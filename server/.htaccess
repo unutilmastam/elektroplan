@@ -1,0 +1,9 @@
+# PHP API (public_html/api). Real routing arrives in Phase 12.
+Options -Indexes
+<FilesMatch "^(config\.php|config\.example\.php|bootstrap\.php)$">
+  Require all denied
+</FilesMatch>
+RedirectMatch 404 ^/api/(migrations|tests)(/|$)
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]

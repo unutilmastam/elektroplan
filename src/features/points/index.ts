@@ -1,0 +1,1 @@
+export { PointPropertiesPanel } from './PointPropertiesPanel';

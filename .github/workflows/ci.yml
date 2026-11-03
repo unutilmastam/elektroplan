@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+    branches-ignore: [main]
+  pull_request: {}
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+      - name: PHP syntax
+        run: find server -name '*.php' -print0 | xargs -0 -r -n1 php -l
+      - name: E2E (all device profiles, WebKit for Apple devices)
+        env: { E2E_WEBKIT: '1' }
+        run: |
+          pnpm exec playwright install --with-deps chromium webkit
+          pnpm test:e2e

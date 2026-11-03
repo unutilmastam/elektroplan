@@ -49,3 +49,13 @@ Tugagach test qil, docs/PROGRESS.md ni yangila, hisobot ber va tasdiqimni kut.
 
 ---
 © ITcoDe.Uz
+
+## Ishga tushirish (Phase 1+)
+
+```
+pnpm install
+pnpm dev            # http://localhost:3000  (demo reja: /?demo=1)
+pnpm typecheck && pnpm lint && pnpm test
+pnpm build          # statik out/
+pnpm test:e2e       # 6 qurilma profili (out/ dan)
+```

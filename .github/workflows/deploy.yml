@@ -1,0 +1,44 @@
+name: Deploy to hostmaster
+on:
+  push: { branches: [main] }
+  workflow_dispatch: {}
+concurrency: { group: deploy, cancel-in-progress: false }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck && pnpm lint && pnpm test
+      - name: Build static export
+        env:
+          # Optional repository variable: set ENABLE_DEMO=1 to allow ?demo=1 on the live site.
+          NEXT_PUBLIC_ENABLE_DEMO: ${{ vars.ENABLE_DEMO }}
+        run: pnpm build
+      - name: Assemble upload folder
+        run: |
+          mkdir -p deploy/api
+          cp -r out/. deploy/
+          rsync -a --exclude tests --exclude config.example.php server/ deploy/api/
+      - name: Write api/config.php from secrets
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASS: ${{ secrets.DB_PASS }}
+          MIGRATE_TOKEN: ${{ secrets.MIGRATE_TOKEN }}
+        run: |
+          umask 077
+          php -r '$c=["db_host"=>getenv("DB_HOST"),"db_name"=>getenv("DB_NAME"),"db_user"=>getenv("DB_USER"),"db_pass"=>getenv("DB_PASS"),"migrate_token"=>getenv("MIGRATE_TOKEN")]; file_put_contents("deploy/api/config.php","<?php\nreturn ".var_export($c,true).";\n");'
+          php -l deploy/api/config.php
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deploy/
+          server-dir: ${{ secrets.FTP_DIR }}
+          protocol: ftps

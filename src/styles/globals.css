@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+
+/* Breakpoints: docs/DEVICES.md §1 (layout depends on width only) */
+@theme {
+  --breakpoint-sm: 600px; /* tablet: icon rail, slide-over, tabs */
+  --breakpoint-md: 1024px; /* iPad landscape: reference layout, compact */
+  --breakpoint-lg: 1280px; /* full reference layout */
+  --breakpoint-xl: 1600px;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-bg: #05080f;
+  --color-bg-elevated: #0a1120;
+  --color-panel: rgba(17, 26, 46, 0.72);
+  --color-panel-solid: #111a2e;
+  --color-panel-border: rgba(120, 150, 210, 0.14);
+  --color-canvas: #0b1322;
+  --color-primary: #1f6fff;
+  --color-primary-hi: #3b8bff;
+  --color-text: #eef3ff;
+  --color-text-muted: #9aa8c4;
+  --color-text-dim: #6b7a96;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-pro-gold: #facc15;
+
+  --radius-panel: 16px;
+  --radius-btn: 10px;
+  --radius-input: 8px;
+}
+
+:root {
+  /* surfaces */
+  --bg: #05080f;
+  --bg-elevated: #0a1120;
+  --panel: rgba(17, 26, 46, 0.72);
+  --panel-solid: #111a2e;
+  --panel-border: rgba(120, 150, 210, 0.14);
+  --canvas: #0b1322;
+  --grid-line: rgba(90, 120, 180, 0.1);
+
+  /* brand */
+  --primary: #1f6fff;
+  --primary-hi: #3b8bff;
+  --primary-glow: rgba(31, 111, 255, 0.45);
+
+  /* text */
+  --text: #eef3ff;
+  --text-muted: #9aa8c4;
+  --text-dim: #6b7a96;
+
+  /* plan */
+  --wall: #e6ebf3;
+  --wall-window: #8a95a8;
+  --room-label: #f2f5fb;
+
+  /* status */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --pro-gold: #facc15;
+
+  /* point swatches */
+  --swatch-blue: #3b8bff;
+  --swatch-red: #ef4444;
+  --swatch-green: #16a34a;
+  --swatch-yellow: #facc15;
+  --swatch-purple: #8b5cf6;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  background:
+    radial-gradient(1200px 700px at 70% 10%, rgba(31, 80, 180, 0.08), transparent 60%),
+    radial-gradient(900px 600px at 20% 100%, rgba(31, 80, 180, 0.06), transparent 60%), var(--bg);
+}
+
+button,
+a,
+[role='button'] {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Glass panel — DESIGN_SYSTEM §2 */
+.glass {
+  background: var(--panel);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-panel);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.nav-active {
+  background: linear-gradient(90deg, #1f6fff, #1a4fc4);
+  box-shadow:
+    0 0 22px rgba(31, 111, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.glow-primary {
+  box-shadow:
+    0 0 18px var(--primary-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.canvas-host {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
