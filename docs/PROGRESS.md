@@ -10,7 +10,7 @@
 | 5 | SVG belgilar | ✅ Tayyor |
 | 6 | Nuqtalarni joylashtirish | ✅ Tayyor |
 | 7 | Devor ko‘rinishi | ✅ Tayyor |
-| 8 | Avtosaqlash (IndexedDB) | ✅ Tayyor (tasdiq kutilmoqda) |
+| 8 | Avtosaqlash (IndexedDB) | ✅ Tayyor |
 | 9 | Montaj rejimi | — |
 | 10 | PDF eksport | — |
 | 11 | PWA / offline (internetsiz ishlash) | — |
