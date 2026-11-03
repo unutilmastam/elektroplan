@@ -4,7 +4,7 @@
  */
 import { labelAnchor, polygonCentroid } from '@/domain/geometry';
 import type { ElectricalPoint, Opening, Project, Room, Vec2, Wall } from '@/domain/types';
-import { deriveWallsFromRooms, findWallByEndpoints, pointOnWall } from '@/domain/walls';
+import { cornerDistance, deriveWallsFromRooms, findWallByEndpoints, pointOnWall } from '@/domain/walls';
 import { SYMBOLS } from '@/features/symbols/catalog';
 import { LABELS, OPENING_SEEDS, POINT_SEEDS, ROOM_SEEDS, type Seg } from './demoSeeds';
 
@@ -89,7 +89,7 @@ function buildPoints(rooms: Room[], walls: Wall[]): ElectricalPoint[] {
       x: pos.x,
       y: pos.y,
       mountHeightCm: seed.height ?? def.defaultMountHeightCm,
-      distanceFromCornerCm: Math.round(t * len),
+      distanceFromCornerCm: Math.round(cornerDistance(wall, t, side)),
     };
   });
 }

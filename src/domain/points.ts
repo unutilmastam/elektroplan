@@ -18,7 +18,7 @@ import type {
   SymbolId,
   Wall,
 } from './types';
-import { pointOnWall } from './walls';
+import { cornerDistance, pointOnWall, tFromCornerDistance } from './walls';
 
 /** Electrical points (Phase 6): placement on walls / ceilings, moving between walls, editing. Pure. */
 
@@ -156,7 +156,7 @@ export function newPoint(
     y: target.pos.y,
     mountHeightCm: defaultHeight(symbol, p.settings),
     distanceFromCornerCm:
-      wall && target.kind === 'wall' ? Math.round(target.t * distance(wall.a, wall.b)) : null,
+      wall && target.kind === 'wall' ? Math.round(cornerDistance(wall, target.t, target.side)) : null,
     description: '',
     color: symbol.defaultColor,
     label: null,
@@ -212,7 +212,7 @@ export function movePointRecipe(base: Project, pointId: string, at: Vec2, o: Pla
       dp.wallId = w.id;
       dp.t = target.t;
       dp.side = target.side;
-      dp.distanceFromCornerCm = Math.round(target.t * distance(w.a, w.b));
+      dp.distanceFromCornerCm = Math.round(cornerDistance(w, target.t, target.side));
     } else {
       dp.wallId = null;
       dp.t = null;
@@ -260,8 +260,7 @@ export function updatePointRecipe(pointId: string, patch: PointPatch, now: strin
     if (patch.distanceFromCornerCm !== undefined && patch.distanceFromCornerCm !== p.distanceFromCornerCm) {
       p.distanceFromCornerCm = patch.distanceFromCornerCm;
       if (wall && patch.distanceFromCornerCm !== null) {
-        const len = distance(wall.a, wall.b) || 1;
-        const t = Math.min(1, Math.max(0, patch.distanceFromCornerCm / len));
+        const t = tFromCornerDistance(wall, patch.distanceFromCornerCm, p.side);
         const inset = p.t === null ? POINT_INSET : distance(p, lerp(wall.a, wall.b, p.t));
         const xy = pointOnWall(wall, t, p.side, inset);
         p.t = t;
@@ -298,11 +297,14 @@ export function duplicatePoint(p: Project, pointId: string, id: string, now: str
   };
   const wall = src.wallId === null ? undefined : p.walls.find((w) => w.id === src.wallId);
   if (!wall || src.t === null) return { ...base, x: src.x + 40, y: src.y };
+  // 40 further from the viewer's left corner (or back, if the wall ends)
   const len = distance(wall.a, wall.b) || 1;
-  const t = src.t + 40 / len <= 1 ? src.t + 40 / len : Math.max(0, src.t - 40 / len);
+  const d0 = cornerDistance(wall, src.t, src.side);
+  const d = d0 + 40 <= len ? d0 + 40 : Math.max(0, d0 - 40);
+  const t = tFromCornerDistance(wall, d, src.side);
   const inset = distance(src, lerp(wall.a, wall.b, src.t));
   const xy = pointOnWall(wall, t, src.side, inset);
-  return { ...base, t, x: xy.x, y: xy.y, distanceFromCornerCm: Math.round(t * len) };
+  return { ...base, t, x: xy.x, y: xy.y, distanceFromCornerCm: Math.round(d) };
 }
 
 export const settingsRecipe = (patch: Partial<ProjectSettings>) => (d: Draft<Project>) => {

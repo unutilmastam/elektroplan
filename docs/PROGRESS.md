@@ -9,13 +9,34 @@
 | 4 | Xonalar va devorlar | ✅ Tayyor |
 | 5 | SVG belgilar | ✅ Tayyor |
 | 6 | Nuqtalarni joylashtirish | ✅ Tayyor |
-| 7 | Devor ko‘rinishi | — |
+| 7 | Devor ko‘rinishi | ✅ Tayyor (tasdiq kutilmoqda) |
 | 8 | Avtosaqlash (IndexedDB) | — |
 | 9 | Montaj rejimi | — |
 | 10 | PDF eksport | — |
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 7 — 2026-11-03
+
+**Bajarildi**
+- “Chap burchakdan” endi **xona ichida devorga qarab turgan odamning chap burchagidan** o‘lchanadi (`domain/walls.ts › leftIsA / cornerDistance / tFromCornerDistance`), rejadagi joylashtirish, sudrash, devor surish, nusxa, panel va devor ko‘rinishi — hammasi shu bitta qoidadan.
+- `domain/elevation.ts` (testlar bilan): devor ko‘rinishi joylashuvi — masofa ↔ x, balandlik ↔ y (ikki tomonga), ko‘rsatiladigan balandlik oralig‘i (≥120 sm, eng baland nuqtaning 1,5 barobari, devor balandligidan oshmaydi), 5 sm qadam.
+- Devor ko‘rinishi (referensdagidek): devor yuzasi, pol chizig‘i, nuqtalardan polga chiziq, ostida masofa yozuvlari (yaqin bo‘lsa suriladi), o‘ngda balandlik o‘lchagichi, TV ekran sifatida. Tanlangan nuqta uchun: o‘lchagich uning balandligini ko‘rsatadi, chap burchakdan punktir chiziq, masofa yozuvi ko‘k.
+- **Sinxronlik:** rejada nuqtani tanlash → devor ko‘rinishida tanlanadi; devor ko‘rinishida bosish → rejada va panelda tanlanadi; devor yuzasini bosish → devor tanlanadi. Hammasi bitta `selection` dan.
+- **Sudrash:** chapga-o‘ngga — masofa, tepaga-pastga — balandlik (5 sm qadam); reja va panel shu zahoti yangilanadi; bitta sudrash = bitta undo. Klaviatura: strelkalar 5 sm, Shift+strelka 20 sm.
+- Oldingi / keyingi tugmalari — xonaning keyingi/oldingi devori; to‘liq ekran tugmasi — telefon/planshetda katta devor ko‘rinishi (16:9), pastda tanlangan nuqtaning balandligi va masofasi, Esc / ✕ bilan yopiladi.
+
+**Test qilindi**
+- `pnpm test` — 164 test (yangi: chap burchak qoidasi ikkala tomondan, masofa ↔ t, layout ikki tomonlama aylantirish, oraliq, cheklash, 5 sm).
+- `pnpm test:e2e` — 41 ssenariy × 6 profil: 235 o‘tdi, 11 ataylab o‘tkazildi. **Sinxronlik e2e:** rejada tanlash ↔ devor ko‘rinishida tanlash; devor ko‘rinishida sudrash → IndexedDB’da masofa va balandlik, rejadagi x masofaga teng, undo qaytaradi; paneldagi balandlik → devor ko‘rinishidagi belgi siljiydi; to‘liq ekran: tahrir, devor almashtirish, yopish; chap burchak qoidasi.
+- Phase 1–6 qayta tekshirildi (shu to‘plamda). Emoji testi izohlardagi ◀ ▶ belgilarini ham ushladi — matn bilan almashtirildi.
+- Skrinshotlar: `docs/screenshots/phase-7/` (demo 1536, sudrashdan keyin, iPhone tab + to‘liq ekran, iPad).
+
+**Ma’lum cheklovlar**
+- Devor ko‘rinishi sxematik (CAD emas): vertikal masshtab nuqtalarga qarab avtomatik, gorizontal — devor uzunligi.
+- Eshik/deraza devor ko‘rinishida hali chizilmaydi.
+- Telefonda to‘liq ekran portretda kichikroq — telefonni yotqizilsa kattaroq ko‘rinadi.
 
 ## Phase 6 — 2026-11-03
 

@@ -1,6 +1,6 @@
 import { panelFocus, type PanelFocus, type Selection } from './selection';
 import type { ElectricalPoint, Project, Room, Wall } from './types';
-import { wallDirection, type WallDirection } from './walls';
+import { cornerDistance, wallDirection, type WallDirection } from './walls';
 
 export interface RoomStat {
   room: Room;
@@ -51,7 +51,7 @@ export function selectWallElevation(project: Project, wallId: string, roomId?: s
     .filter((p) => p.deletedAt === null && p.wallId === wall.id && (room === null || p.roomId === room.id))
     .map((point) => ({
       point,
-      distance: point.distanceFromCornerCm ?? (point.t ?? 0) * length,
+      distance: point.distanceFromCornerCm ?? cornerDistance(wall, point.t ?? 0, point.side),
       height: point.mountHeightCm ?? 0,
     }))
     .sort((a, b) => a.distance - b.distance);
@@ -87,4 +87,21 @@ export function focusForSelection(project: Project, sel: Selection): PanelFocus 
   const f = panelFocus(project, sel);
   if (f.roomId && !f.wallId) return { ...f, wallId: pickDefaultWallId(project, f.roomId) };
   return f;
+}
+
+/** Walls of a room in outline order (prev / next buttons in the wall view). */
+export function roomWallIds(project: Project, roomId: string): string[] {
+  const room = project.rooms.find((r) => r.id === roomId && r.deletedAt === null);
+  if (!room) return [];
+  const out: string[] = [];
+  const same = (p: { x: number; y: number }, q: { x: number; y: number }) =>
+    Math.abs(p.x - q.x) < 0.5 && Math.abs(p.y - q.y) < 0.5;
+  room.vertices.forEach((a, i) => {
+    const b = room.vertices[(i + 1) % room.vertices.length]!;
+    const w = project.walls.find(
+      (x) => x.deletedAt === null && ((same(x.a, a) && same(x.b, b)) || (same(x.a, b) && same(x.b, a))),
+    );
+    if (w && !out.includes(w.id)) out.push(w.id);
+  });
+  return out;
 }

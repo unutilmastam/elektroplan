@@ -10,7 +10,7 @@ import {
   signedArea,
 } from './geometry';
 import type { Opening, Project, Room, Vec2, Wall } from './types';
-import { pointOnWall } from './walls';
+import { cornerDistance, pointOnWall } from './walls';
 
 /**
  * Wall topology (ARCHITECTURE §4.2): walls are DERIVED from room edges (+ free walls), split at every
@@ -204,7 +204,7 @@ export function reconcile(project: Topology, opts: ReconcileOptions): Topology {
       t,
       x: xy.x,
       y: xy.y,
-      distanceFromCornerCm: Math.round(t * distance(nw.a, nw.b)),
+      distanceFromCornerCm: Math.round(cornerDistance(nw, t, p.side)),
       updatedAt: opts.now,
     };
   });

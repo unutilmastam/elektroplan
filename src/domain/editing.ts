@@ -2,7 +2,7 @@ import type { Draft } from 'immer';
 import { lerp, projectOnSegment, snapToGrid } from './geometry';
 import type { Selection } from './selection';
 import type { Project, Vec2 } from './types';
-import { pointOnWall } from './walls';
+import { cornerDistance, pointOnWall } from './walls';
 
 /** Move recipes for `applyRecipe` (undoable). Deleting lives in rooms.ts (topology-aware). */
 
@@ -86,7 +86,7 @@ export function moveRecipe(origin: MoveOrigin, delta: Vec2, grid: number, now: s
         p.t = t;
         p.x = pos.x;
         p.y = pos.y;
-        p.distanceFromCornerCm = Math.round(t * Math.hypot(wall.b.x - wall.a.x, wall.b.y - wall.a.y));
+        p.distanceFromCornerCm = Math.round(cornerDistance(wall, t, p.side));
       } else {
         p.x = target.x;
         p.y = target.y;
