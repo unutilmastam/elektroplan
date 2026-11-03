@@ -6,7 +6,7 @@
 | 1 | Poydevor + dashboard dizayni | ✅ Tayyor |
 | 2 | Loyiha boshqaruvi | ✅ Tayyor |
 | 3 | Chizma dvigateli | ✅ Tayyor |
-| 4 | Xonalar va devorlar | ✅ Tayyor (tasdiq kutilmoqda) |
+| 4 | Xonalar va devorlar | ✅ Tayyor |
 | 5 | SVG belgilar | — |
 | 6 | Nuqtalarni joylashtirish | — |
 | 7 | Devor ko‘rinishi | — |
