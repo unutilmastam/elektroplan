@@ -9,7 +9,7 @@
 | 4 | Xonalar va devorlar | ✅ Tayyor |
 | 5 | SVG belgilar | ✅ Tayyor |
 | 6 | Nuqtalarni joylashtirish | ✅ Tayyor |
-| 7 | Devor ko‘rinishi | ✅ Tayyor (tasdiq kutilmoqda) |
+| 7 | Devor ko‘rinishi | ✅ Tayyor |
 | 8 | Avtosaqlash (IndexedDB) | — |
 | 9 | Montaj rejimi | — |
 | 10 | PDF eksport | — |
