@@ -10,22 +10,25 @@ Har bosqichni Claude Code’da boshlash uchun tayyor prompt ham berilgan (▶).
 ## PHASE 1 — Loyiha poydevori + to‘liq dashboard dizayni
 
 **Vazifalar**
-- Next.js (App Router) + TS strict + Tailwind + shadcn/ui + ESLint/Prettier + Vitest + Playwright, pnpm.
+- Next.js (App Router, `output: 'export'`, `trailingSlash: true`) + TS strict + Tailwind + shadcn/ui + ESLint/Prettier + Vitest + Playwright (6 qurilma profili, `docs/DEVICES.md`), pnpm.
+- GitHub Actions: `ci.yml` (typecheck, lint, test, build) va `deploy.yml` (FTP → hostmaster.uz, `docs/DEPLOY.md`) — har push’dan keyin natijani iPad’da ko‘rish mumkin bo‘lsin.
+- `public/.htaccess` (HTTPS, cache, statik sahifalar), `viewport-fit=cover`, safe-area.
 - `docs/ARCHITECTURE.md` dagi papka tuzilmasini yaratish (bo‘sh modullar `index.ts` bilan).
 - Dizayn tokenlari (`globals.css`), Inter shrift, `GlassPanel`, tugmalar, `ProgressRing`, `NumberField`, `ColorSwatches`.
 - `i18n/uz.ts` — barcha matnlar.
 - AppShell: Sidebar (logo, 6 ta nav, Jami loyihalar, Pro karta, foydalanuvchi), Header, Symbol bar, chap toolbar, markazda Konva `Stage` + grid (hali chizish yo‘q), o‘ng “Tanlangan nuqta” paneli, pastki qator (Xonalar ro‘yxati, Devor ko‘rinishi, Loyiha holati).
 - Barcha 11 ta SVG belgining **ko‘rinishi** (`SymbolIcon`) — dizaynni moslash uchun.
 - Demo ma’lumot faqat dev rejimda (`?demo=1`), referensdagi kabi uy rejasi bilan — dizaynni solishtirish uchun.
-- Responsive skelet: desktop / tablet / mobil (bottom nav, bottom sheet).
+- Responsive skelet `docs/DEVICES.md` dagi 4 ta breakpoint bo‘yicha: iPad landshaft (asosiy), iPad portret, telefon (bottom nav, bottom sheet), Windows desktop.
 - Nav bo‘yicha sahifa marshrutlari ishlaydi. Keyingi bosqich funksiyalari tugmalari `disabled` + “Keyingi bosqichda”.
 
 **Qabul mezonlari**
-- Desktop 1536×1024 skrinshot referensga vizual jihatdan juda yaqin.
-- 390px (iPhone) va 1024px (iPad) da layout buzilmaydi, gorizontal scroll yo‘q.
+- iPad landshaft 1180×820 va 1366×1024 skrinshotlari referensga vizual jihatdan juda yaqin.
+- iPad portret 820×1180, iPhone 390×844, Android 412×915, Windows 1920×1080 da layout buzilmaydi, gorizontal scroll yo‘q.
+- `pnpm build` statik `out/` beradi; deploy workflow sintaksisi to‘g‘ri (secrets qo‘shilganda ishlaydi).
 - `pnpm typecheck lint test` o‘tadi; Playwright: sahifalar ochiladi, nav ishlaydi.
 
-▶ `CLAUDE.md va docs/ ni o‘qi. PHASE 1 ni bajar: loyiha poydevori va referensga mos dashboard dizayni. Tugagach desktop, iPad va iPhone o‘lchamlarida skrinshot olib referens bilan solishtir, PROGRESS.md ni yangila va to‘xta.`
+▶ `CLAUDE.md va docs/ ni o‘qi. PHASE 1 ni bajar: loyiha poydevori va referensga mos dashboard dizayni. Tugagach iPad landshaft/portret, iPhone, Android va Windows o‘lchamlarida skrinshot olib referens bilan solishtir, PROGRESS.md ni yangila va to‘xta.`
 
 ---
 
@@ -48,14 +51,15 @@ Har bosqichni Claude Code’da boshlash uchun tayyor prompt ham berilgan (▶).
 
 **Vazifalar**
 - `editorStore`: viewport, aktiv asbob, selection.
-- Pan (bo‘sh joyni sudrash / ikki barmoq), zoom (g‘ildirak → kursorga, pinch), “ekranga sig‘dirish”.
+- Pan (bo‘sh joyni sudrash / ikki barmoq / Space+drag), zoom (g‘ildirak → kursorga, trackpad pinch, barmoq pinch), “ekranga sig‘dirish”.
+- Apple Pencil: `pointerType='pen'` bilan chizish, kaft rad etish, “Faqat Pencil bilan chizish” sozlamasi; uzoq bosish = kontekst menyu.
 - Pointer Events asosida asbob arxitekturasi (state machine) — sichqoncha, sensor, stilus.
 - Select, marquee (ko‘p tanlash), Shift/Ctrl bilan qo‘shib tanlash, Delete, Esc.
 - Undo/Redo: immer patches, drag birlashtiriladi, 200 qadam, Ctrl+Z / Ctrl+Shift+Z.
 - Grid + snapping (grid, burchak 0/45/90).
 - `domain/geometry.ts` + to‘liq unit testlar.
 
-**Qabul:** iPad’da barmoq bilan pan/zoom silliq (60 fps), undo/redo har qanday amalni qaytaradi.
+**Qabul:** iPad’da barmoq va Pencil bilan pan/zoom/chizish silliq (60 fps); Windows’da sichqoncha va klaviatura bilan ham; undo/redo har qanday amalni qaytaradi.
 
 ▶ `PHASE 3 ni bajar. geometry.ts va history ni avval testlar bilan yoz.`
 
@@ -126,6 +130,7 @@ Har bosqichni Claude Code’da boshlash uchun tayyor prompt ham berilgan (▶).
 
 **Vazifalar**
 - `infra/idb`: projects, outbox, meta; versiyali migratsiya; o‘qishda zod validatsiya.
+- `navigator.storage.persist()` so‘rovi.
 - Har o‘zgarishda 500 ms debounce bilan saqlash; `beforeunload`/`visibilitychange` da darhol.
 - Header: “Saqlanmoqda… / Saqlandi” holati; “Saqlash” tugmasi darhol flush.
 - Outbox’ga patch’lar yoziladi (Phase 12 uchun tayyor).
@@ -165,39 +170,42 @@ Har bosqichni Claude Code’da boshlash uchun tayyor prompt ham berilgan (▶).
 
 ---
 
-## PHASE 11 — PWA va offline
+## PHASE 11 — PWA va offline (internetsiz ishlash)
 
 **Vazifalar**
-- Serwist: manifest, ikonkalar, service worker, app shell kesh, shriftlar kesh.
-- iOS “Bosh ekranga qo‘shish” uchun meta teglar va splash.
-- Oflayn indikator; yangi versiya chiqqanda “Yangilash” xabari.
+- Serwist: manifest, ikonkalar (maskable, apple-touch), service worker, app shell + shrift kesh.
+- Saqlangan loyihalarni **internetsiz ochish**: Loyihalar ro‘yxati, Chizma, Montaj rejimi va PDF eksport faqat IndexedDB’dan ishlaydi.
+- “Zaxira nusxa”: bitta yoki barcha loyihalarni `.elektroplan.json` qilib eksport/import (iOS Fayllar, Telegram orqali).
+- iOS uchun “Bosh ekranga qo‘shing” bir martalik eslatmasi (Safari ma’lumotni o‘chirmasligi uchun); Android `beforeinstallprompt`; Windows Edge/Chrome o‘rnatish.
+- Oflayn indikator, “serverga yuborilmagan o‘zgarishlar” belgisi; yangi versiya chiqqanda “Yangilash” xabari.
 
-**Qabul:** Lighthouse PWA tekshiruvi o‘tadi; samolyot rejimida loyiha ochiladi va tahrirlanadi.
+**Qabul:** iPad, iPhone, Android va Windows’da samolyot rejimida ilova ochiladi, barcha saqlangan loyihalar ko‘rinadi, ochiladi, tahrirlanadi va PDF chiqadi. Lighthouse PWA tekshiruvi o‘tadi.
 
-▶ `PHASE 11 ni bajar.`
+▶ `PHASE 11 ni bajar. Samolyot rejimi ssenariysini Playwright’da (offline context) barcha qurilma profillarida tekshir.`
 
 ---
 
-## PHASE 12 — PostgreSQL sinxronizatsiya va autentifikatsiya
+## PHASE 12 — Server (PHP + MySQL), sinxronizatsiya va autentifikatsiya
 
 **Vazifalar**
-- Prisma migratsiya (`prisma/schema.prisma`), seed (system symbols).
-- Auth.js: email (magic link) yoki Google; lokal loyihalarni akkauntga biriktirish.
-- `/api/sync`: revision asosida push/pull; `domain/merge.ts` konflikt qoidalari (holat hech qachon orqaga qaytmaydi); `ProjectHistory` yozuvi.
+- `server/`: router, PDO, JSON xatolar, validatsiya; `migrate.php` + `001_init.sql`; system belgilar seed.
+- Auth: telefon raqam/email + parol (bcrypt), httpOnly cookie sessiya, rate limit; lokal loyihalarni akkauntga biriktirish.
+- `/api/sync`: revision asosida push/pull, bitta tranzaksiyada; `domain/merge.ts` konflikt qoidalari (montaj holati hech qachon orqaga qaytmaydi); `project_history` yozuvi.
+- Login’dan keyin serverdagi **barcha** loyihalar IndexedDB’ga yuklanadi (boshqa qurilmada yaratilganlari ham offline ochiladi).
 - Fon sinxronizatsiyasi: online bo‘lganda, har 10 s, tab faollashganda; exponential backoff.
-- Header’da sinxron holati.
-- Deploy: Vercel + Neon/Supabase.
+- CI: `php -l`, deploy workflow `config.php` ni secrets’dan yozadi.
 
-**Qabul:** ikki qurilmada bir loyihani oflayn tahrirlab, keyin ulanganda ma’lumot yo‘qolmaydi (integration test).
+**Qabul:** iPad va telefonda bir loyihani oflayn tahrirlab, keyin ulanganda ma’lumot yo‘qolmaydi (integration test); hostmaster.uz’da ishlaydi.
 
-▶ `PHASE 12 ni bajar. Avval merge.ts ni barcha konflikt holatlari uchun testlar bilan yoz.`
+▶ `PHASE 12 ni bajar. Avval merge.ts ni barcha konflikt holatlari uchun testlar bilan yoz, keyin PHP API.`
 
 ---
 
 ## PHASE 13 — To‘liq testlar va optimizatsiya
 
 **Vazifalar**
-- E2E ssenariy: loyiha → xonalar → nuqtalar → devor ko‘rinishi → montaj → PDF → oflayn → sinxron.
+- E2E ssenariy barcha qurilma profillarida: loyiha → xonalar → nuqtalar → devor ko‘rinishi → montaj → PDF → oflayn → sinxron.
+- Haqiqiy qurilmalarda qo‘lda tekshiruv ro‘yxati: iPad (Pencil bilan), iPhone, Android, Windows.
 - Unit coverage `domain/` ≥ 90%.
 - Performance: 500 nuqtali loyihada 60 fps; bundle tahlili; Konva layer caching.
 - A11y: klaviatura, fokus, kontrast.

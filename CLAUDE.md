@@ -5,8 +5,10 @@ Read these before writing any code:
 
 1. `docs/SPEC.md` — full product spec (source of truth for features)
 2. `docs/ARCHITECTURE.md` — folder layout, module boundaries, data flow
-3. `docs/DATA_MODEL.md` + `prisma/schema.prisma` — domain model and geometry
+3. `docs/DATA_MODEL.md` + `server/migrations/*.sql` — domain model, geometry, MySQL schema
 4. `docs/DESIGN_SYSTEM.md` — tokens, layout, Uzbek UI strings
+4a. `docs/DEVICES.md` — iPad-first; iPhone, Android, Windows rules and test matrix
+4b. `docs/DEPLOY.md` — hostmaster.uz cPanel deployment via GitHub Actions
 5. `docs/design/reference-dashboard.png` — the approved visual reference. Match it.
 6. `docs/PHASES.md` — what each phase delivers and its acceptance criteria
 7. `docs/PROGRESS.md` — which phases are done
@@ -15,13 +17,17 @@ Read these before writing any code:
 
 - Work on ONE phase at a time, in order. Never start the next phase without explicit user approval.
 - At the end of each phase:
-  1. `pnpm typecheck && pnpm lint && pnpm test` must pass (and `pnpm test:e2e` once Playwright exists).
+  1. `pnpm typecheck && pnpm lint && pnpm test` must pass (and `pnpm test:e2e` on all device profiles once Playwright exists).
   2. Manually verify earlier phases still work.
   3. Update `docs/PROGRESS.md` (what was done, what was tested, known limitations).
   4. Report to the user in Uzbek (Latin), short and concrete.
   5. Commit with message `phase-N: <summary>` and stop.
 
 ## Hard rules
+
+- Hosting is **cPanel shared hosting**: frontend = Next.js `output: 'export'` (no server code, no dynamic route segments for data — use `?id=`), backend = PHP 8 + MySQL in `server/`. See ARCHITECTURE §0. No Node server, no Prisma, no Auth.js.
+- **Offline is mandatory:** every saved project must open, display and be editable with no internet. Pages read IndexedDB only; the network is background sync.
+- **iPad is the primary device.** Every UI change is checked at 1180×820 and 820×1180 first, then iPhone, Android, Windows (`docs/DEVICES.md`). Input only via Pointer Events.
 
 - UI language: Uzbek (Latin). All user-facing strings live in `src/i18n/uz.ts` — no hardcoded strings in components.
 - TypeScript `strict: true`, no `any`, no `@ts-ignore`.
@@ -43,5 +49,6 @@ pnpm typecheck      # tsc --noEmit
 pnpm lint
 pnpm test           # vitest (unit + integration)
 pnpm test:e2e       # playwright
-pnpm db:migrate     # prisma migrate dev (Phase 12+)
+pnpm build          # static export to out/
+php -l server/*.php # PHP syntax check (Phase 12+)
 ```

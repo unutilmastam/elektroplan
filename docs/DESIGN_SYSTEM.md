@@ -115,7 +115,6 @@ Status: Kutilmoqda · Jarayonda · Bajarildi
 Sidebar cards: Jami loyihalar · Pro versiya · Ko'proq imkoniyatlar · Yangilash · Usta Elektrik · Elektr montaj ustasi
 Generic: Saqlandi · Saqlanmoqda… · Oflayn · Sinxronlandi · Keyingi bosqichda
 
-## 7. Mobile / tablet
+## 7. Devices
 
-- Tablet: sidebar → 72px icon rail; right panel → slide-over sheet opened on selection; bottom row → tabbed dock (Xonalar / Devor / Holat).
-- Mobile: bottom tab bar (Bosh sahifa, Loyihalar, Chizma, Montaj, Ko'proq); header collapses to project name + overflow menu; symbol bar horizontal scroll; toolbar floats as a vertical pill on the left; all panels are bottom sheets with drag handle. Touch targets ≥ 44px.
+iPad is the primary device. Breakpoints, Pencil/keyboard/trackpad behaviour, iPhone safe areas, Android back button, Windows mouse rules and the test matrix are defined in `docs/DEVICES.md`. Same visual identity on every device; panel behaviour changes, not the style.

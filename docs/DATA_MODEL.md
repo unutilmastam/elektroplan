@@ -94,23 +94,24 @@ export interface ProjectSettings {
 
 Progress rules: `percent = round(completed / total * 100)`, `total = 0 → 0%`. "Loyiha tayyor" when `completed === total && total > 0`.
 
-## 3. Database (PostgreSQL / Prisma)
+## 3. Database (MySQL / MariaDB on cPanel)
 
-See `prisma/schema.prisma`. Normalized tables:
+See `server/migrations/001_init.sql`. Snake_case columns, mapped to camelCase in the PHP layer. Normalized tables:
 
-| Model | Purpose |
+| Table | Purpose |
 |---|---|
-| `User` + Auth.js tables (`Account`, `Session`, `VerificationToken`) | accounts |
-| `Project` | header info, `revision`, owner |
-| `ProjectSettings` | 1:1 with project |
-| `Room` | polygon stored as `Json` (`Vec2[]`) |
-| `Wall` | endpoints as floats, `WallRoom` join table for 0..2 rooms |
-| `Symbol` | catalog (seeded), `isSystem`, plus user custom symbols |
-| `ElectricalPoint` | all point properties |
-| `InstallationTask` | status history per point: who/when changed status, optional note/photo later |
-| `ProjectHistory` | change log: op patches, revision, author, conflict records |
+| `users`, `sessions` | accounts (bcrypt), hashed session tokens |
+| `projects` | header info, `revision`, owner |
+| `project_settings` | 1:1 with project |
+| `rooms` | polygon stored as `JSON` (`Vec2[]`) |
+| `walls` | endpoints `a_x, a_y, b_x, b_y`; `wall_rooms` join for 0..2 rooms |
+| `symbols` | catalog (system rows seeded) + user custom symbols |
+| `electrical_points` | all point properties |
+| `installation_tasks` | status change log per point (who/when) |
+| `project_history` | patches per revision, conflict records |
+| `schema_migrations` | applied migration versions |
 
-Indexes: `Project(ownerId, updatedAt)`, `Room(projectId)`, `Wall(projectId)`, `ElectricalPoint(projectId)`, `ElectricalPoint(wallId)`, `ElectricalPoint(projectId, status)`, `ProjectHistory(projectId, revision)`.
+Indexes: `projects(owner_id, updated_at)`, `rooms(project_id)`, `walls(project_id)`, `electrical_points(project_id)`, `electrical_points(wall_id)`, `electrical_points(project_id, status)`, `project_history(project_id, revision)`.
 
 ## 4. IndexedDB (`src/infra/idb`)
 
@@ -120,6 +121,6 @@ Database `elektroplan`, version 1:
 |---|---|---|
 | `projects` | `id` | full `Project` snapshot (validated by zod on read) |
 | `outbox` | auto | `{ projectId, baseRevision, ops: Patch[], createdAt }` |
-| `meta` | key | `lastOpenedProjectId`, `lastSyncAt`, schema version |
+| `meta` | key | `lastOpenedProjectId`, `lastSyncAt`, schema version, `persistGranted`, `iosInstallHintShown` |
 
 Migrations are version-gated in `db.ts` `upgrade()`.

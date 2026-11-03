@@ -1,6 +1,7 @@
 # ⚡ ElektroPlan — Smart Electric Project
 
 Elektr montaj ustalari uchun professional 2D elektr loyihalash va montaj ilovasi.
+**iPad uchun birinchi navbatda**, shuningdek iPhone, Android va Windows’da ishlaydi (PWA). **Internetsiz ham** saqlangan loyihalarni ochib ko‘rish va tahrirlash mumkin.
 
 ![Dizayn namunasi](docs/design/reference-dashboard.png)
 
@@ -10,14 +11,17 @@ Elektr montaj ustalari uchun professional 2D elektr loyihalash va montaj ilovasi
 2. Xonalarni vizual chizadi va nomlaydi (o‘lcham majburiy emas — bu CAD emas).
 3. Devorlarga elektr belgilarini qo‘yadi (rozetka, viklyuchatel, internet, TV, lyustra, LED, konditsioner…).
 4. Har bir nuqtani sozlaydi: poldan balandlik, chap burchakdan masofa, izoh, rang.
-5. Devor ko‘rinishida (elevation) nuqtalarni ko‘radi va tahrirlaydi.
+5. Devor ko‘rinishida nuqtalarni ko‘radi va tahrirlaydi.
 6. Montaj rejimida nuqtalarni “Kutilmoqda → Jarayonda → Bajarildi” deb belgilaydi.
 7. Loyihani PDF qilib eksport qiladi.
-8. Internet yo‘q joyda ham ishlaydi (offline, IndexedDB), keyin serverga sinxronlanadi.
+8. Internet yo‘q joyda barcha saqlangan loyihalarni ochadi va ishlaydi; internet qaytganda serverga avtomatik sinxronlanadi.
 
 ## Texnologiyalar
 
-Next.js (App Router) · React · TypeScript (strict) · Tailwind CSS · shadcn/ui · Konva.js (react-konva) · Zustand · Zod · IndexedDB (idb) · PostgreSQL · Prisma · Auth.js · PWA · pdf-lib · Vitest · Playwright
+**Frontend:** Next.js (static export) · React · TypeScript strict · Tailwind CSS · shadcn/ui · Konva.js · Zustand · Zod · IndexedDB · PWA (Serwist) · pdf-lib
+**Backend:** PHP 8 + MySQL (hostmaster.uz cPanel)
+**Test:** Vitest · Playwright (iPad, iPhone, Android, Windows profillari)
+**Deploy:** GitHub Actions → FTP → cPanel
 
 ## Hujjatlar
 
@@ -25,12 +29,14 @@ Next.js (App Router) · React · TypeScript (strict) · Tailwind CSS · shadcn/u
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Claude Code uchun qat’iy ish qoidalari |
 | [`docs/SPEC.md`](docs/SPEC.md) | To‘liq texnik topshiriq (asl matn) |
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Arxitektura, papka tuzilmasi, modullar, oqimlar |
-| [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md) | Domen modeli, geometriya, ma’lumotlar bazasi |
-| [`prisma/schema.prisma`](prisma/schema.prisma) | PostgreSQL sxemasi (Phase 12 da ulanadi) |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Arxitektura, hosting qarori, papkalar, offline va sinxron |
+| [`docs/DEVICES.md`](docs/DEVICES.md) | iPad / iPhone / Android / Windows moslashuvi |
+| [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md) | Domen modeli, geometriya, IndexedDB, MySQL |
+| [`server/migrations/001_init.sql`](server/migrations/001_init.sql) | MySQL sxemasi |
 | [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) | Ranglar, shriftlar, panellar, UI matnlari |
-| [`docs/PHASES.md`](docs/PHASES.md) | 13 bosqich: vazifalar, qabul mezonlari, Claude Code promptlari |
-| [`docs/PROGRESS.md`](docs/PROGRESS.md) | Bosqichlar holati (har bosqichdan keyin yangilanadi) |
+| [`docs/PHASES.md`](docs/PHASES.md) | 13 bosqich: vazifalar, qabul mezonlari, tayyor promptlar |
+| [`docs/DEPLOY.md`](docs/DEPLOY.md) | hostmaster.uz cPanel’ga joylashtirish |
+| [`docs/PROGRESS.md`](docs/PROGRESS.md) | Bosqichlar holati |
 
 ## Qanday boshlash
 
@@ -40,12 +46,6 @@ Claude Code’da shu repo’ni oching va yozing:
 CLAUDE.md va docs/ papkasini to‘liq o‘qi. docs/PHASES.md dagi PHASE 1 ni bajar.
 Tugagach test qil, docs/PROGRESS.md ni yangila, hisobot ber va tasdiqimni kut.
 ```
-
-## Joylashtirish (deploy)
-
-Next.js + PostgreSQL oddiy cPanel shared hostingda to‘liq ishlamaydi. Tavsiya:
-**Vercel** (ilova, bepul tarif) + **Neon** yoki **Supabase** (PostgreSQL, bepul tarif).
-Domen (masalan `elektroplan.itcode.uz`) cPanel DNS orqali Vercel’ga CNAME qilinadi.
 
 ---
 © ITcoDe.Uz

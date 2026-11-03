@@ -13,10 +13,13 @@
 | 8 | Avtosaqlash (IndexedDB) | — |
 | 9 | Montaj rejimi | — |
 | 10 | PDF eksport | — |
-| 11 | PWA / offline | — |
-| 12 | PostgreSQL sync + Auth | — |
+| 11 | PWA / offline (internetsiz ishlash) | — |
+| 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
 
 ## Phase 0 — 2026-11-03
-- Texnik topshiriq (`docs/SPEC.md`), dizayn referensi, arxitektura, ma’lumot modeli, Prisma sxemasi, dizayn tizimi va bosqichlar rejasi tayyorlandi.
+- Texnik topshiriq (`docs/SPEC.md`), dizayn referensi, arxitektura, ma’lumot modeli, MySQL sxemasi, qurilmalar, deploy, dizayn tizimi va bosqichlar rejasi tayyorlandi.
 - Kod hali yo‘q — PHASE 1 dan boshlanadi.
+- Hosting qarori: hostmaster.uz cPanel → Next.js static export + PHP 8 + MySQL, deploy GitHub Actions → FTP.
+- Offline talab: barcha saqlangan loyihalar internetsiz ochiladi (ARCHITECTURE §4.6).
+- Qurilmalar: iPad asosiy, keyin iPhone, Android, Windows (`docs/DEVICES.md`).
