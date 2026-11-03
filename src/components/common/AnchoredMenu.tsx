@@ -10,21 +10,37 @@ interface AnchoredMenuProps {
   width: number;
   label: string;
   children: ReactNode;
+  /** below the anchor (default) or to its right (vertical toolbars) */
+  placement?: 'below' | 'right';
 }
 
 /**
  * Floating menu under an anchor, portalled to <body> so scroll containers don't clip it.
  * Closes on outside pointer, Escape and resize.
  */
-export function AnchoredMenu({ anchorRef, open, onClose, width, label, children }: AnchoredMenuProps) {
+export function AnchoredMenu({
+  anchorRef,
+  open,
+  onClose,
+  width,
+  label,
+  children,
+  placement = 'below',
+}: AnchoredMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
 
   useLayoutEffect(() => {
     if (!open) return setPos(null);
     const r = anchorRef.current?.getBoundingClientRect();
-    if (r) setPos({ left: Math.max(8, Math.min(r.left, window.innerWidth - width - 8)), top: r.bottom + 6 });
-  }, [open, anchorRef, width]);
+    if (!r) return;
+    if (placement === 'right')
+      setPos({
+        left: Math.min(r.right + 8, window.innerWidth - width - 8),
+        top: Math.max(8, Math.min(r.top, window.innerHeight - 360)),
+      });
+    else setPos({ left: Math.max(8, Math.min(r.left, window.innerWidth - width - 8)), top: r.bottom + 6 });
+  }, [open, anchorRef, width, placement]);
 
   useEffect(() => {
     if (!open) return;

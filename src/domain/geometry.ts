@@ -208,3 +208,32 @@ export function rectFromPoints(a: Vec2, b: Vec2): Bounds {
 export function rectContains(r: Bounds, p: Vec2): boolean {
   return p.x >= r.minX && p.x <= r.maxX && p.y >= r.minY && p.y <= r.maxY;
 }
+
+export const EPS = 0.5;
+
+export function samePoint(a: Vec2, b: Vec2, eps = EPS): boolean {
+  return Math.abs(a.x - b.x) <= eps && Math.abs(a.y - b.y) <= eps;
+}
+
+/** Intersection of infinite lines p1→p2 and p3→p4 (null when parallel). */
+export function lineIntersection(p1: Vec2, p2: Vec2, p3: Vec2, p4: Vec2): Vec2 | null {
+  const d = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+  if (Math.abs(d) < 1e-9) return null;
+  const a = p1.x * p2.y - p1.y * p2.x;
+  const b = p3.x * p4.y - p3.y * p4.x;
+  return { x: (a * (p3.x - p4.x) - (p1.x - p2.x) * b) / d, y: (a * (p3.y - p4.y) - (p1.y - p2.y) * b) / d };
+}
+
+/** True when c lies on segment a–b strictly between its ends (within eps). */
+export function onSegmentInterior(c: Vec2, a: Vec2, b: Vec2, eps = EPS): boolean {
+  if (samePoint(c, a, eps) || samePoint(c, b, eps)) return false;
+  return distanceToSegment(c, a, b) <= eps && projectOnSegment(c, a, b) > 0 && projectOnSegment(c, a, b) < 1;
+}
+
+/** Segments c–d lies on the infinite line of a–b (both ends within eps). */
+export function collinear(a: Vec2, b: Vec2, c: Vec2, d: Vec2, eps = EPS): boolean {
+  const len = distance(a, b);
+  if (len === 0) return false;
+  const off = (p: Vec2) => Math.abs((b.x - a.x) * (a.y - p.y) - (a.x - p.x) * (b.y - a.y)) / len;
+  return off(c) <= eps && off(d) <= eps;
+}

@@ -1,14 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { useEditorStore } from '@/store/editorStore';
+import { useEditorStore, type DrawToolId } from '@/store/editorStore';
+import { getActiveTool } from '../tools/registry';
 import { deleteSelection, redo, selectEverything, undo, zoomBy } from '../actions';
 
 const isTyping = (t: EventTarget | null) =>
   t instanceof HTMLElement && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName));
 
 /**
- * DEVICES §2/§5: V tanlash, M ramka, H siljitish, Space+drag pan, ⌫/Delete o'chirish, Esc,
+ * DEVICES §2/§5: V tanlash, M ramka, H siljitish, R/Q/P/F/W/D/O chizish asboblari, Space+drag pan, ⌫/Delete o'chirish, Esc,
  * ⌘/Ctrl+Z, ⇧⌘Z / Ctrl+Shift+Z / Ctrl+Y, ⌘/Ctrl+A, +/− zoom, 0 ekranga sig'dirish.
  * Returns a getter telling whether Space is held (for the gesture router).
  */
@@ -43,9 +44,28 @@ export function useKeyboardShortcuts(): () => boolean {
         return;
       }
       if (mod) return;
+      const tool = getActiveTool();
+      if ((e.key === 'Enter' || e.key === 'Escape' || e.key === 'Backspace') && tool?.onKey?.(e.key)) {
+        e.preventDefault();
+        return;
+      }
+      const drawKey: Record<string, DrawToolId> = {
+        r: 'room-rect',
+        q: 'room-square',
+        p: 'room-polygon',
+        f: 'sketch',
+        w: 'wall',
+        d: 'door',
+        o: 'window',
+      };
+      if (drawKey[k]) {
+        ed.setTool(drawKey[k]);
+        return;
+      }
       if (k === 'delete' || k === 'backspace') {
         if (deleteSelection()) e.preventDefault();
       } else if (k === 'escape') {
+        if (ed.tool !== 'select') ed.setTool('select');
         ed.openContextMenu(null);
         ed.setMarquee(null);
         ed.clearSelection();

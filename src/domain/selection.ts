@@ -1,14 +1,28 @@
-import { distance, distanceToSegment, pointInPolygon, rectContains, type Bounds } from './geometry';
+import {
+  distance,
+  distanceToSegment,
+  lerp,
+  pointInPolygon,
+  polygonCentroid,
+  projectOnSegment,
+  rectContains,
+  type Bounds,
+} from './geometry';
 import type { Project, Vec2 } from './types';
 
-export type EntityKind = 'room' | 'wall' | 'point';
+export type EntityKind = 'room' | 'wall' | 'point' | 'opening';
 export interface EntityRef {
   kind: EntityKind;
   id: string;
+  /** a room hit on its name label (dragging moves the label) */
+  part?: 'label';
 }
 export type Selection = EntityRef[];
 
 export const sameRef = (a: EntityRef, b: EntityRef) => a.kind === b.kind && a.id === b.id;
+
+/** Selection entry without the hit detail (`part`). */
+export const plainRef = (r: EntityRef): EntityRef => ({ kind: r.kind, id: r.id });
 export const hasRef = (sel: Selection, r: EntityRef) => sel.some((s) => sameRef(s, r));
 
 /** Adds `r`, or removes it when already selected (Shift/Ctrl click). */
@@ -26,6 +40,17 @@ export interface HitOptions {
   tolerance: number;
   /** half size of a point badge in world units */
   pointRadius: number;
+  /** room label font size in world units (0 = labels not pickable) */
+  labelSize?: number;
+}
+
+/** Centre of a room's name label. */
+export function labelCenter(room: {
+  vertices: readonly { x: number; y: number }[];
+  labelOffset: { x: number; y: number };
+}) {
+  const c = polygonCentroid(room.vertices);
+  return { x: c.x + room.labelOffset.x, y: c.y + room.labelOffset.y };
 }
 
 /** Topmost entity under `p`: points → walls → rooms (smallest room wins when nested). */
@@ -37,6 +62,28 @@ export function hitTest(project: Project, p: Vec2, o: HitOptions): EntityRef | n
     if (d <= o.pointRadius + o.tolerance && (!best || d < best.d)) best = { id: pt.id, d };
   }
   if (best) return { kind: 'point', id: best.id };
+
+  const fs = o.labelSize ?? 0;
+  if (fs > 0) {
+    for (const r of project.rooms) {
+      if (r.deletedAt !== null) continue;
+      const c = labelCenter(r);
+      const hw = Math.max(2, r.name.length) * fs * 0.3 + o.tolerance;
+      const hh = fs * 0.6 + o.tolerance * 0.5;
+      if (Math.abs(p.x - c.x) <= hw && Math.abs(p.y - c.y) <= hh)
+        return { kind: 'room', id: r.id, part: 'label' };
+    }
+  }
+
+  for (const op of project.openings) {
+    const w = project.walls.find((x) => x.id === op.wallId && x.deletedAt === null);
+    if (!w) continue;
+    const len = distance(w.a, w.b) || 1;
+    const t = projectOnSegment(p, w.a, w.b);
+    const d = distance(p, lerp(w.a, w.b, t));
+    if (Math.abs(t - op.t) * len <= op.width / 2 && d <= w.thickness / 2 + o.tolerance)
+      return { kind: 'opening', id: op.id };
+  }
 
   for (const w of project.walls) {
     if (w.deletedAt !== null) continue;
@@ -86,6 +133,7 @@ export function selectAll(project: Project): Selection {
 /** Drops refs to deleted / unknown entities (after delete or undo). */
 export function liveSelection(project: Project, sel: Selection): Selection {
   return sel.filter((r) => {
+    if (r.kind === 'opening') return project.openings.some((o) => o.id === r.id);
     const list = r.kind === 'room' ? project.rooms : r.kind === 'wall' ? project.walls : project.points;
     return list.some((e) => e.id === r.id && e.deletedAt === null);
   });
@@ -108,7 +156,11 @@ export function panelFocus(project: Project, sel: Selection): PanelFocus {
     const p = project.points.find((x) => x.id === pointRef.id)!;
     return { pointId: p.id, roomId: p.roomId, wallId: p.wallId };
   }
-  const wallRef = live.find((r) => r.kind === 'wall');
+  const opening = live.find((r) => r.kind === 'opening');
+  const openingWall = opening ? project.openings.find((o) => o.id === opening.id)?.wallId : undefined;
+  const wallRef =
+    live.find((r) => r.kind === 'wall') ??
+    (openingWall ? { kind: 'wall' as const, id: openingWall } : undefined);
   if (wallRef) {
     const w = project.walls.find((x) => x.id === wallRef.id)!;
     const room = live.find((r) => r.kind === 'room' && w.roomIds.includes(r.id));

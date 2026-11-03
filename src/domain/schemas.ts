@@ -137,6 +137,8 @@ export function validateProjectInfo(
 export const DeviceSettingsSchema = z.object({
   /** Apple Pencil / stylus draws; one finger only selects and pans */
   penOnly: z.boolean().default(false),
+  /** straighten freehand room sketches automatically */
+  autoStraighten: z.boolean().default(true),
 });
 export type DeviceSettings = z.infer<typeof DeviceSettingsSchema>;
-export const DEFAULT_DEVICE_SETTINGS: DeviceSettings = { penOnly: false };
+export const DEFAULT_DEVICE_SETTINGS: DeviceSettings = { penOnly: false, autoStraighten: true };

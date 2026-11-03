@@ -52,6 +52,25 @@ export function SelectionContent({ project, selection, marquee, k, scale }: Sele
             />
           );
         }
+        if (r.kind === 'opening') {
+          const op = project.openings.find((x) => x.id === r.id)!;
+          const w = project.walls.find((x) => x.id === op.wallId);
+          if (!w) return null;
+          const len = Math.hypot(w.b.x - w.a.x, w.b.y - w.a.y) || 1;
+          const h = op.width / 2 / len;
+          const a = { x: w.a.x + (w.b.x - w.a.x) * (op.t - h), y: w.a.y + (w.b.y - w.a.y) * (op.t - h) };
+          const b = { x: w.a.x + (w.b.x - w.a.x) * (op.t + h), y: w.a.y + (w.b.y - w.a.y) * (op.t + h) };
+          return (
+            <Line
+              key={`o-${r.id}`}
+              points={[a.x, a.y, b.x, b.y]}
+              stroke={BLUE}
+              strokeWidth={w.thickness + 6 * px}
+              opacity={0.55}
+              listening={false}
+            />
+          );
+        }
         const p = project.points.find((x) => x.id === r.id)!;
         return (
           <Circle

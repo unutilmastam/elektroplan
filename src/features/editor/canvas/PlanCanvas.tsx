@@ -13,6 +13,7 @@ import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
 import { useCanvasInput } from '../hooks/useCanvasInput';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { CanvasContextMenu } from './CanvasContextMenu';
+import { PolygonActions } from './PolygonActions';
 
 const PlanStage = dynamic(() => import('./PlanStage'), { ssr: false });
 
@@ -44,6 +45,8 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
   const viewport = useEditorStore((s) => s.viewport);
   const selection = useEditorStore((s) => s.selection);
   const marquee = useEditorStore((s) => s.marquee);
+  const draft = useEditorStore((s) => s.draft);
+  const hover = useEditorStore((s) => s.hover);
   const fitRequest = useEditorStore((s) => s.fitRequest);
   const spaceHeld = useKeyboardShortcuts();
   useCanvasInput(hostRef, spaceHeld);
@@ -95,6 +98,8 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
             viewport={viewport}
             selection={selection}
             marquee={marquee}
+            draft={draft}
+            hover={hover}
           />
         ) : null}
       </div>
@@ -112,6 +117,7 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
         <DrawingToolbar />
       </div>
       <CanvasContextMenu />
+      <PolygonActions />
     </div>
   );
 }

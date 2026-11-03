@@ -4,43 +4,7 @@ import type { Selection } from './selection';
 import type { Project, Vec2 } from './types';
 import { pointOnWall } from './walls';
 
-/** Plan-editing recipes for `applyRecipe` (undoable). Phase 3: delete + move. */
-
-/**
- * Soft-deletes the selection with its dependants:
- * room → its points, and walls no other live room uses (shared walls just lose the roomId);
- * wall → points attached to it and its openings.
- */
-export function deleteSelectionRecipe(sel: Selection, now: string) {
-  return (d: Draft<Project>) => {
-    const roomIds = new Set(sel.filter((r) => r.kind === 'room').map((r) => r.id));
-    const wallIds = new Set(sel.filter((r) => r.kind === 'wall').map((r) => r.id));
-    const pointIds = new Set(sel.filter((r) => r.kind === 'point').map((r) => r.id));
-    const kill = (e: { deletedAt: string | null; updatedAt: string }) => {
-      if (e.deletedAt === null) {
-        e.deletedAt = now;
-        e.updatedAt = now;
-      }
-    };
-    for (const r of d.rooms) if (roomIds.has(r.id)) kill(r);
-    for (const w of d.walls) {
-      if (w.deletedAt !== null || wallIds.has(w.id)) continue;
-      if (w.roomIds.some((id) => roomIds.has(id))) {
-        const remaining = w.roomIds.filter((id) => !roomIds.has(id));
-        if (remaining.length === 0) wallIds.add(w.id);
-        else {
-          w.roomIds = remaining;
-          w.updatedAt = now;
-        }
-      }
-    }
-    for (const w of d.walls) if (wallIds.has(w.id)) kill(w);
-    for (const p of d.points)
-      if (pointIds.has(p.id) || roomIds.has(p.roomId) || (p.wallId !== null && wallIds.has(p.wallId)))
-        kill(p);
-    d.openings = d.openings.filter((o) => !wallIds.has(o.wallId));
-  };
-}
+/** Move recipes for `applyRecipe` (undoable). Deleting lives in rooms.ts (topology-aware). */
 
 /**
  * Rooms can move rigidly only as a closed group: every wall of the moved rooms must belong only to moved rooms
@@ -62,12 +26,14 @@ export interface MoveOrigin {
   rooms: Record<string, Vec2[]>;
   walls: Record<string, { a: Vec2; b: Vec2 }>;
   points: Record<string, { x: number; y: number; t: number | null }>;
+  /** selected doors/windows slide along their wall */
+  openings: Record<string, { t: number }>;
 }
 
 /** Snapshot of what a drag of `sel` will move. Wall points slide along their wall; ceiling points move freely. */
 export function captureMoveOrigin(project: Project, sel: Selection): MoveOrigin {
   const rooms = movableRoomIds(project, sel);
-  const o: MoveOrigin = { rooms: {}, walls: {}, points: {} };
+  const o: MoveOrigin = { rooms: {}, walls: {}, points: {}, openings: {} };
   for (const r of project.rooms) if (rooms.has(r.id)) o.rooms[r.id] = r.vertices.map((v) => ({ ...v }));
   for (const w of project.walls)
     if (w.deletedAt === null && w.roomIds.length > 0 && w.roomIds.every((id) => rooms.has(id)))
@@ -76,11 +42,16 @@ export function captureMoveOrigin(project: Project, sel: Selection): MoveOrigin 
   for (const p of project.points)
     if (p.deletedAt === null && (pointIds.has(p.id) || rooms.has(p.roomId)))
       o.points[p.id] = { x: p.x, y: p.y, t: p.t };
+  const openingIds = new Set(sel.filter((r) => r.kind === 'opening').map((r) => r.id));
+  for (const op of project.openings)
+    if (openingIds.has(op.id) && !o.walls[op.wallId]) o.openings[op.id] = { t: op.t };
   return o;
 }
 
 export const isEmptyMove = (o: MoveOrigin) =>
-  Object.keys(o.rooms).length === 0 && Object.keys(o.points).length === 0;
+  Object.keys(o.rooms).length === 0 &&
+  Object.keys(o.points).length === 0 &&
+  Object.keys(o.openings).length === 0;
 
 /** Applies a total drag delta from `origin`. Room groups snap the delta to the grid when `grid > 0`. */
 export function moveRecipe(origin: MoveOrigin, delta: Vec2, grid: number, now: string) {
@@ -121,6 +92,16 @@ export function moveRecipe(origin: MoveOrigin, delta: Vec2, grid: number, now: s
         p.y = target.y;
       }
       p.updatedAt = now;
+    }
+    for (const op of d.openings) {
+      const oo = origin.openings[op.id];
+      const wall = oo ? d.walls.find((w) => w.id === op.wallId) : undefined;
+      if (!oo || !wall) continue;
+      const len = Math.hypot(wall.b.x - wall.a.x, wall.b.y - wall.a.y) || 1;
+      const ux = (wall.b.x - wall.a.x) / len;
+      const uy = (wall.b.y - wall.a.y) / len;
+      const half = op.width / 2 / len;
+      op.t = Math.min(1 - half, Math.max(half, oo.t + (delta.x * ux + delta.y * uy) / len));
     }
   };
 }

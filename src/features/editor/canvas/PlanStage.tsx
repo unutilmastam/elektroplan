@@ -3,7 +3,9 @@
 import Konva from 'konva';
 import { useEffect, useState } from 'react';
 import { Group, Layer, Stage } from 'react-konva';
-import type { Bounds, Viewport } from '@/domain/geometry';
+import type { Bounds, Vec2, Viewport } from '@/domain/geometry';
+import type { DraftShape } from '@/store/editorStore';
+import { DraftContent } from './DraftContent';
 import type { Selection } from '@/domain/selection';
 import type { Project } from '@/domain/types';
 import { decorationK } from './decoration';
@@ -18,13 +20,24 @@ export interface PlanStageProps {
   viewport: Viewport;
   selection: Selection;
   marquee: Bounds | null;
+  draft: DraftShape | null;
+  hover: Vec2 | null;
 }
 
 /**
  * Konva stage (ARCHITECTURE §4.1): Grid → Plan (memo) → Selection/marquee overlay.
  * Input is handled outside Konva (useCanvasInput) with our own hit testing, so nothing here listens.
  */
-export default function PlanStage({ project, width, height, viewport, selection, marquee }: PlanStageProps) {
+export default function PlanStage({
+  project,
+  width,
+  height,
+  viewport,
+  selection,
+  marquee,
+  draft,
+  hover,
+}: PlanStageProps) {
   const [fontFamily, setFontFamily] = useState('sans-serif');
   useEffect(() => {
     Konva.pixelRatio = Math.min(window.devicePixelRatio || 1, 3);
@@ -50,6 +63,7 @@ export default function PlanStage({ project, width, height, viewport, selection,
             k={k}
             scale={viewport.scale}
           />
+          <DraftContent draft={draft} hover={hover} scale={viewport.scale} />
         </Group>
       </Layer>
     </Stage>

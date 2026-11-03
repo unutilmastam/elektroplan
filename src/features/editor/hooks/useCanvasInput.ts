@@ -1,100 +1,57 @@
 'use client';
 
 import { useEffect, type RefObject } from 'react';
-import { captureMoveOrigin, isEmptyMove, moveRecipe, type MoveOrigin } from '@/domain/editing';
-import { panBy, type Vec2 } from '@/domain/geometry';
-import { entitiesInRect, hasRef, hitTest, liveSelection } from '@/domain/selection';
-import { useEditorStore } from '@/store/editorStore';
+import type { Vec2 } from '@/domain/geometry';
+import { hasRef, hitTest } from '@/domain/selection';
+import { useEditorStore, type ToolId } from '@/store/editorStore';
 import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { PICK_PX, pointRadiusWorld } from '../canvas/decoration';
 import { GestureRouter, type RawPointer } from '../input/GestureRouter';
+import { createToolContext } from '../input/toolContext';
 import {
   createMarqueeTool,
+  createOpeningTool,
   createPanTool,
+  createPolygonRoomTool,
+  createRectRoomTool,
   createSelectTool,
+  createSketchTool,
+  createWallTool,
+  setActiveTool,
   type PointerKind,
   type Tool,
-  type ToolContext,
 } from '../tools';
-
-let dragCounter = 0;
-
-/** Tool context backed by the stores (always reads the latest state — no stale closures). */
-function createContext(): ToolContext {
-  const proj = () => selectCurrentProject(useProjectStore.getState());
-  const ed = () => useEditorStore.getState();
-  let origin: MoveOrigin | null = null;
-  let dragKey = '';
-  return {
-    hit: (p) => {
-      const project = proj();
-      const vp = ed().viewport;
-      if (!project || !vp) return null;
-      return hitTest(project, p.world, {
-        tolerance: PICK_PX[p.pointerType] / vp.scale,
-        pointRadius: pointRadiusWorld(vp.scale),
-      });
-    },
-    selection: () => {
-      const project = proj();
-      return project ? liveSelection(project, ed().selection) : [];
-    },
-    select: (sel) => {
-      const project = proj();
-      if (project) ed().select(project, sel);
-    },
-    entitiesIn: (r) => {
-      const project = proj();
-      return project ? entitiesInRect(project, r) : [];
-    },
-    setMarquee: (r) => ed().setMarquee(r),
-    beginMove: () => {
-      const project = proj();
-      if (!project) return false;
-      origin = captureMoveOrigin(project, liveSelection(project, ed().selection));
-      if (isEmptyMove(origin)) {
-        origin = null;
-        return false;
-      }
-      dragKey = `move-${++dragCounter}`;
-      return true;
-    },
-    moveTo: (delta) => {
-      const project = proj();
-      if (!origin || !project) return;
-      const grid = project.settings.snapToGrid ? project.settings.gridSize : 0;
-      useProjectStore
-        .getState()
-        .apply('Siljitish', moveRecipe(origin, delta, grid, new Date().toISOString()), dragKey);
-    },
-    endMove: () => {
-      origin = null;
-      useProjectStore.getState().seal();
-    },
-    panBy: (dx, dy) => {
-      const vp = ed().viewport;
-      if (vp) ed().setViewport(panBy(vp, dx, dy));
-    },
-  };
-}
 
 /** Pointer Events → GestureRouter → tools. Moves are batched per animation frame (smooth on 120 Hz iPads). */
 export function useCanvasInput(hostRef: RefObject<HTMLElement | null>, spaceHeld: () => boolean) {
   useEffect(() => {
     const el = hostRef.current;
     if (!el) return;
-    const ctx = createContext();
-    const tools: Record<string, Tool> = {
+    const ctx = createToolContext();
+    const tools: Record<ToolId | 'finger', Tool> = {
       select: createSelectTool(ctx),
       marquee: createMarqueeTool(ctx),
       pan: createPanTool(ctx),
+      'room-rect': createRectRoomTool(ctx, false),
+      'room-square': createRectRoomTool(ctx, true),
+      'room-polygon': createPolygonRoomTool(ctx),
+      sketch: createSketchTool(ctx),
+      wall: createWallTool(ctx),
+      door: createOpeningTool(ctx, 'door'),
+      window: createOpeningTool(ctx, 'window'),
       finger: createSelectTool(ctx, { allowMove: false }),
     };
     const toolFor = (kind: PointerKind): Tool => {
-      if (kind === 'touch' && useSettingsStore.getState().penOnly) return tools.finger!;
-      return tools[useEditorStore.getState().tool]!;
+      // "Faqat Pencil": a finger only selects and pans
+      const t =
+        kind === 'touch' && useSettingsStore.getState().penOnly
+          ? tools.finger
+          : tools[useEditorStore.getState().tool];
+      setActiveTool(t);
+      return t;
     };
+    setActiveTool(tools[useEditorStore.getState().tool]);
     const openMenuAt = (screen: Vec2, world: Vec2, kind: PointerKind) => {
       const project = selectCurrentProject(useProjectStore.getState());
       const ed = useEditorStore.getState();
@@ -113,6 +70,7 @@ export function useCanvasInput(hostRef: RefObject<HTMLElement | null>, spaceHeld
       toolFor,
       spaceHeld,
       onLongPress: openMenuAt,
+      onHover: (p) => tools[useEditorStore.getState().tool].onHover?.(p),
       setTimer: (fn, ms) => window.setTimeout(fn, ms),
       clearTimer: (h) => window.clearTimeout(h as number),
     });
@@ -188,7 +146,13 @@ export function useCanvasInput(hostRef: RefObject<HTMLElement | null>, spaceHeld
     el.addEventListener('contextmenu', onContext);
     el.addEventListener('gesturestart', stopGesture);
     window.addEventListener('blur', onBlur);
-    const unsubTool = useEditorStore.subscribe((s, prev) => s.tool !== prev.tool && router.reset());
+    const unsubTool = useEditorStore.subscribe((s, prev) => {
+      if (s.tool === prev.tool) return;
+      router.reset();
+      setActiveTool(tools[s.tool]);
+    });
+    const onLeave = () => useEditorStore.getState().setHover(null);
+    el.addEventListener('pointerleave', onLeave);
     return () => {
       if (frame) cancelAnimationFrame(frame);
       el.removeEventListener('pointerdown', onDown);
@@ -200,6 +164,8 @@ export function useCanvasInput(hostRef: RefObject<HTMLElement | null>, spaceHeld
       el.removeEventListener('gesturestart', stopGesture);
       window.removeEventListener('blur', onBlur);
       unsubTool();
+      el.removeEventListener('pointerleave', onLeave);
+      setActiveTool(null);
     };
   }, [hostRef, spaceHeld]);
 }
