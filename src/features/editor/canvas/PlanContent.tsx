@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import { Line, Text } from 'react-konva';
-import { polygonCentroid } from '@/domain/geometry';
+import { labelAnchor } from '@/domain/geometry';
 import type { Project, Wall } from '@/domain/types';
 import { PointGlyph } from '@/features/points/PointGlyph';
 import { SYMBOLS } from '@/features/symbols/catalog';
@@ -45,7 +45,7 @@ export const PlanContent = memo(function PlanContent({ project, k, fontFamily }:
       ))}
       <WallsLayerContent walls={walls} openings={project.openings} />
       {rooms.map((r) => {
-        const c = polygonCentroid(r.vertices);
+        const c = labelAnchor(r.vertices);
         const fs = 19 * k;
         const w = 220 * k;
         return (

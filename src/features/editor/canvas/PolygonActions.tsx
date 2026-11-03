@@ -13,21 +13,21 @@ export function PolygonActions() {
   const send = (k: 'Enter' | 'Backspace' | 'Escape') => getActiveTool()?.onKey?.(k);
   return (
     <div
-      className="glass absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 p-1.5"
+      className="glass absolute top-2.5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 p-1.5 whitespace-nowrap"
       style={{ background: 'rgba(14,22,40,0.94)' }}
     >
-      <span className="hidden px-2 text-[13px] text-text-muted md:inline">{uz.tools.polygonHint}</span>
+      <span className="hidden px-2 text-[13px] text-text-muted xl:inline">{uz.tools.polygonHint}</span>
       <Button size="sm" variant="primary" disabled={!draft.closable} onClick={() => send('Enter')}>
         <Check size={16} aria-hidden />
         {uz.tools.finish}
       </Button>
       <Button size="sm" onClick={() => send('Backspace')} aria-label={uz.tools.removeLast}>
         <Undo size={16} aria-hidden />
-        <span className="hidden sm:inline">{uz.tools.removeLast}</span>
+        <span className="hidden lg:inline">{uz.tools.removeLast}</span>
       </Button>
-      <Button size="sm" onClick={() => send('Escape')}>
+      <Button size="sm" onClick={() => send('Escape')} aria-label={uz.tools.cancel}>
         <X size={16} aria-hidden />
-        {uz.tools.cancel}
+        <span className="hidden sm:inline">{uz.tools.cancel}</span>
       </Button>
     </div>
   );

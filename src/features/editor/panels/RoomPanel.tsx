@@ -49,8 +49,8 @@ export function RoomPanel({ room, showTitle }: { room: Room; showTitle: boolean 
           onBlur={commit}
         />
       </form>
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-[15px]">{uz.room.color}</span>
+      <div className="flex flex-col gap-2.5">
+        <span className="text-[14px]">{uz.room.color}</span>
         <ColorSwatches swatches={SWATCHES} value={room.color} onChange={(c) => setRoomColor(room.id, c)} />
       </div>
       <p className="tabular text-[14px] text-text-muted">

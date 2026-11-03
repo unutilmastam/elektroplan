@@ -41,8 +41,21 @@ export function snapToPlan(p: Project, at: Vec2, o: SnapOptions): { point: Vec2;
       const dx = s.x - o.from.x;
       const dy = s.y - o.from.y;
       let q: Vec2;
-      if (Math.abs(dy) < 1e-9) q = { x: g(s.x), y: o.from.y };
-      else if (Math.abs(dx) < 1e-9) q = { x: o.from.x, y: g(s.y) };
+      // line up with an existing corner's x / y when close, else the grid
+      const align = (axis: 'x' | 'y', v: number) => {
+        let bestA: number | null = null;
+        let bestD = o.tolerance;
+        for (const a of planAnchors(p)) {
+          const d = Math.abs(a[axis] - v);
+          if (d <= bestD) {
+            bestD = d;
+            bestA = a[axis];
+          }
+        }
+        return bestA ?? g(v);
+      };
+      if (Math.abs(dy) < 1e-9) q = { x: align('x', at.x), y: o.from.y };
+      else if (Math.abs(dx) < 1e-9) q = { x: o.from.x, y: align('y', at.y) };
       else {
         const len = Math.abs(g(dx)) || Math.abs(dx);
         q = { x: o.from.x + Math.sign(dx) * len, y: o.from.y + Math.sign(dy) * len };
@@ -51,6 +64,7 @@ export function snapToPlan(p: Project, at: Vec2, o: SnapOptions): { point: Vec2;
     }
   }
 
+  let bestWall: { a: Vec2; b: Vec2 } | null = null;
   for (const w of p.walls) {
     if (w.deletedAt !== null) continue;
     const t = projectOnSegment(at, w.a, w.b);
@@ -59,7 +73,23 @@ export function snapToPlan(p: Project, at: Vec2, o: SnapOptions): { point: Vec2;
     if (d <= bd) {
       bd = d;
       best = q;
+      bestWall = w;
     }
+  }
+  if (best && bestWall && o.grid > 0) {
+    // slide along an axis-aligned wall to the grid, so neighbouring rooms line up exactly
+    const w = bestWall;
+    const horizontal = Math.abs(w.a.y - w.b.y) < 1e-9;
+    const vertical = Math.abs(w.a.x - w.b.x) < 1e-9;
+    if (horizontal) {
+      const x = Math.min(Math.max(g(best.x), Math.min(w.a.x, w.b.x)), Math.max(w.a.x, w.b.x));
+      best = { x, y: w.a.y };
+    } else if (vertical) {
+      const y = Math.min(Math.max(g(best.y), Math.min(w.a.y, w.b.y)), Math.max(w.a.y, w.b.y));
+      best = { x: w.a.x, y };
+    }
+    for (const a of planAnchors(p))
+      if (distance(a, best) <= o.tolerance) return { point: { ...a }, kind: 'corner' };
   }
   if (best) return { point: best, kind: 'wall' };
   if (o.grid > 0) return { point: { x: g(at.x), y: g(at.y) }, kind: 'grid' };

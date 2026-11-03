@@ -111,6 +111,7 @@ export const uz = {
     cannotMerge: 'Bu ikki xona bir nechta devor bilan tutashgan — avval ortiqcha devorlarni bo‘ling.',
     panelTitle: 'Tanlangan devor',
     split: 'Devorni bo‘lish',
+    splitShort: 'Bo‘lish',
     delete: 'O‘chirish',
     shared: 'Umumiy devor',
     free: 'Alohida devor',

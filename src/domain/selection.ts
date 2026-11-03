@@ -3,7 +3,7 @@ import {
   distanceToSegment,
   lerp,
   pointInPolygon,
-  polygonCentroid,
+  labelAnchor,
   projectOnSegment,
   rectContains,
   type Bounds,
@@ -49,7 +49,7 @@ export function labelCenter(room: {
   vertices: readonly { x: number; y: number }[];
   labelOffset: { x: number; y: number };
 }) {
-  const c = polygonCentroid(room.vertices);
+  const c = labelAnchor(room.vertices);
   return { x: c.x + room.labelOffset.x, y: c.y + room.labelOffset.y };
 }
 
@@ -63,6 +63,13 @@ export function hitTest(project: Project, p: Vec2, o: HitOptions): EntityRef | n
   }
   if (best) return { kind: 'point', id: best.id };
 
+  // Directly on a wall body (no tolerance) beats a room label drawn over it.
+  const strict = { ...o, tolerance: 0 };
+  const onOpening = hitOpening(project, p, strict);
+  if (onOpening) return onOpening;
+  const onWall = hitWall(project, p, 0);
+  if (onWall) return onWall;
+
   const fs = o.labelSize ?? 0;
   if (fs > 0) {
     for (const r of project.rooms) {
@@ -75,6 +82,21 @@ export function hitTest(project: Project, p: Vec2, o: HitOptions): EntityRef | n
     }
   }
 
+  const nearOpening = hitOpening(project, p, o);
+  if (nearOpening) return nearOpening;
+  const nearWall = hitWall(project, p, o.tolerance);
+  if (nearWall) return nearWall;
+
+  let room: { id: string; area: number } | null = null;
+  for (const r of project.rooms) {
+    if (r.deletedAt !== null || !pointInPolygon(p, r.vertices)) continue;
+    const area = polygonAreaAbs(r.vertices);
+    if (!room || area < room.area) room = { id: r.id, area };
+  }
+  return room ? { kind: 'room', id: room.id } : null;
+}
+
+function hitOpening(project: Project, p: Vec2, o: HitOptions): EntityRef | null {
   for (const op of project.openings) {
     const w = project.walls.find((x) => x.id === op.wallId && x.deletedAt === null);
     if (!w) continue;
@@ -84,21 +106,17 @@ export function hitTest(project: Project, p: Vec2, o: HitOptions): EntityRef | n
     if (Math.abs(t - op.t) * len <= op.width / 2 && d <= w.thickness / 2 + o.tolerance)
       return { kind: 'opening', id: op.id };
   }
+  return null;
+}
 
+function hitWall(project: Project, p: Vec2, tolerance: number): EntityRef | null {
+  let best: { id: string; d: number } | null = null;
   for (const w of project.walls) {
     if (w.deletedAt !== null) continue;
     const d = distanceToSegment(p, w.a, w.b);
-    if (d <= w.thickness / 2 + o.tolerance && (!best || d < best.d)) best = { id: w.id, d };
+    if (d <= w.thickness / 2 + tolerance && (!best || d < best.d)) best = { id: w.id, d };
   }
-  if (best) return { kind: 'wall', id: best.id };
-
-  let room: { id: string; area: number } | null = null;
-  for (const r of project.rooms) {
-    if (r.deletedAt !== null || !pointInPolygon(p, r.vertices)) continue;
-    const area = polygonAreaAbs(r.vertices);
-    if (!room || area < room.area) room = { id: r.id, area };
-  }
-  return room ? { kind: 'room', id: room.id } : null;
+  return best ? { kind: 'wall', id: best.id } : null;
 }
 
 function polygonAreaAbs(vs: readonly Vec2[]): number {

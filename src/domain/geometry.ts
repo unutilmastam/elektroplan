@@ -237,3 +237,35 @@ export function collinear(a: Vec2, b: Vec2, c: Vec2, d: Vec2, eps = EPS): boolea
   const off = (p: Vec2) => Math.abs((b.x - a.x) * (a.y - p.y) - (a.x - p.x) * (b.y - a.y)) / len;
   return off(c) <= eps && off(d) <= eps;
 }
+
+/**
+ * Point well inside a polygon for its label: the centroid when it is comfortably inside,
+ * otherwise the sampled point farthest from all edges (works for L / U shapes).
+ */
+export function labelAnchor(vertices: readonly Vec2[]): Vec2 {
+  const c = polygonCentroid(vertices);
+  const b = boundsOf(vertices);
+  if (!b || vertices.length < 3) return c;
+  const edgeDist = (p: Vec2) => {
+    let m = Infinity;
+    for (let i = 0; i < vertices.length; i++)
+      m = Math.min(m, distanceToSegment(p, vertices[i]!, vertices[(i + 1) % vertices.length]!));
+    return m;
+  };
+  const need = Math.min(b.maxX - b.minX, b.maxY - b.minY) * 0.3;
+  if (pointInPolygon(c, vertices) && edgeDist(c) >= need) return c;
+  let best = c;
+  let bestD = pointInPolygon(c, vertices) ? edgeDist(c) : -1;
+  const N = 24;
+  for (let i = 1; i < N; i++)
+    for (let j = 1; j < N; j++) {
+      const p = { x: b.minX + ((b.maxX - b.minX) * i) / N, y: b.minY + ((b.maxY - b.minY) * j) / N };
+      if (!pointInPolygon(p, vertices)) continue;
+      const d = edgeDist(p);
+      if (d > bestD + 1e-9) {
+        bestD = d;
+        best = p;
+      }
+    }
+  return best;
+}

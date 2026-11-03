@@ -29,9 +29,14 @@ export function WallPanel({ wall, showTitle }: { wall: Wall; showTitle: boolean 
           <Trash2 size={18} aria-hidden />
           {uz.walls.delete}
         </Button>
-        <Button className="h-11 px-2" onClick={() => splitSelectedWall(wall.id)}>
+        <Button
+          className="h-11 px-2"
+          aria-label={uz.walls.split}
+          title={uz.walls.split}
+          onClick={() => splitSelectedWall(wall.id)}
+        >
           <Scissors size={18} aria-hidden />
-          {uz.walls.split}
+          {uz.walls.splitShort}
         </Button>
       </div>
     </PanelShell>

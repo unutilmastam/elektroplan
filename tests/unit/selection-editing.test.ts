@@ -41,6 +41,15 @@ describe('selection helpers', () => {
     expect(hitTest(project, { x: -500, y: -500 }, opts)).toBeNull();
   });
 
+  it('a press exactly on a wall wins over a room label drawn over it', () => {
+    const wall = project.walls.find((w) => w.id === tvSocket.wallId)!;
+    const onWall = { x: wall.a.x, y: (wall.a.y + wall.b.y) / 2 };
+    // a huge label size makes the Zal label cover its own west wall
+    expect(hitTest(project, onWall, { ...opts, labelSize: 400 })).toEqual({ kind: 'wall', id: wall.id });
+    const c = { x: zal.vertices[0]!.x + 200, y: zal.vertices[0]!.y + 100 };
+    expect(hitTest(project, c, { ...opts, labelSize: 400 })).toMatchObject({ kind: 'room', part: 'label' });
+  });
+
   it('selects everything inside a marquee', () => {
     const all = selectAll(project);
     expect(all.filter((r) => r.kind === 'room')).toHaveLength(6);

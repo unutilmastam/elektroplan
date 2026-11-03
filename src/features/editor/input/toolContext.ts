@@ -108,7 +108,10 @@ export function createToolContext(): ToolContext {
     snap: (p, from) => {
       const project = proj();
       if (!project) return p.world;
-      return snapToPlan(project, p.world, { tolerance: 14 / scale(), grid: grid(project), from }).point;
+      // corners attract within 14 px, but never less than ~half a grid cell (rooms line up even when zoomed in)
+      const g = grid(project);
+      return snapToPlan(project, p.world, { tolerance: Math.max(14 / scale(), g * 0.6), grid: g, from })
+        .point;
     },
     px: (n) => n / scale(),
     setDraft: (d) => ed().setDraft(d),

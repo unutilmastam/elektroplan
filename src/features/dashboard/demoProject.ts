@@ -2,7 +2,7 @@
  * Demo house used to compare the UI with docs/design/reference-dashboard.png.
  * Only reachable with `?demo=1` in development (or when NEXT_PUBLIC_ENABLE_DEMO=1).
  */
-import { polygonCentroid } from '@/domain/geometry';
+import { labelAnchor, polygonCentroid } from '@/domain/geometry';
 import type { ElectricalPoint, Opening, Project, Room, Vec2, Wall } from '@/domain/types';
 import { deriveWallsFromRooms, findWallByEndpoints, pointOnWall } from '@/domain/walls';
 import { SYMBOLS } from '@/features/symbols/catalog';
@@ -16,7 +16,7 @@ const stamp = { createdAt: NOW, updatedAt: NOW, deletedAt: null };
 function buildRooms(): Room[] {
   return ROOM_SEEDS.map(([id, name, vs], order) => {
     const vertices = vs.map(([x, y]) => P(x, y));
-    const c = polygonCentroid(vertices);
+    const c = labelAnchor(vertices);
     const [lx, ly] = LABELS[id] ?? [0, 0];
     const label = P(lx, ly);
     return {

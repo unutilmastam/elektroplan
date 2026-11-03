@@ -107,7 +107,7 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-16 text-center">
           {overlay}
         </div>
-      ) : empty ? (
+      ) : empty && !draft ? (
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 px-16 text-center">
           <div className="text-[17px] font-medium text-text">{uz.canvas.emptyTitle}</div>
           <div className="text-[14px] text-text-muted">{uz.canvas.emptyHint}</div>

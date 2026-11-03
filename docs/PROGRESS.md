@@ -6,7 +6,7 @@
 | 1 | Poydevor + dashboard dizayni | ✅ Tayyor |
 | 2 | Loyiha boshqaruvi | ✅ Tayyor |
 | 3 | Chizma dvigateli | ✅ Tayyor |
-| 4 | Xonalar va devorlar | — |
+| 4 | Xonalar va devorlar | ✅ Tayyor (tasdiq kutilmoqda) |
 | 5 | SVG belgilar | — |
 | 6 | Nuqtalarni joylashtirish | — |
 | 7 | Devor ko‘rinishi | — |
@@ -16,6 +16,34 @@
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 4 — 2026-11-03
+
+**Bajarildi**
+- Chizish asboblari (toolbar’dagi “Chizish asboblari” menyusi + klaviatura): To‘rtburchak xona (R), Kvadrat xona (Q), Erkin xona (P — burchaklarni bosing, birinchi nuqtani bosib yoping; ekranda “Yopish / Oxirgisini o‘chirish / Bekor”), Qo‘lda chizish (F), Devor (W), Eshik (D), Deraza (O). O‘lcham hech qayerda so‘ralmaydi.
+- **Qo‘lda chizishni avtomatik tekislash** (`domain/sketch.ts`): silliqlash → Ramer–Douglas–Peucker → yopish → keraksiz burchaklarni olib tashlash → 0/45/90° ga tortish → to‘rtburchak / kvadrat → mavjud burchak, devor va grid’ga yopishtirish; ochiq chiziq → devor(lar). Bir marta “Bekor qilish” qo‘lda chizilgan asl shaklni qaytaradi. Sozlamalarda o‘chirish mumkin. Tolerantlik ekran pikselida — har qanday zoom’da bir xil.
+- **Devor topologiyasi** (`domain/topology.ts`, `domain/wallEdits.ts`): devorlar xona chegaralaridan avtomatik; qo‘shni xonalar umumiy devorni bo‘lishadi, T-tutashuvlar to‘g‘ri bo‘linadi; devor ID’lari saqlanadi, nuqta va eshiklar geometriya bo‘yicha qayta bog‘lanadi.
+- Devorni sudrab surish (bog‘liq xonalar cho‘ziladi; tutashgan devor bo‘ylab uchi sirpanadi; davom etayotgan devor bo‘lsa — pog‘ona hosil bo‘ladi), devorni bo‘lish, devorni o‘chirish (alohida devor — o‘chadi; umumiy devor — ikki xona birlashadi; tashqi devor — rad etiladi, sababi xabarda).
+- Xona: nomlash (ikki marta bosish → nom maydoni yoki panel), rang (7 rang), nusxa (nuqtalari bilan, o‘ngga), o‘chirish, nom joyini sudrash. Botiq (L) xonalarda nom ichki eng keng joyga qo‘yiladi.
+- Eshik/deraza — devorga bosib qo‘yiladi, devor bo‘ylab suriladi, o‘chiriladi.
+- Yopishtirish (`domain/snap.ts`): mavjud burchak → devor (devor bo‘ylab grid) → oldingi nuqtadan 45° (mavjud burchaklar bilan tekislash) → grid. Pencil/sichqoncha hover’da yopishish nuqtasi oldindan ko‘rinadi.
+- O‘ng panel tanlovga qarab: Tanlangan nuqta / xona / devor / eshik-deraza. “Xonalar ro‘yxati”dagi ko‘z — xonaga fokus.
+- “Faqat Pencil bilan chizish” yoqilsa, barmoq chizmaydi (faqat tanlaydi/suradi).
+
+**Test qilindi**
+- `pnpm typecheck`, `pnpm lint`, `pnpm test` — 137 test (topologiya, devor surish/bo‘lish/birlashtirish, sketch — titroq to‘rtburchak/kvadrat/L/45°/ochiq chiziq/zoom, xona buyruqlari, yopishtirish, chizish asboblari, hit-test).
+- `pnpm test:e2e` — 26 ssenariy × 6 profil: 151 o‘tdi, 5 ataylab o‘tkazildi. Yangi: ikki xona umumiy devor; titroq chizma → toza to‘rtburchak + undo’da asl chizma; erkin L-xona; umumiy devorni surish; ikki marta bosib nomlash + rang + yangilashdan keyin saqlanishi; eshik; tashqi devorni o‘chirishda xabar; **telefonda barmoq bilan** (CDP touch) titroq chizma → to‘rtburchak. Hammasi IndexedDB’dan tekshiriladi.
+- Qabul: referensdagidek 6 xonali reja (5 to‘rtburchak + 1 erkin koridor, 6 eshik, 6 deraza) skript bilan ~2 s da chiziladi — qo‘lda 3 daqiqadan ancha kam (`docs/screenshots/phase-4/`).
+- Skrinshotlar: iPad 1180, Windows 1920, iPhone (barmoq bilan chizish va natija), panellar, xabar, menyu.
+- Phase 1–3 qayta tekshirildi (shu e2e to‘plamida + demo 1536×1024 skrinshoti).
+- Topilib tuzatilgan: devor surishda davom etuvchi devor qiyshayishi (endi pog‘ona), kichik xonada nom yorlig‘i devor ustidan tanlanishi, devorga yopishganda grid’dan chiqib ketish (10 birlik “bo‘lakchalar”), ko‘pburchak paneli bosishlarni to‘sishi, rang namunalari sig‘masligi, iPad’da toolbar sig‘masligi (tugmalar guruhlandi).
+
+**Ma’lum cheklovlar**
+- Haqiqiy iPad + Apple Pencil’da sinab ko‘rish kerak (bu yerda emulyatsiya).
+- Yopiq guruh bo‘lmagan bitta xonani butunlay siljitish yo‘q (devorlarini surish orqali o‘zgartiriladi).
+- Devorni o‘chirish bilan birlashtirish faqat bitta umumiy devor bo‘lsa ishlaydi (aks holda xabar).
+- Undo tarixi faqat xotirada.
+- Eshik/deraza eni standart (80 / 120) — o‘zgartirish keyinroq.
 
 ## Phase 3 — 2026-11-03
 
