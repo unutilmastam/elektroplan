@@ -73,9 +73,16 @@ Har bosqichni Claude Code’da boshlash uchun tayyor prompt ham berilgan (▶).
 - Devorni siljitish (bog‘liq xonalar ham o‘zgaradi), devorni o‘chirish, devorni bo‘lish.
 - Xona: nomlash (ikki marta bosish yoki panel), rang, nusxa, o‘chirish, label joyi.
 - Eshik/deraza — faqat vizual devor bo‘shlig‘i (ixtiyoriy, CAD emas).
+- **Qo‘lda chizish → avtomatik tekislash (egasining talabi, 2026-11-03):** iPhone/iPad’da barmoq yoki Pencil bilan xona shaklini qiyshiq chizsa ham, ilova uni toza ko‘pburchakka aylantiradi (`domain/sketch.ts`, sof funksiya + testlar):
+  1. Chiziq nuqtalarini silliqlash va soddalashtirish (Ramer–Douglas–Peucker) → burchaklarni topish.
+  2. Yo‘nalishlarni 0/45/90° ga tortish, deyarli parallel tomonlarni tenglashtirish; 4 burchakli shakl → aniq to‘rtburchak (tomonlari deyarli teng bo‘lsa → kvadrat).
+  3. Boshi va oxiri yaqin bo‘lsa — shaklni yopish.
+  4. Burchaklarni grid’ga va mavjud devor/burchaklarga yopishtirish, qo‘shni xona bilan umumiy devor hosil qilish.
+  5. Ochiq chiziq → alohida devor(lar).
+  - Natija darhol tekislangan ko‘rinishda chiqadi; bitta “Bekor qilish” (undo) qo‘lda chizilgan asl shaklga qaytaradi; sozlamada tekislashni o‘chirish mumkin.
 - “Xonalar ro‘yxati” paneli real ma’lumotdan; ko‘z ikonkasi — xonaga fokus.
 
-**Qabul:** referensdagi 6 xonali rejani 3 daqiqada chizish mumkin; o‘lcham hech qayerda so‘ralmaydi.
+**Qabul:** referensdagi 6 xonali rejani 3 daqiqada chizish mumkin; o‘lcham hech qayerda so‘ralmaydi; iPhone’da barmoq bilan qiyshiq chizilgan to‘rtburchak/L-shakl/erkin xona toza shaklga aylanadi (unit testlar + e2e: sintetik “titroq” chiziq → kutilgan ko‘pburchak).
 
 ▶ `PHASE 4 ni bajar. walls.ts (umumiy devor, siljitish, bo‘lish) testlar bilan.`
 
