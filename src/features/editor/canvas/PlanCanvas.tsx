@@ -5,7 +5,7 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { boundsOf, fitViewport } from '@/domain/geometry';
 import type { Project } from '@/domain/types';
 import { pointOnWall } from '@/domain/walls';
-import { DrawingToolbar } from '@/features/editor/toolbar/DrawingToolbar';
+import { DrawingToolbar, ViewToolbar } from '@/features/editor/toolbar/DrawingToolbar';
 import { uz } from '@/i18n/uz';
 import { useElementSize } from '@/lib/useElementSize';
 import { useEditorStore } from '@/store/editorStore';
@@ -41,7 +41,22 @@ function fitTo(width: number, height: number) {
 }
 
 /** Canvas area: grid + plan (Konva) with the floating drawing toolbar on the left. */
-export function PlanCanvas({ project, overlay }: { project: Project | null; overlay?: ReactNode }) {
+export function PlanCanvas({
+  project,
+  overlay,
+  mode = 'edit',
+}: {
+  project: Project | null;
+  overlay?: ReactNode;
+  /** 'install': view + tap only, status rings, zoom toolbar */
+  mode?: 'edit' | 'install';
+}) {
+  const install = mode === 'install';
+  const pointFilter = useEditorStore((s) => s.pointFilter);
+  const shown =
+    project && install && pointFilter === 'open'
+      ? { ...project, points: project.points.filter((p) => p.status !== 'completed') }
+      : project;
   const [hostRef, size] = useElementSize<HTMLDivElement>();
   const viewport = useEditorStore((s) => s.viewport);
   const selection = useEditorStore((s) => s.selection);
@@ -49,8 +64,8 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
   const draft = useEditorStore((s) => s.draft);
   const hover = useEditorStore((s) => s.hover);
   const fitRequest = useEditorStore((s) => s.fitRequest);
-  const spaceHeld = useKeyboardShortcuts();
-  useCanvasInput(hostRef, spaceHeld);
+  const spaceHeld = useKeyboardShortcuts(install);
+  useCanvasInput(hostRef, spaceHeld, install);
 
   const projectId = project?.id ?? null;
   // Fit when a project opens or on request (not on every edit).
@@ -93,7 +108,8 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
       >
         {project && viewport && size.width > 0 ? (
           <PlanStage
-            project={project}
+            project={shown!}
+            showStatus={install}
             width={size.width}
             height={size.height}
             viewport={viewport}
@@ -115,11 +131,15 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
         </div>
       ) : null}
       <div className="absolute top-2 left-2 md:top-2.5 md:left-2.5 lg:top-4 lg:left-2">
-        <DrawingToolbar />
+        {install ? <ViewToolbar /> : <DrawingToolbar />}
       </div>
-      <CanvasContextMenu />
-      <PolygonActions />
-      <PlaceModeBar />
+      {install ? null : (
+        <>
+          <CanvasContextMenu />
+          <PolygonActions />
+          <PlaceModeBar />
+        </>
+      )}
     </div>
   );
 }

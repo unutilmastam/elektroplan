@@ -135,3 +135,24 @@ export function DrawingToolbar() {
     </div>
   );
 }
+
+/** Montaj rejimi: only view controls (nothing on the plan can change). */
+export function ViewToolbar() {
+  const requestFit = useEditorStore((s) => s.requestFit);
+  return (
+    <div
+      role="toolbar"
+      aria-orientation="vertical"
+      aria-label={uz.tools.label}
+      className="flex flex-col gap-1 sm:gap-1.5 lg:gap-2.5"
+    >
+      <Group>
+        <ToolButton icon={Plus} label={uz.tools.zoomIn} onClick={() => zoomBy(1.2)} />
+        <ToolButton icon={Minus} label={uz.tools.zoomOut} onClick={() => zoomBy(1 / 1.2)} />
+      </Group>
+      <Group>
+        <ToolButton icon={Maximize} label={uz.tools.fit} onClick={requestFit} />
+      </Group>
+    </div>
+  );
+}

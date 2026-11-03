@@ -125,6 +125,7 @@ export function buildDemoProject(): Project {
     walls,
     points: buildPoints(rooms, walls),
     openings: buildOpenings(rooms, walls),
+    installLog: [],
     settings: {
       gridSize: 20,
       snapToGrid: true,

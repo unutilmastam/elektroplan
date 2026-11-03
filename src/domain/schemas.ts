@@ -91,6 +91,17 @@ export const PointSchema = z.object({
   ...timestamps,
 });
 
+const StatusSchema = z.enum(['pending', 'in_progress', 'completed']);
+
+export const InstallationTaskSchema = z.object({
+  id: z.string().min(1),
+  pointId: z.string().min(1),
+  userId: z.string().nullable(),
+  fromStatus: StatusSchema,
+  toStatus: StatusSchema,
+  createdAt: isoDate,
+});
+
 export const ProjectSettingsSchema = z.object({
   gridSize: z.number().positive(),
   snapToGrid: z.boolean(),
@@ -110,6 +121,7 @@ export const ProjectSchema = z.object({
   walls: z.array(WallSchema),
   points: z.array(PointSchema),
   openings: z.array(OpeningSchema).default([]),
+  installLog: z.array(InstallationTaskSchema).default([]),
   settings: ProjectSettingsSchema,
   ...timestamps,
 });

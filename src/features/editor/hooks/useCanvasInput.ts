@@ -25,7 +25,12 @@ import {
 } from '../tools';
 
 /** Pointer Events → GestureRouter → tools. Moves are batched per animation frame (smooth on 120 Hz iPads). */
-export function useCanvasInput(hostRef: RefObject<HTMLElement | null>, spaceHeld: () => boolean) {
+/** `readOnly` (Montaj rejimi): tap selects, drag pans, pinch zooms — nothing can be moved or drawn. */
+export function useCanvasInput(
+  hostRef: RefObject<HTMLElement | null>,
+  spaceHeld: () => boolean,
+  readOnly = false,
+) {
   useEffect(() => {
     const el = hostRef.current;
     if (!el) return;
@@ -47,14 +52,15 @@ export function useCanvasInput(hostRef: RefObject<HTMLElement | null>, spaceHeld
     const toolFor = (kind: PointerKind): Tool => {
       // "Faqat Pencil": a finger only selects and pans
       const t =
-        kind === 'touch' && useSettingsStore.getState().penOnly
+        readOnly || (kind === 'touch' && useSettingsStore.getState().penOnly)
           ? tools.finger
           : tools[useEditorStore.getState().tool];
       setActiveTool(t);
       return t;
     };
-    setActiveTool(tools[useEditorStore.getState().tool]);
+    setActiveTool(readOnly ? tools.finger : tools[useEditorStore.getState().tool]);
     const openMenuAt = (screen: Vec2, world: Vec2, kind: PointerKind) => {
+      if (readOnly) return;
       const project = selectCurrentProject(useProjectStore.getState());
       const ed = useEditorStore.getState();
       if (!project || !ed.viewport) return;
@@ -169,5 +175,5 @@ export function useCanvasInput(hostRef: RefObject<HTMLElement | null>, spaceHeld
       el.removeEventListener('pointerleave', onLeave);
       setActiveTool(null);
     };
-  }, [hostRef, spaceHeld]);
+  }, [hostRef, spaceHeld, readOnly]);
 }

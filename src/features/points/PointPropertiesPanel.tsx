@@ -6,7 +6,13 @@ import { ColorSwatches, type Swatch } from '@/components/common/ColorSwatches';
 import { NumberField } from '@/components/common/NumberField';
 import { Button } from '@/components/ui/button';
 import type { ElectricalPoint } from '@/domain/types';
-import { deleteSelection, duplicateSelectedPoint, sealEdit, updatePoint } from '@/features/editor/actions';
+import {
+  deleteSelection,
+  duplicateSelectedPoint,
+  sealEdit,
+  setPointStatus,
+  updatePoint,
+} from '@/features/editor/actions';
 import { SYMBOL_COLORS } from '@/features/symbols/catalog';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
@@ -162,10 +168,7 @@ export function PointPropertiesPanel({
           <div className="mt-2 flex flex-col gap-1.5">
             <span className="text-[14.5px]">{uz.point.status}</span>
             <div>
-              <StatusPicker
-                value={point.status}
-                onChange={(st) => updatePoint(point.id, { status: st }, `status-${st}`)}
-              />
+              <StatusPicker value={point.status} onChange={(st) => setPointStatus(point.id, st)} />
             </div>
           </div>
           <div className={cn('grid grid-cols-2 gap-2.5 pt-2.5', showTitle && 'md:max-lg:hidden')}>

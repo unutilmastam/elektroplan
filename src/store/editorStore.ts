@@ -53,6 +53,9 @@ interface EditorState {
   setDraft: (d: DraftShape | null) => void;
   setHover: (p: Vec2 | null) => void;
   canvasSize: { width: number; height: number };
+  /** Montaj rejimi: hide completed points on the plan */
+  pointFilter: 'all' | 'open';
+  setPointFilter: (f: 'all' | 'open') => void;
   setCanvasSize: (w: number, h: number) => void;
   setTool: (t: ToolId) => void;
   setActiveSymbol: (id: SymbolId) => void;
@@ -84,6 +87,8 @@ export const useEditorStore = create<EditorState>()((set) => ({
   setDraft: (draft) => set({ draft }),
   setHover: (hover) => set((s) => (s.hover === hover ? s : { hover })),
   canvasSize: { width: 0, height: 0 },
+  pointFilter: 'all',
+  setPointFilter: (pointFilter) => set({ pointFilter }),
   setCanvasSize: (width, height) =>
     set((s) =>
       s.canvasSize.width === width && s.canvasSize.height === height ? s : { canvasSize: { width, height } },

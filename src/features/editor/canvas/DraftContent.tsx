@@ -5,7 +5,7 @@ import type { Vec2 } from '@/domain/geometry';
 import { PointGlyph } from '@/features/points/PointGlyph';
 import { SYMBOLS } from '@/features/symbols/catalog';
 import type { DraftShape } from '@/store/editorStore';
-import { decorationK, POINT_BADGE } from './decoration';
+import { pointK, POINT_BADGE } from './decoration';
 
 const BLUE = '#3b8bff';
 const flat = (pts: readonly Vec2[]) => pts.flatMap((p) => [p.x, p.y]);
@@ -21,7 +21,7 @@ export function DraftContent({
   scale: number;
 }) {
   const px = 1 / scale;
-  const k = decorationK(scale);
+  const k = pointK(scale);
   return (
     <>
       {draft?.kind === 'rect' ? (

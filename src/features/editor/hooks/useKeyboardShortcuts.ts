@@ -14,7 +14,7 @@ const isTyping = (t: EventTarget | null) =>
  * ⌘/Ctrl+Z, ⇧⌘Z / Ctrl+Shift+Z / Ctrl+Y, ⌘/Ctrl+A, +/− zoom, 0 ekranga sig'dirish.
  * Returns a getter telling whether Space is held (for the gesture router).
  */
-export function useKeyboardShortcuts(): () => boolean {
+export function useKeyboardShortcuts(readOnly = false): () => boolean {
   const space = useRef(false);
 
   useEffect(() => {
@@ -28,6 +28,7 @@ export function useKeyboardShortcuts(): () => boolean {
         e.preventDefault();
         return;
       }
+      if (readOnly && mod && k !== 's') return;
       if (mod && k === 'z') {
         e.preventDefault();
         if (e.shiftKey) redo();
@@ -50,6 +51,14 @@ export function useKeyboardShortcuts(): () => boolean {
         return;
       }
       if (mod) return;
+      if (readOnly) {
+        // Montaj rejimi: view keys only
+        if (k === 'escape') ed.clearSelection();
+        else if (k === '+' || k === '=') zoomBy(1.2);
+        else if (k === '-' || k === '_') zoomBy(1 / 1.2);
+        else if (k === '0') ed.requestFit();
+        return;
+      }
       const tool = getActiveTool();
       if ((e.key === 'Enter' || e.key === 'Escape' || e.key === 'Backspace') && tool?.onKey?.(e.key)) {
         e.preventDefault();
@@ -94,7 +103,7 @@ export function useKeyboardShortcuts(): () => boolean {
       window.removeEventListener('keyup', onKeyUp);
       window.removeEventListener('blur', onBlur);
     };
-  }, []);
+  }, [readOnly]);
 
   return useCallback(() => space.current, []);
 }

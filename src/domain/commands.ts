@@ -64,6 +64,7 @@ export function duplicateProject(project: Project, name: string, newId: () => st
       b: { ...w.b },
       roomIds: w.roomIds.map(map),
     })),
+    installLog: [], // a copy is a new job
     openings: project.openings.map((o) => ({ ...o, id: map(o.id), wallId: map(o.wallId) })),
     points: live(project.points).map((p) => ({
       ...p,
