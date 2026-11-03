@@ -8,6 +8,7 @@ import {
   setRoomVertices,
   topologyRecipe,
 } from '@/domain/rooms';
+import { addPointRecipe, newPoint, placementTarget } from '@/domain/points';
 import { hitTest } from '@/domain/selection';
 import { straightenSketch } from '@/domain/sketch';
 import { planAnchors } from '@/domain/snap';
@@ -17,6 +18,7 @@ import { useEditorStore } from '@/store/editorStore';
 import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useUiStore } from '@/store/uiStore';
+import { SYMBOLS } from '@/features/symbols/catalog';
 import { topoOpts } from './actions';
 
 /** Drawing commands used by the Phase 4 tools. Each is one (or, for sketches, two) undo steps. */
@@ -93,4 +95,30 @@ export function placeOpening(world: Vec2, scale: number, pickPx: number, kind: O
   );
   const after = project();
   if (after) useEditorStore.getState().select(after, [{ kind: 'opening', id }]);
+}
+
+/** Placement preview / commit for the symbol bar tool (Phase 6). */
+export function symbolTarget(world: Vec2, pickPx: number, free: boolean) {
+  const p = project();
+  const vp = useEditorStore.getState().viewport;
+  if (!p || !vp) return null;
+  const id = useEditorStore.getState().activeSymbolId;
+  return placementTarget(p, world, SYMBOLS[id], { tolerance: Math.max(pickPx, 24) / vp.scale, free });
+}
+
+export function placeSymbolAt(world: Vec2, pickPx: number, free: boolean) {
+  const p = project();
+  if (!p) return;
+  const symbolId = useEditorStore.getState().activeSymbolId;
+  const target = symbolTarget(world, pickPx, free);
+  if (!target) {
+    useUiStore
+      .getState()
+      .notify(SYMBOLS[symbolId].placement === 'ceiling' ? uz.symbols.placeInRoom : uz.symbols.placeNearWall);
+    return;
+  }
+  const point = newPoint(p, target, symbolId, SYMBOLS[symbolId], uuidv7(), new Date().toISOString());
+  useProjectStore.getState().apply(uz.symbols[symbolId], addPointRecipe(point));
+  const after = project();
+  if (after) useEditorStore.getState().select(after, [{ kind: 'point', id: point.id }]);
 }

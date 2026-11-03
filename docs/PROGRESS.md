@@ -8,7 +8,7 @@
 | 3 | Chizma dvigateli | ✅ Tayyor |
 | 4 | Xonalar va devorlar | ✅ Tayyor |
 | 5 | SVG belgilar | ✅ Tayyor |
-| 6 | Nuqtalarni joylashtirish | — |
+| 6 | Nuqtalarni joylashtirish | ✅ Tayyor (tasdiq kutilmoqda) |
 | 7 | Devor ko‘rinishi | — |
 | 8 | Avtosaqlash (IndexedDB) | — |
 | 9 | Montaj rejimi | — |
@@ -16,6 +16,30 @@
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 6 — 2026-11-03
+
+**Bajarildi**
+- `domain/points.ts` (testlar bilan): joylashtirish nishoni (eng yaqin devor → `wallId + t + side`, kursor qaysi tomonda bo‘lsa o‘sha xona; tashqi devor tashqarisiga bosilsa ham xona ichiga), ship belgilari (lyustra) xona ichiga — markazga yaqin bosilsa aynan markazga, LED/Boshqa — devor yaqinida devorga, aks holda xona ichiga; Shift — devorsiz erkin. Standart balandlik loyiha sozlamasidan (rozetka 30, viklyuchatel 90), boshqalari katalogdan.
+- Joylashtirish asbobi: belgi kursor/Pencil ortidan devorga yopishib, devor bo‘ylab burilib ko‘rinadi; bosilsa qo‘yiladi va tanlanadi; joy bo‘lmasa — xabar.
+- Nuqtani sudrash: boshqa devor yaqinida — o‘sha devorga (va xonaga) o‘tadi, aks holda o‘z devori bo‘ylab sirpanadi; ship nuqtasi erkin; Shift — erkin. Bitta undo qadam.
+- Devor surilganda nuqtalar u bilan birga yuradi (`t` saqlanadi) — Phase 4 topologiyasi orqali, test bilan.
+- “Tanlangan nuqta” paneli to‘liq tahrir: belgi turi (menyu), Pol’dan balandlik, Chap burchakdan (devor bo‘ylab siljitadi), X/Y (ship nuqtalari), Izoh, Rang, Holat (Kutilmoqda / Jarayonda / Bajarildi — “Loyiha holati” darhol yangilanadi), O‘chirish, Nusxa. Har bir maydon — bitta undo qadam (yozish blur’da yakunlanadi).
+- Nusxa: paneldan va kontekst menyudan (nuqta — devor bo‘ylab 40 sm yonga; xona — o‘ngga).
+- Sozlamalar → Loyiha: standart rozetka / viklyuchatel balandligi (undo bo‘ladi, IndexedDB’ga yoziladi).
+- Yangi xonalarda nom markazdan biroz yuqorida (lyustra markazga qo‘yilganda nomni yopmaydi).
+- iPad landshaftda panel qisqa bo‘lgani uchun Nusxa/O‘chirish sarlavha qatorida ikonka bo‘lib turadi.
+
+**Test qilindi**
+- `pnpm test` — 156 test (yangi: joylashtirish, tomon/xona tanlash, tashqi devor, ship va markazga yopishish, Shift, standart balandliklar, boshqa devorga o‘tish, o‘z devori bo‘ylab sirpanish, har bir xususiyat tahriri + undo, X/Y, devor bilan birga yurish, nusxa).
+- `pnpm test:e2e` — 36 ssenariy × 6 profil: 208 o‘tdi, 8 ataylab o‘tkazildi (kichik ekranda panel/✎ ko‘rinmaydi). Yangi: devorga rozetka (30 sm), lyustra xona ichiga, Shift erkin, boshqa devorga sudrash, devor surilganda nuqta, paneldagi barcha xususiyatlar + 6 marta undo, nusxa (menyu va panel), sozlamadagi 40 sm yangi rozetkaga qo‘llanishi. Hammasi IndexedDB’dan tekshiriladi.
+- Phase 1–5 qayta tekshirildi (shu to‘plamda). Topilib tuzatilgan regressiya: nuqtani devordan uzoqroqqa sudraganda siljimay qolishi (endi o‘z devori bo‘ylab sirpanadi).
+- Skrinshotlar: `docs/screenshots/phase-6/` (iPad 1180, 1536).
+
+**Ma’lum cheklovlar**
+- Nuqta belgisining rejadagi o‘lchami barcha belgilar uchun bir xil; alohida o‘lcham sozlamasi yo‘q.
+- Ko‘p nuqtani birga sudrashda ular o‘z devorlari bo‘ylab sirpanadi (boshqa devorga o‘tish faqat bitta nuqtada).
+- Devor ko‘rinishida tanlash/sudrash — PHASE 7.
 
 ## Phase 5 — 2026-11-03
 

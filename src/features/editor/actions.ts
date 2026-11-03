@@ -1,6 +1,13 @@
 import { boundsOf, fitViewport, zoomAt } from '@/domain/geometry';
 import { uuidv7 } from '@/domain/ids';
 import {
+  addPointRecipe,
+  duplicatePoint,
+  settingsRecipe,
+  updatePointRecipe,
+  type PointPatch,
+} from '@/domain/points';
+import {
   deleteSelection as deleteFromProject,
   duplicateRoom,
   renameRoomRecipe,
@@ -119,4 +126,30 @@ export function splitSelectedWall(wallId: string) {
     .getState()
     .apply('Devorni bo‘lish', topologyRecipe(splitWall(p, wallId, 0.5, grid, topoOpts())));
   refreshSelection();
+}
+
+/** Panel edits on a point; typing in one field stays one undo step (sealed on blur). */
+export function updatePoint(pointId: string, patch: PointPatch, field: string) {
+  useProjectStore
+    .getState()
+    .apply('Nuqta', updatePointRecipe(pointId, patch, new Date().toISOString()), `edit-${pointId}-${field}`);
+}
+
+export function sealEdit() {
+  useProjectStore.getState().seal();
+}
+
+export function duplicateSelectedPoint(pointId: string) {
+  const p = project();
+  if (!p) return;
+  const copy = duplicatePoint(p, pointId, uuidv7(), new Date().toISOString());
+  if (!copy) return;
+  useProjectStore.getState().apply('Nusxa', addPointRecipe(copy));
+  const after = project();
+  if (after) useEditorStore.getState().select(after, [{ kind: 'point', id: copy.id }]);
+}
+
+/** Default heights of the open project (Sozlamalar). */
+export function setDefaultHeights(patch: { defaultSocketHeightCm?: number; defaultSwitchHeightCm?: number }) {
+  useProjectStore.getState().apply('Sozlamalar', settingsRecipe(patch), 'project-settings');
 }

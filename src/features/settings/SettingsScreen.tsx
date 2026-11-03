@@ -7,6 +7,7 @@ import { GlassPanel } from '@/components/layout/GlassPanel';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 import { useSettingsStore } from '@/store/settingsStore';
+import { ProjectDefaults } from './ProjectDefaults';
 
 function SwitchRow({
   icon: Icon,
@@ -82,6 +83,7 @@ export function SettingsScreen() {
           onChange={(v) => void update({ autoStraighten: v })}
         />
       </GlassPanel>
+      <ProjectDefaults />
       <GlassPanel className="flex flex-col gap-1 p-2">
         <h2 className="px-3 pt-2 pb-1 text-[13px] font-medium tracking-wide text-text-dim uppercase">
           {uz.settings.library}

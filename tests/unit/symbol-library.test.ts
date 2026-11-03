@@ -83,6 +83,13 @@ describe('placement tool', () => {
     const ctx = {
       setDraft: (d: DraftShape | null) => void (draft = d),
       activeSymbol: () => 'tv',
+      symbolPreview: (q: ToolPointer) => ({
+        kind: 'symbol',
+        symbolId: 'tv',
+        at: q.world,
+        rotation: 0,
+        valid: true,
+      }),
       placeSymbol: (p: ToolPointer) => void placed.push(p),
     } as unknown as ToolContext;
     const t = createPlaceSymbolTool(ctx);
@@ -94,7 +101,7 @@ describe('placement tool', () => {
       toggle: false,
     });
     t.onHover!(p(10));
-    expect(draft).toEqual({ kind: 'symbol', symbolId: 'tv', at: { x: 10, y: 5 } });
+    expect(draft).toEqual({ kind: 'symbol', symbolId: 'tv', at: { x: 10, y: 5 }, rotation: 0, valid: true });
     t.onDown(p(20));
     t.onUp(p(22));
     t.onDown(p(20));

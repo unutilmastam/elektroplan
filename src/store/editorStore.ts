@@ -23,7 +23,7 @@ export type DraftShape =
   | { kind: 'polygon'; points: Vec2[]; cursor: Vec2 | null; closable: boolean }
   | { kind: 'wall'; a: Vec2; b: Vec2 }
   | { kind: 'stroke'; points: Vec2[] }
-  | { kind: 'symbol'; symbolId: SymbolId; at: Vec2 };
+  | { kind: 'symbol'; symbolId: SymbolId; at: Vec2; rotation: number; valid: boolean };
 
 export interface ContextMenuState {
   /** screen position relative to the canvas */

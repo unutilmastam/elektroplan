@@ -2,11 +2,10 @@
 
 import { Copy, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { useEffect, useRef } from 'react';
-import { NextPhase } from '@/components/common/Hint';
 import { uz } from '@/i18n/uz';
 import { useEditorStore } from '@/store/editorStore';
 import { useUiStore } from '@/store/uiStore';
-import { deleteSelection } from '../actions';
+import { deleteSelection, duplicateSelectedPoint, duplicateSelectedRoom } from '../actions';
 
 const item =
   'flex h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-[15px] hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-60';
@@ -16,6 +15,8 @@ export function CanvasContextMenu() {
   const menu = useEditorStore((s) => s.contextMenu);
   const close = () => useEditorStore.getState().openContextMenu(null);
   const size = useEditorStore((s) => s.canvasSize);
+  const selection = useEditorStore((s) => s.selection);
+  const single = selection.length === 1 ? selection[0] : undefined;
   const ref = useRef<HTMLDivElement>(null);
   const openedAt = useRef(0);
   // The finger lifting after a long press produces a synthetic click under it — ignore that one.
@@ -63,12 +64,20 @@ export function CanvasContextMenu() {
         <SlidersHorizontal size={18} aria-hidden />
         {uz.canvas.properties}
       </button>
-      <NextPhase side="right" className="flex">
-        <button type="button" role="menuitem" disabled className={item}>
-          <Copy size={18} aria-hidden />
-          {uz.canvas.duplicate}
-        </button>
-      </NextPhase>
+      <button
+        type="button"
+        role="menuitem"
+        disabled={!single || (single.kind !== 'point' && single.kind !== 'room')}
+        className={item}
+        onClick={guard(() => {
+          if (single?.kind === 'point') duplicateSelectedPoint(single.id);
+          else if (single?.kind === 'room') duplicateSelectedRoom(single.id);
+          close();
+        })}
+      >
+        <Copy size={18} aria-hidden />
+        {uz.canvas.duplicate}
+      </button>
       <button
         type="button"
         role="menuitem"
