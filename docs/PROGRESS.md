@@ -12,10 +12,29 @@
 | 7 | Devor ko‘rinishi | ✅ Tayyor |
 | 8 | Avtosaqlash (IndexedDB) | ✅ Tayyor |
 | 9 | Montaj rejimi | ✅ Tayyor |
-| 10 | PDF eksport | — |
+| 10 | PDF eksport | ✅ Tayyor (tasdiq kutilmoqda) |
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 10 — 2026-11-03
+
+**Bajarildi**
+- `pdf-lib` + `@pdf-lib/fontkit` (ARCHITECTURE §5 ro‘yxatida), Inter TTF (Regular/SemiBold/Bold, SIL OFL) `public/fonts/` da — o‘zbek harflari (oʻ, gʻ, ‘ ’, sh, ch) to‘g‘ri chiqadi.
+- `domain/report.ts` (testlar bilan): nuqtalar ish tartibida 1…N raqamlanadi — rejada, jadvalda va devor ko‘rinishida bir xil raqam; xonalar bo‘yicha guruh va progress; nuqtasi bor har bir devor uchun ko‘rinish; ishlatilgan belgilar; fayl nomi.
+- PDF (A4, **vektor** — chop etishda aniq, oq fonda): 1) muqova — ElektroPlan, loyiha, buyurtmachi, manzil, sana, xona/nuqta soni, montaj holati halqasi, xonalar bo‘yicha progress chiziqlari; 2) uy rejasi (landshaft): xonalar, devorlar, eshik/derazalar, nomlar, belgilar + holat rangli raqamlar; 3) nuqtalar jadvali xona bo‘yicha (№, belgi, devor yo‘nalishi, balandlik, chap burchakdan, holat, izoh), sahifalarga bo‘linadi; 4) devor ko‘rinishlari (sahifaga 3 ta): belgilar, balandliklar, masofa yozuvlari; 5) shartli belgilar + holat ranglari. Har sahifada pastki yozuv va “n / N”.
+- Header’dagi “Eksport PDF” ishlaydi: avval saqlaydi, so‘ng PDF qurilmaning o‘zida yasaladi; iPhone/iPad/Android’da **Ulashish** oynasi (Fayllar, Telegram…), kompyuterda oddiy yuklab olish; ulashish imkoni bo‘lmasa — yuklab olish.
+
+**Test qilindi**
+- `pnpm test` — 187 test. Integratsiya: 60 nuqtali loyiha → 18 sahifa, barcha sahifalar A4, **5 soniyadan tez** (node’da ~1 s), sarlavhada o‘zbek harflari, qayta o‘qiladi; bo‘sh loyiha ham eksport bo‘ladi.
+- `pnpm test:e2e` — 49 ssenariy × 6 profil: 283 o‘tdi, 11 ataylab o‘tkazildi. Yangi: 6 qurilmada “Eksport PDF” → yuklab olish, nom `Sinov_uyi_elektroplan.pdf`, `%PDF-`, 5 s dan tez, “PDF tayyor” xabari.
+- PDF sahifalari rasmga aylantirilib ko‘zdan kechirildi (`docs/screenshots/phase-10/`).
+- Topilib tuzatilgan: pdf-lib shriftni qisqartirganda (subset) harflar yo‘qolishi — to‘liq shrift joylanadi (PDF ~0,6 MB).
+
+**Ma’lum cheklovlar**
+- Internetsiz eksport uchun shriftlar keshlangan bo‘lishi kerak — Phase 11 (service worker) bu fayllarni oldindan keshlaydi.
+- Rejadagi rozetka belgilari PDF’da devor bo‘ylab burilmaydi (tik turadi).
+- iOS’da PDF tayyorlash uzoq cho‘zilsa, Safari ulashish oynasini ochishga ruxsat bermasligi mumkin — bunda fayl yuklab olinadi.
 
 ## Phase 9 — 2026-11-03
 
