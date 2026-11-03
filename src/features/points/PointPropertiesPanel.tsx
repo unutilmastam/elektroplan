@@ -69,8 +69,15 @@ export function PointPropertiesPanel({
     <div className={cn('flex h-full min-h-0 flex-col', className)}>
       {showTitle ? (
         <div className="flex items-center gap-3 border-b border-white/[0.08] px-4 py-2.5 lg:px-5 lg:pt-4 lg:pb-4">
-          <Plug size={24} className="shrink-0 rotate-180 text-primary-hi md:max-lg:hidden" fill="currentColor" aria-hidden />
-          <h2 className="truncate text-[16px] font-semibold whitespace-nowrap lg:text-[17px]">{uz.point.panelTitle}</h2>
+          <Plug
+            size={24}
+            className="shrink-0 rotate-180 text-primary-hi md:max-lg:hidden"
+            fill="currentColor"
+            aria-hidden
+          />
+          <h2 className="truncate text-[16px] font-semibold whitespace-nowrap lg:text-[17px]">
+            {uz.point.panelTitle}
+          </h2>
           {point ? (
             // iPad landscape: the panel is short, so the actions live in the title row
             <div className="ml-auto hidden gap-1 md:max-lg:flex">

@@ -168,6 +168,12 @@ export const uz = {
   },
   wallView: {
     title: 'Devor ko‘rinishi',
+    prev: 'Oldingi devor',
+    next: 'Keyingi devor',
+    fullscreen: 'To‘liq ekranda ochish',
+    close: 'Yopish',
+    dragHint: 'Belgini suring: chapga-o‘ngga — masofa, tepaga-pastga — balandlik',
+    pointLabel: 'balandlik {h} sm, chap burchakdan {d} sm',
     points: 'nuqta',
     empty: 'Devor tanlanmagan',
     directions: { north: 'Shimol devori', south: 'Janub devori', east: 'Sharq devori', west: 'G‘arb devori' },

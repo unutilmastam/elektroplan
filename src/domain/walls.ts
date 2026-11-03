@@ -102,3 +102,33 @@ export function solidIntervals(
   if (cursor < 1) out.push([cursor, 1]);
   return out;
 }
+
+/**
+ * Standing in the room on `side` of the wall and facing it: is corner `a` on the viewer's left?
+ * ("Chap burchakdan" and the wall view are measured from the viewer's LEFT corner.)
+ */
+export function leftIsA(wall: Pick<Wall, 'a' | 'b'>, side: 1 | -1): boolean {
+  const len = Math.hypot(wall.b.x - wall.a.x, wall.b.y - wall.a.y) || 1;
+  // normal toward the room, then the viewer looks the opposite way
+  const nx = (-(wall.b.y - wall.a.y) / len) * side;
+  const ny = ((wall.b.x - wall.a.x) / len) * side;
+  const dx = -nx;
+  const dy = -ny;
+  // y points down on screen: "left" of a direction (dx, dy) is (dy, -dx)
+  const lx = dy;
+  const ly = -dx;
+  return (wall.a.x - wall.b.x) * lx + (wall.a.y - wall.b.y) * ly > 0;
+}
+
+/** Distance from the viewer's left corner for a point at `t` on `side`. */
+export function cornerDistance(wall: Pick<Wall, 'a' | 'b'>, t: number, side: 1 | -1): number {
+  const len = Math.hypot(wall.b.x - wall.a.x, wall.b.y - wall.a.y);
+  return (leftIsA(wall, side) ? t : 1 - t) * len;
+}
+
+/** Inverse of cornerDistance (clamped to the wall). */
+export function tFromCornerDistance(wall: Pick<Wall, 'a' | 'b'>, dist: number, side: 1 | -1): number {
+  const len = Math.hypot(wall.b.x - wall.a.x, wall.b.y - wall.a.y) || 1;
+  const f = Math.min(1, Math.max(0, dist / len));
+  return leftIsA(wall, side) ? f : 1 - f;
+}
