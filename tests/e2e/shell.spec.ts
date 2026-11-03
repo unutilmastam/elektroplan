@@ -52,7 +52,7 @@ test('later-phase buttons are disabled', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('button', { name: 'Saqlash' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Eksport PDF' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Bekor qilish' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Bekor qilish' })).toBeDisabled(); // nothing to undo yet
 });
 
 test('symbol chips select the active symbol, Boshqa opens the rest', async ({ page }) => {

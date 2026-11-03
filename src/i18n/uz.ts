@@ -62,6 +62,10 @@ export const uz = {
   },
   canvas: {
     label: 'Uy rejasi',
+    menu: 'Amallar menyusi',
+    properties: 'Xususiyatlar',
+    duplicate: 'Nusxa',
+    delete: 'O‘chirish',
     emptyTitle: 'Reja hali bo‘sh',
     emptyHint: 'Xona chizish asboblari keyingi bosqichda qo‘shiladi',
   },
@@ -196,6 +200,14 @@ export const uz = {
     name_too_long: 'Nom juda uzun (ko‘pi bilan 120 belgi)',
     customer_too_long: 'Buyurtmachi nomi juda uzun (ko‘pi bilan 120 belgi)',
     address_too_long: 'Manzil juda uzun (ko‘pi bilan 200 belgi)',
+  },
+  settings: {
+    title: 'Sozlamalar',
+    device: 'Shu qurilma',
+    penOnly: 'Faqat Pencil bilan chizish',
+    penOnlyHint:
+      'Yoqilsa: Apple Pencil (stilus) chizadi, bitta barmoq faqat tanlaydi va rejani suradi. Ikki barmoq har doim kattalashtiradi.',
+    more: 'Boshqa sozlamalar keyingi bosqichlarda qo‘shiladi.',
   },
   generic: {
     close: 'Yopish',

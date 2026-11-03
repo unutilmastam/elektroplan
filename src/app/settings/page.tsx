@@ -1,6 +1,10 @@
-import { PlaceholderPage } from '@/components/layout/PlaceholderPage';
-import { uz } from '@/i18n/uz';
+import { AppShell } from '@/components/layout/AppShell';
+import { SettingsScreen } from '@/features/settings/SettingsScreen';
 
 export default function SettingsPage() {
-  return <PlaceholderPage title={uz.pages.settingsTitle} text={uz.pages.settingsText} />;
+  return (
+    <AppShell>
+      <SettingsScreen />
+    </AppShell>
+  );
 }

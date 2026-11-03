@@ -2,7 +2,6 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { pickDefaultWallId } from '@/domain/selectors';
 import { recentProjects } from '@/domain/projectList';
 import { useEditorStore } from '@/store/editorStore';
 import { useProjectStore } from '@/store/projectStore';
@@ -27,7 +26,8 @@ export function useWorkspaceProject(mode: WorkspaceMode): { notFound: boolean } 
   const idParam = mode === 'editor' ? params.get('id') : null;
   const status = useProjectStore((s) => s.status);
   const currentId = useProjectStore((s) => s.currentId);
-  const setSelection = useEditorStore((s) => s.setSelection);
+  const select = useEditorStore((s) => s.select);
+  const clearSelection = useEditorStore((s) => s.clearSelection);
   const requestFit = useEditorStore((s) => s.requestFit);
   const [notFound, setNotFound] = useState(false);
   const demoLoaded = useRef(false);
@@ -37,15 +37,10 @@ export function useWorkspaceProject(mode: WorkspaceMode): { notFound: boolean } 
     demoLoaded.current = true;
     void import('./demoProject').then(({ buildDemoProject, DEMO_PROJECT_COUNT, DEMO_SELECTED_POINT_ID }) => {
       const demo = buildDemoProject();
-      const zal = demo.rooms[0]?.id ?? null;
       useProjectStore.getState().loadDemo(demo, DEMO_PROJECT_COUNT);
-      setSelection({
-        selectedPointId: DEMO_SELECTED_POINT_ID,
-        selectedRoomId: zal,
-        selectedWallId: zal ? pickDefaultWallId(demo, zal) : null,
-      });
+      select(demo, [{ kind: 'point', id: DEMO_SELECTED_POINT_ID }]);
     });
-  }, [demoRequested, setSelection]);
+  }, [demoRequested, select]);
 
   useEffect(() => {
     if (demoRequested || status !== 'ready') return;
@@ -66,9 +61,9 @@ export function useWorkspaceProject(mode: WorkspaceMode): { notFound: boolean } 
   // A different project → clear selection and re-fit the plan.
   useEffect(() => {
     if (demoRequested) return;
-    setSelection({ selectedPointId: null, selectedRoomId: null, selectedWallId: null });
+    clearSelection();
     requestFit();
-  }, [currentId, demoRequested, setSelection, requestFit]);
+  }, [currentId, demoRequested, clearSelection, requestFit]);
 
   return { notFound };
 }

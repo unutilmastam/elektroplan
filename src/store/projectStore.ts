@@ -1,7 +1,17 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { createProject, deleteProject, duplicateProject, updateProjectInfo } from '@/domain/commands';
+import {
+  applyRecipe,
+  emptyHistory,
+  record,
+  redo as redoHistory,
+  seal as sealHistory,
+  undo as undoHistory,
+  type History,
+} from '@/domain/history';
 import { uuidv7 } from '@/domain/ids';
+import type { Draft } from 'immer';
 import type { ProjectInfo } from '@/domain/schemas';
 import type { Project } from '@/domain/types';
 import {
@@ -26,6 +36,16 @@ interface ProjectState {
   /** reference-image project count shown while the demo is open */
   demoProjectCount: number | null;
   saveError: boolean;
+  /** undo/redo of the open project (in memory, reset when another project opens) */
+  history: History;
+  /** undoable plan edit on the open project; same `coalesceKey` merges steps (one drag = one undo) */
+  apply: (label: string, recipe: (d: Draft<Project>) => void, coalesceKey?: string | null) => boolean;
+  /** ends the current coalescing step (pointer up) */
+  seal: () => void;
+  undo: () => void;
+  redo: () => void;
+  /** writes pending edits now (page hide / before navigation) */
+  flush: () => Promise<void>;
   init: () => Promise<void>;
   create: (info: ProjectInfo) => Promise<string>;
   updateInfo: (id: string, info: ProjectInfo) => Promise<void>;
@@ -36,6 +56,7 @@ interface ProjectState {
 }
 
 const nowIso = () => new Date().toISOString();
+const EDIT_SAVE_DELAY_MS = 400;
 const str = (v: unknown) => (typeof v === 'string' ? v : null);
 
 export const useProjectStore = create<ProjectState>()(
@@ -65,6 +86,36 @@ export const useProjectStore = create<ProjectState>()(
       });
     const find = (id: string) => get().projects.find((p) => p.id === id && p.deletedAt === null);
 
+    /** Plan edits are shown instantly and written after a short pause (full autosave: Phase 8). */
+    let pending: Project | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const schedule = (p: Project) => {
+      pending = p;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => void flushPending(), EDIT_SAVE_DELAY_MS);
+    };
+    const flushPending = async () => {
+      if (timer) clearTimeout(timer);
+      timer = null;
+      const p = pending;
+      pending = null;
+      if (p) await persist(p);
+    };
+    /** Puts a new version of the open project (demo or local) into state. */
+    const commit = (next: Project, history: History) => {
+      const stamped = { ...next, updatedAt: nowIso() };
+      set((s) => {
+        s.history = history;
+        if (s.demo) s.demo = stamped;
+        else {
+          const i = s.projects.findIndex((x) => x.id === stamped.id);
+          if (i >= 0) s.projects[i] = stamped;
+        }
+      });
+      if (!get().demo) schedule(stamped);
+    };
+    const current = () => selectCurrentProject(get());
+
     return {
       status: 'idle',
       projects: [],
@@ -73,6 +124,35 @@ export const useProjectStore = create<ProjectState>()(
       demo: null,
       demoProjectCount: null,
       saveError: false,
+      history: emptyHistory(),
+
+      apply: (label, recipe, coalesceKey = null) => {
+        const cur = current();
+        if (!cur) return false;
+        const { next, entry } = applyRecipe(cur, label, recipe, coalesceKey);
+        if (!entry) return false;
+        commit(next, record(get().history, entry));
+        return true;
+      },
+
+      seal: () =>
+        set((s) => {
+          s.history = sealHistory(s.history);
+        }),
+
+      undo: () => {
+        const cur = current();
+        const r = cur ? undoHistory(cur, get().history) : null;
+        if (r) commit(r.state, r.history);
+      },
+
+      redo: () => {
+        const cur = current();
+        const r = cur ? redoHistory(cur, get().history) : null;
+        if (r) commit(r.state, r.history);
+      },
+
+      flush: flushPending,
 
       init: async () => {
         if (get().status !== 'idle') return;
@@ -102,6 +182,7 @@ export const useProjectStore = create<ProjectState>()(
       },
 
       updateInfo: async (id, info) => {
+        await flushPending();
         const cur = find(id);
         if (!cur) return;
         const p = updateProjectInfo(cur, info, nowIso());
@@ -110,6 +191,7 @@ export const useProjectStore = create<ProjectState>()(
       },
 
       duplicate: async (id, name) => {
+        await flushPending();
         const cur = find(id);
         if (!cur) return null;
         const p = duplicateProject(cur, name, () => uuidv7(), nowIso());
@@ -119,6 +201,7 @@ export const useProjectStore = create<ProjectState>()(
       },
 
       remove: async (id) => {
+        await flushPending();
         const cur = find(id);
         if (!cur) return;
         const p = deleteProject(cur, nowIso());
@@ -131,7 +214,9 @@ export const useProjectStore = create<ProjectState>()(
       },
 
       open: (id) => {
+        void flushPending();
         set((s) => {
+          if (s.currentId !== id) s.history = emptyHistory();
           s.currentId = id;
           if (id) s.lastOpenedId = id;
         });
@@ -142,6 +227,7 @@ export const useProjectStore = create<ProjectState>()(
         set((s) => {
           s.demo = project;
           s.demoProjectCount = projectCount;
+          s.history = emptyHistory();
         }),
     };
   }),

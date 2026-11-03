@@ -12,18 +12,21 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { Hint, NextPhase } from '@/components/common/Hint';
+import { Hint } from '@/components/common/Hint';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 import { useEditorStore } from '@/store/editorStore';
+import { useProjectStore } from '@/store/projectStore';
+import { redo, undo, zoomBy } from '../actions';
 
 interface ToolProps {
   icon: LucideIcon;
   label: string;
   active?: boolean;
   onClick?: () => void;
-  /** later-phase tool: rendered disabled with "Keyingi bosqichda" */
-  later?: boolean;
+  disabled?: boolean;
+  /** tool buttons report pressed state */
+  toggle?: boolean;
   fillIcon?: boolean;
 }
 
@@ -32,20 +35,21 @@ function ToolButton({
   label,
   active = false,
   onClick,
-  later = false,
+  disabled = false,
+  toggle = false,
   fillIcon = false,
 }: ToolProps) {
   const btn = (
     <button
       type="button"
       aria-label={label}
-      aria-pressed={onClick || active ? active : undefined}
-      disabled={later}
+      aria-pressed={toggle ? active : undefined}
+      disabled={disabled}
       onClick={onClick}
       className={cn(
         'flex h-9 w-9 items-center justify-center rounded-[10px] transition-colors duration-150 disabled:cursor-not-allowed sm:h-10 sm:w-11 md:h-10 md:w-[48px] lg:h-[54px] lg:w-[58px]',
         active ? 'bg-primary/25 text-white' : 'text-text hover:bg-white/[0.07]',
-        later && 'text-text/70',
+        disabled && 'text-text/40',
       )}
     >
       <Icon
@@ -56,9 +60,7 @@ function ToolButton({
       />
     </button>
   );
-  return later ? (
-    <NextPhase side="right">{btn}</NextPhase>
-  ) : (
+  return (
     <Hint label={label} side="right">
       {btn}
     </Hint>
@@ -73,10 +75,13 @@ function Group({ children }: { children: ReactNode }) {
   );
 }
 
-/** Left drawing toolbar (DESIGN_SYSTEM §4). Zoom/fit work now; drawing tools arrive in Phase 3. */
-export function DrawingToolbar({ onZoom }: { onZoom: (factor: number) => void }) {
+/** Left drawing toolbar (DESIGN_SYSTEM §4): tools, undo/redo, zoom, fit — all live. */
+export function DrawingToolbar() {
   const tool = useEditorStore((s) => s.tool);
+  const setTool = useEditorStore((s) => s.setTool);
   const requestFit = useEditorStore((s) => s.requestFit);
+  const canUndo = useProjectStore((s) => s.history.past.length > 0);
+  const canRedo = useProjectStore((s) => s.history.future.length > 0);
   return (
     <div
       role="toolbar"
@@ -85,21 +90,40 @@ export function DrawingToolbar({ onZoom }: { onZoom: (factor: number) => void })
       className="flex flex-col gap-1 sm:gap-1.5 lg:gap-2.5"
     >
       <Group>
-        <ToolButton icon={MousePointer2} label={uz.tools.select} active={tool === 'select'} fillIcon />
+        <ToolButton
+          icon={MousePointer2}
+          label={`${uz.tools.select} (V)`}
+          active={tool === 'select'}
+          onClick={() => setTool('select')}
+          toggle
+          fillIcon
+        />
       </Group>
       <Group>
-        <ToolButton icon={BoxSelect} label={uz.tools.marquee} later />
+        <ToolButton
+          icon={BoxSelect}
+          label={`${uz.tools.marquee} (M)`}
+          active={tool === 'marquee'}
+          onClick={() => setTool('marquee')}
+          toggle
+        />
       </Group>
       <Group>
-        <ToolButton icon={Move} label={uz.tools.pan} later />
+        <ToolButton
+          icon={Move}
+          label={`${uz.tools.pan} (H)`}
+          active={tool === 'pan'}
+          onClick={() => setTool('pan')}
+          toggle
+        />
       </Group>
       <Group>
-        <ToolButton icon={Undo2} label={uz.tools.undo} later />
-        <ToolButton icon={Redo2} label={uz.tools.redo} later />
+        <ToolButton icon={Undo2} label={uz.tools.undo} onClick={undo} disabled={!canUndo} />
+        <ToolButton icon={Redo2} label={uz.tools.redo} onClick={redo} disabled={!canRedo} />
       </Group>
       <Group>
-        <ToolButton icon={Plus} label={uz.tools.zoomIn} onClick={() => onZoom(1.2)} />
-        <ToolButton icon={Minus} label={uz.tools.zoomOut} onClick={() => onZoom(1 / 1.2)} />
+        <ToolButton icon={Plus} label={uz.tools.zoomIn} onClick={() => zoomBy(1.2)} />
+        <ToolButton icon={Minus} label={uz.tools.zoomOut} onClick={() => zoomBy(1 / 1.2)} />
       </Group>
       <Group>
         <ToolButton icon={Maximize} label={uz.tools.fit} onClick={requestFit} />

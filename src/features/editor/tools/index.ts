@@ -1,2 +1,4 @@
-// Module placeholder — implemented in a later phase (see docs/PHASES.md).
-export {};
+export { createSelectTool } from './selectTool';
+export { createMarqueeTool } from './marqueeTool';
+export { createPanTool } from './panTool';
+export type { Tool, ToolContext, ToolPointer, PointerKind } from './types';

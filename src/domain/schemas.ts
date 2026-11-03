@@ -132,3 +132,11 @@ export function validateProjectInfo(
   }
   return { ok: false, errors };
 }
+
+/** Per-device preferences (IndexedDB meta, not synced). */
+export const DeviceSettingsSchema = z.object({
+  /** Apple Pencil / stylus draws; one finger only selects and pans */
+  penOnly: z.boolean().default(false),
+});
+export type DeviceSettings = z.infer<typeof DeviceSettingsSchema>;
+export const DEFAULT_DEVICE_SETTINGS: DeviceSettings = { penOnly: false };

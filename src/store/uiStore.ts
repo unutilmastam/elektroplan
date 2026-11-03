@@ -10,6 +10,9 @@ interface UiState {
   openEdit: (id: string) => void;
   openDelete: (id: string) => void;
   closeDialog: () => void;
+  /** bumps when "Xususiyatlar" is chosen; compact layouts open the point panel */
+  propertiesRequest: number;
+  requestProperties: () => void;
 }
 
 export const useUiStore = create<UiState>()((set) => ({
@@ -18,4 +21,6 @@ export const useUiStore = create<UiState>()((set) => ({
   openEdit: (id) => set({ dialog: { kind: 'edit', id } }),
   openDelete: (id) => set({ dialog: { kind: 'delete', id } }),
   closeDialog: () => set({ dialog: null }),
+  propertiesRequest: 0,
+  requestProperties: () => set((s) => ({ propertiesRequest: s.propertiesRequest + 1 })),
 }));

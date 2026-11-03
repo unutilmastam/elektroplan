@@ -1,7 +1,8 @@
 'use client';
 
 import { ChevronDown, ChevronUp, PlugZap, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useUiStore } from '@/store/uiStore';
 import { GlassPanel } from '@/components/layout/GlassPanel';
 import { ProgressCard } from '@/features/installation/ProgressCard';
 import { PointPropertiesPanel } from '@/features/points/PointPropertiesPanel';
@@ -20,6 +21,13 @@ const TABS: TabKey[] = ['point', 'rooms', 'wall', 'status'];
 export function CompactPanels() {
   const [tab, setTab] = useState<TabKey>('rooms');
   const [open, setOpen] = useState(false);
+  useOnPropertiesRequest(() => {
+    // phone: open the sheet on "Nuqta"; tablet uses the slide-over instead
+    if (window.matchMedia('(max-width: 599px)').matches) {
+      setTab('point');
+      setOpen(true);
+    }
+  });
 
   const pick = (t: TabKey) => {
     if (t === tab) setOpen((o) => !o);
@@ -80,6 +88,7 @@ export function CompactPanels() {
 /** Tablet (600–1023) slide-over for "Tanlangan nuqta", toggled from the canvas corner. */
 export function PointSlideOver() {
   const [open, setOpen] = useState(false);
+  useOnPropertiesRequest(() => setOpen(true));
   return (
     <div className="hidden sm:block md:hidden">
       <button
@@ -115,4 +124,15 @@ export function PointSlideOver() {
       </GlassPanel>
     </div>
   );
+}
+
+/** Runs `fn` whenever "Xususiyatlar" is requested (context menu). */
+function useOnPropertiesRequest(fn: () => void) {
+  const req = useUiStore((s) => s.propertiesRequest);
+  const first = useRef(req);
+  const cb = useRef(fn);
+  cb.current = fn;
+  useEffect(() => {
+    if (req !== first.current) cb.current();
+  }, [req]);
 }

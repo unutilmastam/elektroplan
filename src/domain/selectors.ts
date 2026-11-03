@@ -1,3 +1,4 @@
+import { panelFocus, type PanelFocus, type Selection } from './selection';
 import type { ElectricalPoint, Project, Room, Wall } from './types';
 import { wallDirection, type WallDirection } from './walls';
 
@@ -79,4 +80,11 @@ export function pickDefaultWallId(project: Project, roomId: string): string | nu
     }
   }
   return best;
+}
+
+/** Panel focus for a selection, falling back to the room's busiest wall for the wall view. */
+export function focusForSelection(project: Project, sel: Selection): PanelFocus {
+  const f = panelFocus(project, sel);
+  if (f.roomId && !f.wallId) return { ...f, wallId: pickDefaultWallId(project, f.roomId) };
+  return f;
 }

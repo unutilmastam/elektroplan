@@ -1,18 +1,20 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, type ReactNode } from 'react';
-import { boundsOf, fitViewport, zoomAt } from '@/domain/geometry';
+import { useEffect, useRef, type ReactNode } from 'react';
+import { boundsOf, fitViewport } from '@/domain/geometry';
 import type { Project } from '@/domain/types';
 import { pointOnWall } from '@/domain/walls';
 import { DrawingToolbar } from '@/features/editor/toolbar/DrawingToolbar';
 import { uz } from '@/i18n/uz';
 import { useElementSize } from '@/lib/useElementSize';
 import { useEditorStore } from '@/store/editorStore';
+import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
+import { useCanvasInput } from '../hooks/useCanvasInput';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { CanvasContextMenu } from './CanvasContextMenu';
 
 const PlanStage = dynamic(() => import('./PlanStage'), { ssr: false });
-
-const DEFAULT_VIEW = { x: 0, y: 0, scale: 1 };
 
 /** Walls plus door-leaf tips, so swinging doors are not clipped when fitting. */
 function planBounds(project: Project) {
@@ -24,39 +26,76 @@ function planBounds(project: Project) {
   return boundsOf([...walls.flatMap((w) => [w.a, w.b]), ...doorTips]);
 }
 
+function fitTo(width: number, height: number) {
+  const project = selectCurrentProject(useProjectStore.getState());
+  const set = useEditorStore.getState().setViewport;
+  if (!project || width === 0) return;
+  const b = planBounds(project);
+  if (!b) return set({ x: width / 2, y: height / 2, scale: 1 });
+  const toolbarSpace = width < 600 ? 52 : width < 1000 ? 64 : 80;
+  const pad = Math.max(16, Math.min(width, height) * 0.05);
+  const v = fitViewport(b, width - toolbarSpace, height, pad);
+  set({ ...v, x: v.x + toolbarSpace });
+}
+
 /** Canvas area: grid + plan (Konva) with the floating drawing toolbar on the left. */
 export function PlanCanvas({ project, overlay }: { project: Project | null; overlay?: ReactNode }) {
   const [hostRef, size] = useElementSize<HTMLDivElement>();
   const viewport = useEditorStore((s) => s.viewport);
-  const setViewport = useEditorStore((s) => s.setViewport);
+  const selection = useEditorStore((s) => s.selection);
+  const marquee = useEditorStore((s) => s.marquee);
   const fitRequest = useEditorStore((s) => s.fitRequest);
+  const spaceHeld = useKeyboardShortcuts();
+  useCanvasInput(hostRef, spaceHeld);
 
-  const fit = useCallback(() => {
-    if (!project || size.width === 0) return;
-    const b = planBounds(project);
-    const toolbarSpace = size.width < 600 ? 52 : size.width < 1000 ? 64 : 80;
-    const pad = Math.max(16, Math.min(size.width, size.height) * 0.05);
-    if (!b) return setViewport({ ...DEFAULT_VIEW, x: size.width / 2, y: size.height / 2 });
-    const v = fitViewport(b, size.width - toolbarSpace, size.height, pad);
-    setViewport({ ...v, x: v.x + toolbarSpace });
-  }, [project, size.width, size.height, setViewport]);
-
+  const projectId = project?.id ?? null;
+  // Fit when a project opens or on request (not on every edit).
   useEffect(() => {
-    fit();
-  }, [fit, fitRequest]);
+    fitTo(useEditorStore.getState().canvasSize.width, useEditorStore.getState().canvasSize.height);
+  }, [projectId, fitRequest]);
 
-  const zoom = (factor: number) => {
-    const v = viewport ?? DEFAULT_VIEW;
-    setViewport(zoomAt(v, factor, { x: size.width / 2, y: size.height / 2 }));
-  };
+  // Resize (rotation, Split View, Stage Manager): keep the view centre instead of re-fitting.
+  const prev = useRef({ width: 0, height: 0 });
+  const { width, height } = size;
+  useEffect(() => {
+    const ed = useEditorStore.getState();
+    ed.setCanvasSize(width, height);
+    const p = prev.current;
+    if (p.width === width && p.height === height) return;
+    prev.current = { width, height };
+    if (width === 0) return;
+    if (p.width === 0 || !ed.viewport) fitTo(width, height);
+    else
+      ed.setViewport({
+        ...ed.viewport,
+        x: ed.viewport.x + (width - p.width) / 2,
+        y: ed.viewport.y + (height - p.height) / 2,
+      });
+  }, [width, height]);
 
-  const empty = !project || project.rooms.length === 0;
+  const empty = !project || project.rooms.filter((r) => r.deletedAt === null).length === 0;
 
   return (
     <div className="relative h-full min-h-0 w-full overflow-hidden rounded-[14px] border border-white/[0.07] bg-canvas/80 lg:rounded-[16px]">
-      <div ref={hostRef} className="canvas-host absolute inset-0" aria-label={uz.canvas.label} role="img">
+      <div
+        ref={hostRef}
+        className="canvas-host absolute inset-0"
+        aria-label={uz.canvas.label}
+        role="application"
+        data-testid="plan-canvas"
+        data-vx={viewport?.x.toFixed(2)}
+        data-vy={viewport?.y.toFixed(2)}
+        data-scale={viewport?.scale.toFixed(4)}
+      >
         {project && viewport && size.width > 0 ? (
-          <PlanStage project={project} width={size.width} height={size.height} viewport={viewport} />
+          <PlanStage
+            project={project}
+            width={size.width}
+            height={size.height}
+            viewport={viewport}
+            selection={selection}
+            marquee={marquee}
+          />
         ) : null}
       </div>
       {overlay ? (
@@ -70,8 +109,9 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
         </div>
       ) : null}
       <div className="absolute top-2 left-2 md:top-2.5 md:left-2.5 lg:top-4 lg:left-2">
-        <DrawingToolbar onZoom={zoom} />
+        <DrawingToolbar />
       </div>
+      <CanvasContextMenu />
     </div>
   );
 }

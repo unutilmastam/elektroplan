@@ -2,7 +2,7 @@
 
 import { Eye, House, List } from 'lucide-react';
 import { NextPhase } from '@/components/common/Hint';
-import { pickDefaultWallId, selectRoomStats } from '@/domain/selectors';
+import { selectRoomStats } from '@/domain/selectors';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 import { useEditorStore } from '@/store/editorStore';
@@ -14,7 +14,7 @@ const ICON_COLORS = ['#ffffff', '#22c55e', '#f59e0b', '#14b8a6', '#3b8bff', '#a7
 export function RoomList({ showTitle = true }: { showTitle?: boolean }) {
   const project = useCurrentProject();
   const selectedRoomId = useEditorStore((s) => s.selectedRoomId);
-  const setSelection = useEditorStore((s) => s.setSelection);
+  const select = useEditorStore((s) => s.select);
   const stats = project ? selectRoomStats(project) : [];
 
   return (
@@ -44,13 +44,7 @@ export function RoomList({ showTitle = true }: { showTitle?: boolean }) {
                 <button
                   type="button"
                   aria-pressed={active}
-                  onClick={() =>
-                    project &&
-                    setSelection({
-                      selectedRoomId: room.id,
-                      selectedWallId: pickDefaultWallId(project, room.id),
-                    })
-                  }
+                  onClick={() => project && select(project, [{ kind: 'room', id: room.id }])}
                   className="flex h-[38px] min-w-0 flex-1 items-center gap-3 pl-2.5 text-left text-[15px] lg:h-[38px]"
                 >
                   <House
