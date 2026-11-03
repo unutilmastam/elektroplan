@@ -48,6 +48,23 @@ export const uz = {
     custom: 'Boshqa',
     more: 'Boshqa',
     barLabel: 'Elektr belgilar',
+    placing: 'joylashtirish',
+    placeHint: 'Devor yoniga bosing',
+    placeSoon: 'Belgini rejaga qo‘yish keyingi bosqichda (PHASE 6) ishlaydi — hozir oldindan ko‘rinishi.',
+    stopPlacing: 'Tugatish',
+    gallery: 'Belgilar galereyasi',
+    galleryHint: 'Barcha elektr belgilar: o‘lchamlar, ranglar va 50%–400% zoom (rejadagi ko‘rinishi).',
+    sizes: 'O‘lchamlar',
+    colors: 'Ranglar',
+    zoom: 'Rejada (zoom)',
+    category: {
+      socket: 'Rozetkalar',
+      switch: 'Viklyuchatellar',
+      data: 'Internet / TV',
+      lighting: 'Yoritish',
+      climate: 'Konditsioner',
+      custom: 'Boshqa',
+    },
   },
   tools: {
     label: 'Chizma asboblari',
@@ -254,6 +271,8 @@ export const uz = {
     autoStraightenHint:
       'Qiyshiq chizilgan xona to‘g‘ri burchakli toza shaklga aylanadi. Bir marta “Bekor qilish” asl chizmani qaytaradi.',
     more: 'Boshqa sozlamalar keyingi bosqichlarda qo‘shiladi.',
+    library: 'Kutubxona',
+    openGallery: 'Belgilar galereyasini ochish',
   },
   generic: {
     close: 'Yopish',

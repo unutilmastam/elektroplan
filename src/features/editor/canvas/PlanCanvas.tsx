@@ -13,6 +13,7 @@ import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
 import { useCanvasInput } from '../hooks/useCanvasInput';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { CanvasContextMenu } from './CanvasContextMenu';
+import { PlaceModeBar } from './PlaceModeBar';
 import { PolygonActions } from './PolygonActions';
 
 const PlanStage = dynamic(() => import('./PlanStage'), { ssr: false });
@@ -118,6 +119,7 @@ export function PlanCanvas({ project, overlay }: { project: Project | null; over
       </div>
       <CanvasContextMenu />
       <PolygonActions />
+      <PlaceModeBar />
     </div>
   );
 }

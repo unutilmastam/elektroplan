@@ -47,6 +47,8 @@ function fakeCtx(movable = true) {
     createWall: () => undefined,
     commitSketch: () => undefined,
     placeOpening: () => undefined,
+    activeSymbol: () => 'socket-single',
+    placeSymbol: () => void log.push('place'),
   };
   return { ctx, log, moves, sel: () => selection, marquee: () => marquee, pan: () => pan };
 }

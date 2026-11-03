@@ -10,6 +10,8 @@ export interface SymbolVisual {
   /** 'badge' = rounded square filled with the colour; 'outline' = coloured glyph only (plan lyustra). */
   badge: 'badge' | 'outline';
   glyph: GlyphPart[];
+  /** on a wall the glyph turns with the wall (sockets read as "8" on vertical walls) */
+  rotatable: boolean;
 }
 
 const circle = (cx: number, cy: number, r: number) =>
@@ -43,6 +45,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: 30,
     placement: 'wall',
     editableProps: wallProps,
+    rotatable: true,
     badge: 'badge',
     glyph: [s(circle(12, 12, 7)), f(circle(9.4, 12, 1.5)), f(circle(14.6, 12, 1.5))],
   },
@@ -53,6 +56,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: 30,
     placement: 'wall',
     editableProps: wallProps,
+    rotatable: true,
     badge: 'badge',
     glyph: [
       s(circle(7, 12, 4.8)),
@@ -70,6 +74,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: 30,
     placement: 'wall',
     editableProps: wallProps,
+    rotatable: true,
     badge: 'badge',
     glyph: [
       s(circle(4.6, 12, 3.4)),
@@ -87,6 +92,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: 90,
     placement: 'wall',
     editableProps: wallProps,
+    rotatable: false,
     badge: 'badge',
     glyph: [
       s(
@@ -102,6 +108,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: 90,
     placement: 'wall',
     editableProps: wallProps,
+    rotatable: false,
     badge: 'badge',
     glyph: [
       s(
@@ -119,6 +126,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: 30,
     placement: 'wall',
     editableProps: wallProps,
+    rotatable: false,
     badge: 'badge',
     glyph: [
       s(circle(12, 12, 8.5)),
@@ -133,6 +141,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: 110,
     placement: 'wall',
     editableProps: wallProps,
+    rotatable: false,
     badge: 'badge',
     glyph: [
       s(
@@ -150,6 +159,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: null,
     placement: 'ceiling',
     editableProps: ['description', 'color'],
+    rotatable: false,
     badge: 'outline',
     glyph: [s(circle(12, 12, 9)), s('M5.64 5.64l12.72 12.72M18.36 5.64L5.64 18.36')],
   },
@@ -160,6 +170,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: null,
     placement: 'any',
     editableProps: ['description', 'color'],
+    rotatable: false,
     badge: 'badge',
     glyph: [s('M2.5 9h19v6h-19Z'), f('M4.5 11h2.5v2H4.5ZM8.5 11H11v2H8.5ZM13 11h2.5v2H13ZM17 11h2.5v2H17Z')],
   },
@@ -170,6 +181,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: 220,
     placement: 'wall',
     editableProps: wallProps,
+    rotatable: false,
     badge: 'badge',
     glyph: [
       s(
@@ -186,6 +198,7 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
     defaultMountHeightCm: null,
     placement: 'any',
     editableProps: ['mountHeightCm', 'distanceFromCornerCm', 'description', 'color', 'label'],
+    rotatable: false,
     badge: 'badge',
     glyph: [f(circle(5.5, 12, 2)), f(circle(12, 12, 2)), f(circle(18.5, 12, 2))],
   },

@@ -3,6 +3,7 @@ export { createMarqueeTool } from './marqueeTool';
 export { createPanTool } from './panTool';
 export {
   createOpeningTool,
+  createPlaceSymbolTool,
   createPolygonRoomTool,
   createRectRoomTool,
   createSketchTool,

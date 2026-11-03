@@ -178,3 +178,30 @@ export function createOpeningTool(ctx: ToolContext, kind: Opening['kind']): Tool
     },
   };
 }
+
+/** Belgi joylashtirish: the picked symbol follows the pointer; a tap places it. */
+export function createPlaceSymbolTool(ctx: ToolContext): Tool {
+  let down: ToolPointer | null = null;
+  const ghost = (p: ToolPointer) =>
+    ctx.setDraft({ kind: 'symbol', symbolId: ctx.activeSymbol(), at: p.world });
+  return {
+    onDown(p) {
+      down = p;
+      ghost(p);
+    },
+    onMove(p) {
+      ghost(p);
+    },
+    onUp(p) {
+      if (down && distance(down.screen, p.screen) < 12) ctx.placeSymbol(p);
+      down = null;
+    },
+    onCancel() {
+      down = null;
+      ctx.setDraft(null);
+    },
+    onHover(p) {
+      ghost(p);
+    },
+  };
+}

@@ -225,7 +225,7 @@ function snapCoord(v: number, axis: 'x' | 'y', o: SketchOptions, tol: number): n
 
 const nz = (n: number) => n + 0; // turns -0 into 0
 
-/** The constant a line keeps: y (horizontal), x (vertical), x−y (↘ 45°) or x+y (↙ 45°). */
+/** The constant a line keeps: y (horizontal), x (vertical), x−y (45° down-right) or x+y (45° down-left). */
 function lineKind(angle: number): 'h' | 'v' | 'd1' | 'd2' {
   const k = (((Math.round(angle / DEG45) % 4) + 4) % 4) as 0 | 1 | 2 | 3;
   return (['h', 'd1', 'v', 'd2'] as const)[k];

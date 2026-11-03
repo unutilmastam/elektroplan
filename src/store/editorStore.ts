@@ -5,7 +5,7 @@ import type { PanelFocus, Selection } from '@/domain/selection';
 import type { Project, SymbolId } from '@/domain/types';
 
 export type DrawToolId = 'room-rect' | 'room-square' | 'room-polygon' | 'sketch' | 'wall' | 'door' | 'window';
-export type ToolId = 'select' | 'marquee' | 'pan' | DrawToolId;
+export type ToolId = 'select' | 'marquee' | 'pan' | 'place' | DrawToolId;
 export const DRAW_TOOLS: DrawToolId[] = [
   'room-rect',
   'room-square',
@@ -22,7 +22,8 @@ export type DraftShape =
   | { kind: 'rect'; a: Vec2; b: Vec2 }
   | { kind: 'polygon'; points: Vec2[]; cursor: Vec2 | null; closable: boolean }
   | { kind: 'wall'; a: Vec2; b: Vec2 }
-  | { kind: 'stroke'; points: Vec2[] };
+  | { kind: 'stroke'; points: Vec2[] }
+  | { kind: 'symbol'; symbolId: SymbolId; at: Vec2 };
 
 export interface ContextMenuState {
   /** screen position relative to the canvas */
@@ -95,7 +96,9 @@ export const useEditorStore = create<EditorState>()((set) => ({
       hover: null,
       lastDrawTool: isDrawTool(tool) ? tool : s.lastDrawTool,
     })),
-  setActiveSymbol: (id) => set({ activeSymbolId: id }),
+  /** picking a symbol switches to the placement tool */
+  setActiveSymbol: (id) =>
+    set({ activeSymbolId: id, tool: 'place', draft: null, hover: null, marquee: null }),
   setViewport: (viewport) => set({ viewport }),
   requestFit: () => set((s) => ({ fitRequest: s.fitRequest + 1 })),
   select: (project, selection) => {
