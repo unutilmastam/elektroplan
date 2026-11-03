@@ -20,13 +20,15 @@ function wallRotation(wall: Wall | undefined): number {
 
 interface PlanContentProps {
   project: Project;
-  /** decoration multiplier (see decoration.ts) */
+  /** decoration multiplier for labels (see decoration.ts) */
   k: number;
+  /** decoration multiplier for point badges */
+  kp: number;
   fontFamily: string;
 }
 
 /** Rooms → walls → labels → points, in world units. Memoised: panning does not re-render it. */
-export const PlanContent = memo(function PlanContent({ project, k, fontFamily }: PlanContentProps) {
+export const PlanContent = memo(function PlanContent({ project, k, kp, fontFamily }: PlanContentProps) {
   const rooms = project.rooms.filter((r) => r.deletedAt === null);
   const walls = project.walls.filter((w) => w.deletedAt === null);
   const points = project.points.filter((p) => p.deletedAt === null);
@@ -67,7 +69,7 @@ export const PlanContent = memo(function PlanContent({ project, k, fontFamily }:
         <PointGlyph
           key={p.id}
           point={p}
-          size={POINT_BADGE * k}
+          size={POINT_BADGE * kp}
           rotation={SYMBOLS[p.symbolId].rotatable ? wallRotation(walls.find((w) => w.id === p.wallId)) : 0}
         />
       ))}

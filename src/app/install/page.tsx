@@ -1,6 +1,14 @@
-import { PlaceholderPage } from '@/components/layout/PlaceholderPage';
-import { uz } from '@/i18n/uz';
+import { Suspense } from 'react';
+import { AppShell } from '@/components/layout/AppShell';
+import { InstallScreen } from '@/features/installation/InstallScreen';
 
+/** Montaj rejimi (/install/?id=…) — works from IndexedDB only. */
 export default function InstallPage() {
-  return <PlaceholderPage title={uz.pages.installTitle} text={uz.pages.installText} />;
+  return (
+    <AppShell>
+      <Suspense>
+        <InstallScreen />
+      </Suspense>
+    </AppShell>
+  );
 }

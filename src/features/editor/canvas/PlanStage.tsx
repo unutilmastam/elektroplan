@@ -9,7 +9,7 @@ import { DraftContent } from './DraftContent';
 import { StatusLayer } from '@/features/installation/StatusLayer';
 import type { Selection } from '@/domain/selection';
 import type { Project } from '@/domain/types';
-import { decorationK } from './decoration';
+import { decorationK, pointK } from './decoration';
 import { GridLayer } from './GridLayer';
 import { PlanContent } from './PlanContent';
 import { SelectionContent } from './SelectionLayer';
@@ -48,6 +48,7 @@ export default function PlanStage({
     setFontFamily(getComputedStyle(document.body).fontFamily);
   }, []);
   const k = decorationK(viewport.scale);
+  const kp = pointK(viewport.scale);
   const t = { x: viewport.x, y: viewport.y, scaleX: viewport.scale, scaleY: viewport.scale };
 
   return (
@@ -55,8 +56,8 @@ export default function PlanStage({
       <GridLayer width={width} height={height} viewport={viewport} gridSize={project.settings.gridSize} />
       <Layer listening={false}>
         <Group {...t}>
-          <PlanContent project={project} k={k} fontFamily={fontFamily} />
-          {showStatus ? <StatusLayer project={project} k={k} scale={viewport.scale} /> : null}
+          <PlanContent project={project} k={k} kp={kp} fontFamily={fontFamily} />
+          {showStatus ? <StatusLayer project={project} k={kp} scale={viewport.scale} /> : null}
         </Group>
       </Layer>
       <Layer listening={false}>
@@ -65,7 +66,7 @@ export default function PlanStage({
             project={project}
             selection={selection}
             marquee={marquee}
-            k={k}
+            k={kp}
             scale={viewport.scale}
           />
           <DraftContent draft={draft} hover={hover} scale={viewport.scale} />

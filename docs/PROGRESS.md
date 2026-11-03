@@ -11,11 +11,33 @@
 | 6 | Nuqtalarni joylashtirish | ✅ Tayyor |
 | 7 | Devor ko‘rinishi | ✅ Tayyor |
 | 8 | Avtosaqlash (IndexedDB) | ✅ Tayyor |
-| 9 | Montaj rejimi | — |
+| 9 | Montaj rejimi | ✅ Tayyor (tasdiq kutilmoqda) |
 | 10 | PDF eksport | — |
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 9 — 2026-11-03
+
+**Bajarildi**
+- `/install/?id=` (statik eksport qoidasi — `[id]` marshruti o‘rniga query) — telefon (390 px) birinchi dizayn, iPad landshaft/desktop’da reja + ro‘yxat yonma-yon.
+- `domain/installation.ts` (testlar bilan): holatni o‘rnatish + **InstallationTask** jurnali (kim — hozircha `null`, Phase 12 da foydalanuvchi; qachon; qaysidan → qaysiga) — MySQL `installation_tasks` jadvaliga mos; xonalar bo‘yicha progress; ish tartibi (xonalar ro‘yxati tartibida, devor nuqtalari masofa bo‘yicha, ship nuqtalari oxirida); “Keyingi bajarilmagan nuqta”.
+- Ekran: loyiha nomi + progress halqasi va “21/30 · Qolgan 9”; xonalar navigatsiyasi (har xonada bajarilgan/jami, tayyor xonada ✓); “Faqat bajarilmaganlar” filtri (rejada ham, ro‘yxatda ham); Reja / Ro‘yxat (telefonda); tanlangan nuqta paneli: belgi, xona, balandlik, chap burchakdan, izoh, **3 ta katta tugma (64 px, qo‘lqop bilan)**, “Keyingi” (52–56 px), devor ko‘rinishi tugmasi.
+- Reja montajda faqat ko‘rish uchun: bosish — tanlash, sudrash — reja suriladi, pinch — zoom; hech narsa siljimaydi/o‘chmaydi (Delete, chizish asboblari, kontekst menyu o‘chiq). Holat rejada halqa rangi bilan: kulrang / to‘q sariq punktir / yashil + ✓.
+- Telefonda reja juda kichik bo‘lganda belgilar haddan tashqari kattalashmasligi uchun nuqta belgilari yozuvlardan alohida masshtablanadi.
+- Muharrir paneli ham holatni jurnal bilan o‘zgartiradi; “Loyiha holati” kartasidagi yashil tugma endi montaj rejimini ochadi (hammasi bajarilsa “Loyiha tayyor”, aks holda “Montajni davom ettirish”).
+- Progress hech qachon yo‘qolmaydi: har bosish Phase 8 avtosaqlash orqali IndexedDB’ga (va outbox’ga).
+
+**Test qilindi**
+- `pnpm test` — 180 test (holat + jurnal + undo, xonalar progressi, ish tartibi, keyingi nuqta, eski loyihalar jurnalsiz yuklanadi).
+- `pnpm test:e2e` — 48 ssenariy × 6 profil: 277 o‘tdi, 11 ataylab o‘tkazildi. Yangi: muharrirdan montajga o‘tish, “Keyingi”, katta tugma ≥60 px, holat → sahifa yangilangandan keyin ham saqlanadi + jurnalda; rejada bosib tanlash, sudrash/Delete hech narsani o‘zgartirmaydi; xona va filtr; devor ko‘rinishi.
+- Phase 1–8 qayta tekshirildi.
+- Skrinshotlar: `docs/screenshots/phase-9/` (iPhone reja + ro‘yxat, iPad landshaft).
+
+**Ma’lum cheklovlar**
+- Montajda devor ko‘rinishidan balandlik/masofani tuzatish mumkin (joyida o‘lchab yozish uchun) — bu ataylab qoldirildi.
+- Jurnalda “kim” — akkauntlar Phase 12 da.
+- Holat orqaga qaytarilishi mumkin (xato bosilganda); serverdagi sinxronizatsiyada “orqaga qaytmaslik” qoidasi Phase 12 da.
 
 ## Phase 8 — 2026-11-03
 

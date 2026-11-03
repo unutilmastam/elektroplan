@@ -1,7 +1,7 @@
 'use client';
 
 import { CircleCheck } from 'lucide-react';
-import { NextPhase } from '@/components/common/Hint';
+import Link from 'next/link';
 import { ProgressRing } from '@/components/common/ProgressRing';
 import { Button } from '@/components/ui/button';
 import { computeProgress } from '@/domain/progress';
@@ -21,6 +21,7 @@ function Row({ dot, label, value }: { dot: string; label: string; value: number 
 /** "Loyiha holati": completion ring + counts + "Loyiha tayyor". */
 export function ProgressCard({ showTitle = true }: { showTitle?: boolean }) {
   const points = useProjectStore((s) => selectCurrentProject(s)?.points);
+  const projectId = useProjectStore((s) => (s.demo ? null : (selectCurrentProject(s)?.id ?? null)));
   const p = computeProgress(points ?? []);
   return (
     <div className="flex h-full min-h-0 flex-col px-4 pt-3 pb-3 lg:pt-4 lg:pb-4">
@@ -38,12 +39,13 @@ export function ProgressCard({ showTitle = true }: { showTitle?: boolean }) {
           <Row dot="#334155" label={uz.status.total} value={p.total} />
         </div>
       </div>
-      <NextPhase className="flex">
-        <Button variant="success" disabled className="h-11 w-full text-[16px] lg:h-[54px] lg:text-[17px]">
+      {/* reference: "Loyiha tayyor" — opens Montaj rejimi; when everything is done it says so */}
+      <Button asChild variant="success" className="h-11 w-full text-[16px] lg:h-[54px] lg:text-[17px]">
+        <Link href={projectId ? `/install/?id=${encodeURIComponent(projectId)}` : '/install/'}>
           <CircleCheck size={26} className="text-success" aria-hidden />
-          {uz.status.ready}
-        </Button>
-      </NextPhase>
+          {p.ready ? uz.status.ready : uz.install.continue}
+        </Link>
+      </Button>
     </div>
   );
 }

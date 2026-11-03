@@ -1,5 +1,7 @@
 import { boundsOf, fitViewport, zoomAt } from '@/domain/geometry';
 import { uuidv7 } from '@/domain/ids';
+import { setStatusRecipe } from '@/domain/installation';
+import type { PointStatus } from '@/domain/types';
 import {
   addPointRecipe,
   duplicatePoint,
@@ -152,4 +154,28 @@ export function duplicateSelectedPoint(pointId: string) {
 /** Default heights of the open project (Sozlamalar). */
 export function setDefaultHeights(patch: { defaultSocketHeightCm?: number; defaultSwitchHeightCm?: number }) {
   useProjectStore.getState().apply('Sozlamalar', settingsRecipe(patch), 'project-settings');
+}
+
+/** Montaj: point status with an InstallationTask log entry (one undo step). */
+export function setPointStatus(pointId: string, status: PointStatus) {
+  useProjectStore
+    .getState()
+    .apply('Holat', setStatusRecipe(pointId, status, uuidv7(), new Date().toISOString()));
+}
+
+/** Select a point and bring it to the middle of the plan (keeps the zoom). */
+export function focusPoint(pointId: string) {
+  const p = project();
+  const ed = useEditorStore.getState();
+  const pt = p?.points.find((x) => x.id === pointId && x.deletedAt === null);
+  if (!p || !pt) return;
+  ed.select(p, [{ kind: 'point', id: pt.id }]);
+  const vp = ed.viewport;
+  const { width, height } = ed.canvasSize;
+  if (!vp || width === 0) return;
+  const sx = pt.x * vp.scale + vp.x;
+  const sy = pt.y * vp.scale + vp.y;
+  const margin = Math.min(width, height) * 0.15;
+  if (sx > margin && sx < width - margin && sy > margin && sy < height - margin) return;
+  ed.setViewport({ ...vp, x: width / 2 - pt.x * vp.scale, y: height / 2 - pt.y * vp.scale });
 }
