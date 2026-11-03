@@ -7,6 +7,7 @@ import type { Project } from '@/domain/types';
 import { moveWall } from '@/domain/wallEdits';
 import { useEditorStore } from '@/store/editorStore';
 import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
+import { uz } from '@/i18n/uz';
 import { useUiStore } from '@/store/uiStore';
 import { topoOpts } from '../actions';
 import { decorationK, PICK_PX, pointRadiusWorld } from '../canvas/decoration';
@@ -120,5 +121,8 @@ export function createToolContext(): ToolContext {
     createWall,
     commitSketch: (stroke) => commitSketch(stroke),
     placeOpening: (p, kind) => placeOpening(p.world, scale(), PICK_PX[p.pointerType], kind),
+    activeSymbol: () => ed().activeSymbolId,
+    // Putting the point on a wall is Phase 6; until then the tool previews the symbol and says so.
+    placeSymbol: () => useUiStore.getState().notify(uz.symbols.placeSoon),
   };
 }

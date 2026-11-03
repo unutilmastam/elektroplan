@@ -1,5 +1,5 @@
 import type { Bounds, Vec2 } from '@/domain/geometry';
-import type { Opening, Room } from '@/domain/types';
+import type { Opening, Room, SymbolId } from '@/domain/types';
 import type { DraftShape } from '@/store/editorStore';
 import type { EntityRef, Selection } from '@/domain/selection';
 
@@ -43,6 +43,10 @@ export interface ToolContext {
   createWall: (a: Vec2, b: Vec2) => void;
   commitSketch: (stroke: Vec2[], pointerType: PointerKind) => void;
   placeOpening: (p: ToolPointer, kind: Opening['kind']) => void;
+  /** the symbol picked in the symbol bar */
+  activeSymbol: () => SymbolId;
+  /** tap with the placement tool */
+  placeSymbol: (p: ToolPointer) => void;
 }
 
 /** A tool is a small pointer state machine (ARCHITECTURE §4.1). */

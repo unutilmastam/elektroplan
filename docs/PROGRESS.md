@@ -7,7 +7,7 @@
 | 2 | Loyiha boshqaruvi | ✅ Tayyor |
 | 3 | Chizma dvigateli | ✅ Tayyor |
 | 4 | Xonalar va devorlar | ✅ Tayyor |
-| 5 | SVG belgilar | — |
+| 5 | SVG belgilar | ✅ Tayyor (tasdiq kutilmoqda) |
 | 6 | Nuqtalarni joylashtirish | — |
 | 7 | Devor ko‘rinishi | — |
 | 8 | Avtosaqlash (IndexedDB) | — |
@@ -16,6 +16,26 @@
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 5 — 2026-11-03
+
+**Bajarildi**
+- `features/symbols/catalog.ts` — 11 ta belgining yagona manbasi: id, kategoriya, SVG glif (24×24 path’lar), standart rang, standart balandlik (rozetka 30, viklyuchatel 90, TV 110, konditsioner 220 sm), joylashuv (devor / ship / har qayer), tahrirlanadigan xususiyatlar, rejada burilishi (faqat rozetkalar devor bo‘ylab buriladi). Nomlar — `uz.ts` da.
+- Bir xil glif ma’lumotidan: `SymbolIcon` (DOM/SVG — panel, menyu, galereya, devor ko‘rinishi) va `PointGlyph` (Konva — reja).
+- Symbol bar: belgini tanlash = **joylashtirish asbobi**. Kursor / Pencil hover ortidan belgining yarim shaffof ko‘rinishi yuradi; canvas tepasida “Belgi — joylashtirish · Tugatish”, Esc yoki “Tugatish” — tanlashga qaytadi. Rejaga haqiqiy qo‘yish (devorga yopishish, saqlash) — PHASE 6; hozir bosilganda shu haqda xabar chiqadi.
+- “Boshqa” menyusi — Uch rozetka, Ikki klavishli viklyuchatel, Konditsioner, Boshqa.
+- Sozlamalar → **Belgilar galereyasi** (`/settings/symbols/`): kategoriyalar bo‘yicha barcha belgilar, 16–64 px o‘lchamlar, 5 rang, haqiqiy reja renderida 50% / 100% / 200% / 400% zoom.
+
+**Test qilindi**
+- `pnpm test` — 143 test: katalog to‘liqligi (11 ta, barcha maydonlar, standart balandliklar), SVG path sintaksisi va 24×24 chegarasi, faqat rozetkalar buriladi, **butun `src` da emoji yo‘qligi** (avtomatik skan), joylashtirish asbobi.
+- `pnpm test:e2e` — 29 ssenariy × 6 profil: 169 o‘tdi, 5 ataylab o‘tkazildi. Yangi: galereyada 11 belgi + zoom canvas, gorizontal scroll yo‘q; belgi tanlash → joylashtirish rejimi → bosish → xabar → Esc; “Tugatish” tugmasi.
+- Skrinshotlar (`docs/screenshots/phase-5/`, DPR 2): galereya, 50–400% zoom (vektor — har zoomda aniq), joylashtirish ko‘rinishi, iPhone galereya.
+- Phase 1–4 qayta tekshirildi (shu e2e to‘plamida).
+- Topilib tuzatilgan: galereya zoom qatorida devor chizig‘i katta zoomda belgini yopishi; izohdagi o‘q belgilari emoji-skanerga tushishi.
+
+**Ma’lum cheklovlar**
+- Belgini rejaga qo‘yish va tahrirlash — PHASE 6.
+- 50% zoomda (12 px) eng mayda belgilar faqat shaklidan taniladi; rejada belgi o‘lchami zoom’dan qat’i nazar o‘qiladigan chegarada ushlanadi.
 
 ## Phase 4 — 2026-11-03
 

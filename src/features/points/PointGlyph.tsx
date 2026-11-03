@@ -5,20 +5,22 @@ import type { ElectricalPoint } from '@/domain/types';
 import { SYMBOLS } from '@/features/symbols/catalog';
 
 interface PointGlyphProps {
-  point: ElectricalPoint;
+  point: Pick<ElectricalPoint, 'x' | 'y' | 'symbolId' | 'color'>;
   /** badge edge in world units */
   size: number;
   rotation: number;
+  /** placement preview is drawn semi-transparent */
+  opacity?: number;
 }
 
 /** Konva rendering of an electrical point, from the same glyph data as SymbolIcon. */
-export function PointGlyph({ point, size, rotation }: PointGlyphProps) {
+export function PointGlyph({ point, size, rotation, opacity = 1 }: PointGlyphProps) {
   const def = SYMBOLS[point.symbolId];
   const color = point.color || def.defaultColor;
   if (def.badge === 'outline') {
     const s = size * 1.3;
     return (
-      <Group x={point.x} y={point.y} listening={false}>
+      <Group x={point.x} y={point.y} opacity={opacity} listening={false}>
         <Group x={-s / 2} y={-s / 2} scaleX={s / 24} scaleY={s / 24}>
           {def.glyph.map((g, i) => (
             <Path
@@ -39,7 +41,7 @@ export function PointGlyph({ point, size, rotation }: PointGlyphProps) {
   const pad = size * 0.16;
   const inner = size - pad * 2;
   return (
-    <Group x={point.x} y={point.y} rotation={rotation} listening={false}>
+    <Group x={point.x} y={point.y} rotation={rotation} opacity={opacity} listening={false}>
       <Rect
         x={-size / 2}
         y={-size / 2}
