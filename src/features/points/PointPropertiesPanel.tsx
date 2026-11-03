@@ -9,8 +9,9 @@ import { SymbolIcon } from '@/features/symbols/SymbolIcon';
 import { SYMBOL_COLORS } from '@/features/symbols/catalog';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
+import { deleteSelection } from '@/features/editor/actions';
 import { useEditorStore } from '@/store/editorStore';
-import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
+import { selectCurrentProject, useCurrentProject, useProjectStore } from '@/store/projectStore';
 
 const SWATCHES: Swatch[] = [
   { value: SYMBOL_COLORS.blue, label: uz.point.swatch.blue },
@@ -29,6 +30,7 @@ export function PointPropertiesPanel({
   showTitle?: boolean;
 }) {
   const selectedId = useEditorStore((s) => s.selectedPointId);
+  const project = useCurrentProject();
   const point = useProjectStore(
     (s) => selectCurrentProject(s)?.points.find((p) => p.id === selectedId && p.deletedAt === null) ?? null,
   );
@@ -70,12 +72,17 @@ export function PointPropertiesPanel({
             <ColorSwatches swatches={SWATCHES} value={point.color} />
           </div>
           <div className="grid grid-cols-2 gap-2.5 pt-3 lg:pt-5">
-            <NextPhase className="flex">
-              <Button variant="danger" disabled className="h-11 w-full px-2 lg:h-[54px]">
-                <Trash2 size={20} aria-hidden />
-                {uz.point.delete}
-              </Button>
-            </NextPhase>
+            <Button
+              variant="danger"
+              className="h-11 w-full px-2 lg:h-[54px]"
+              onClick={() => {
+                if (project) useEditorStore.getState().select(project, [{ kind: 'point', id: point.id }]);
+                deleteSelection();
+              }}
+            >
+              <Trash2 size={20} aria-hidden />
+              {uz.point.delete}
+            </Button>
             <NextPhase className="flex">
               <Button disabled className="h-11 w-full px-2 lg:h-[54px]">
                 <Copy size={20} aria-hidden />

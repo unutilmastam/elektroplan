@@ -5,7 +5,7 @@
 | 0 | Arxitektura va hujjatlar | ✅ Tayyor |
 | 1 | Poydevor + dashboard dizayni | ✅ Tayyor |
 | 2 | Loyiha boshqaruvi | ✅ Tayyor |
-| 3 | Chizma dvigateli | — |
+| 3 | Chizma dvigateli | ✅ Tayyor (tasdiq kutilmoqda) |
 | 4 | Xonalar va devorlar | — |
 | 5 | SVG belgilar | — |
 | 6 | Nuqtalarni joylashtirish | — |
@@ -16,6 +16,34 @@
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 3 — 2026-11-03
+
+**Bajarildi**
+- `domain/geometry.ts`: ekran ↔ dunyo koordinatalari, pan, ikki barmoqli pinch (barmoq ostidagi nuqta joyida qoladi), g‘ildirak turi (sichqoncha → kursorga zoom, trackpad pinch → zoom, trackpad scroll → pan), grid va 0/45/90° burchakka yopishtirish, kesmaga proyeksiya/masofa, ko‘pburchak ichidami, to‘rtburchak.
+- `domain/history.ts`: immer patch’lari bilan undo/redo, bitta sudrash = bitta qadam (coalesce), 200 qadam chegarasi, yangi amal redo’ni tozalaydi.
+- `domain/selection.ts`: hit-test (nuqta → devor → xona), ramka bilan tanlash, Shift/Ctrl, panel fokusi. `domain/editing.ts`: o‘chirish (xona → nuqtalari va faqat o‘ziga tegishli devorlar; umumiy devor qo‘shniga qoladi; devor → undagi nuqtalar), siljitish (devordagi nuqta devor bo‘ylab sirpanadi, shift saqlanadi; xonalar faqat yopiq guruh bo‘lsa butunlay siljiydi, grid’ga yopishadi).
+- Asboblar (pointer holat mashinalari): Tanlash (V), Ramka tanlash (M), Siljitish (H). Bo‘sh joyni sudrash = pan. Tanlov barmoq ko‘tarilganda yoki sudrash boshlanganda hal qilinadi — ikkinchi barmoq (pinch) yoki uzoq bosish tanlovni buzmaydi.
+- `GestureRouter`: ikki barmoq pinch/pan, o‘rta tugma va Space+drag pan, kaftni rad etish (Pencil bosilganda barmoq e’tiborsiz), uzoq bosish 500 ms → kontekst menyu (Xususiyatlar / Nusxa — Phase 6 / O‘chirish), o‘ng tugma → shu menyu. Harakatlar `requestAnimationFrame` bilan guruhlanadi (120 Hz iPad).
+- Klaviatura: ⌘/Ctrl+Z, ⇧⌘Z / Ctrl+Shift+Z / Ctrl+Y, ⌫/Delete, Esc, ⌘/Ctrl+A, V/M/H, +/−, 0 (ekranga sig‘dirish).
+- Canvas: reja qatlami memo (pan paytida qayta chizilmaydi), tanlash/ramka overlay qatlami; o‘lcham o‘zgarsa (aylantirish, Split View) ko‘rinish markazi saqlanadi.
+- Toolbar’dagi barcha tugmalar endi ishlaydi; nuqta panelidagi “O‘chirish” ishlaydi. Devor bosilsa — “Devor ko‘rinishi” shu devorni ko‘rsatadi.
+- Sozlamalar sahifasi: “Faqat Pencil bilan chizish” (qurilmada IndexedDB `meta.deviceSettings` da saqlanadi): yoqilsa bitta barmoq faqat tanlaydi va suradi, obyektni siljitmaydi.
+- Reja ichidagi o‘zgarishlar 400 ms dan keyin IndexedDB’ga yoziladi, ilova fonga o‘tganda/yopilganda darhol (`pagehide`/`visibilitychange`). Loyiha darajasidagi amallardan oldin ham kutilayotgan yozuv yakunlanadi.
+
+**Test qilindi**
+- `pnpm typecheck`, `pnpm lint`, `pnpm test` — 93 test (geometriya, tarix, tanlash/tahrir, asboblar, gest router — fake timer bilan uzoq bosish, kaft, pinch).
+- `pnpm test:e2e` — 20 ssenariy × 6 profil: 115 o‘tdi, 5 ataylab o‘tkazildi (telefonda ✎ yo‘q; <1024 da nuqta paneli yashirin — o‘sha o‘chirish kontekst menyu testida). Test loyihasi IndexedDB’ga yozib ochiladi (zod o‘qish yo‘li ham tekshiriladi): tanlash, devor bo‘ylab sudrash, undo/redo, yangilashdan keyin saqlanish, ramka + Delete + Ctrl+Z/Ctrl+Shift+Z, o‘ng tugma menyusi, zoom tugmalari/fit/pan, CDP orqali ikki barmoqli pinch, Pencil sozlamasi saqlanishi.
+- Qo‘lda (Playwright skrinshot, `docs/screenshots/phase-3/`): iPad landshaft — sichqoncha, ramka, g‘ildirak, o‘ng tugma; sensor — pinch, uzoq bosish; iPhone/iPad portret — menyu → Xususiyatlar (telefonda pastki panel, planshetda slide-over).
+- Phase 1–2 qayta tekshirildi (shu e2e to‘plamida): sahifalar, nav, loyiha CRUD, demo.
+- Topilib tuzatilgan: canvas o‘lchami effektidagi cheksiz qayta-render; barmoq ko‘tarilganda sun’iy click menyuni yopib qo‘yishi; pinch boshida birinchi barmoq tanlovni o‘zgartirishi.
+
+**Ma’lum cheklovlar**
+- Haqiqiy iPad/Apple Pencil’da 60 fps va kaft rad etishni bu muhitda o‘lchab bo‘lmadi (Chromium emulyatsiyasi). Iltimos, iPad’da tekshirib ko‘ring.
+- Pencil hover oldindan ko‘rsatish — Phase 4 (devor/burchakka yopishish bilan birga).
+- Bitta xonani umumiy devorlardan ajratib siljitish, devorni siljitish/bo‘lish — Phase 4. Nuqtani boshqa devorga ko‘chirish — Phase 6.
+- Undo tarixi faqat xotirada (sahifa yangilansa tozalanadi).
+- Nusxa (kontekst menyu, panel) — Phase 6.
 
 ## Phase 2 — 2026-11-03
 
