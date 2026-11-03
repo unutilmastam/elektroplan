@@ -4,7 +4,7 @@ import { GlassPanel } from '@/components/layout/GlassPanel';
 import { PlanCanvas } from '@/features/editor/canvas/PlanCanvas';
 import { SymbolBar } from '@/features/editor/toolbar/SymbolBar';
 import { ProgressCard } from '@/features/installation/ProgressCard';
-import { PointPropertiesPanel } from '@/features/points/PointPropertiesPanel';
+import { PropertiesPanel } from '@/features/editor/panels/PropertiesPanel';
 import { ProjectHeader } from '@/features/projects/ProjectHeader';
 import { RoomList } from '@/features/rooms/RoomList';
 import { WallViewPanel } from '@/features/wall-view/WallViewPanel';
@@ -38,7 +38,7 @@ export function Workspace({ mode }: { mode: WorkspaceMode }) {
         <PointSlideOver />
       </div>
       <GlassPanel as="aside" className="hidden min-h-0 md:block">
-        <PointPropertiesPanel />
+        <PropertiesPanel />
       </GlassPanel>
       <div className="hidden min-h-0 gap-2.5 md:grid md:grid-cols-[250px_minmax(0,1fr)] lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-3.5">
         <GlassPanel className="min-h-0">

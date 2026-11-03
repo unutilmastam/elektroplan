@@ -38,6 +38,15 @@ function fakeCtx(movable = true) {
     moveTo: (d) => void moves.push(d),
     endMove: () => void log.push('endMove'),
     panBy: (dx, dy) => void (pan = { x: pan.x + dx, y: pan.y + dy }),
+    doubleTap: (h) => void log.push(`double:${h.id}`),
+    snap: (p) => p.world,
+    px: (n) => n,
+    setDraft: () => undefined,
+    setHover: () => undefined,
+    createRoom: () => undefined,
+    createWall: () => undefined,
+    commitSketch: () => undefined,
+    placeOpening: () => undefined,
   };
   return { ctx, log, moves, sel: () => selection, marquee: () => marquee, pan: () => pan };
 }

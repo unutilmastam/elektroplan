@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import {
-  captureMoveOrigin,
-  deleteSelectionRecipe,
-  isEmptyMove,
-  movableRoomIds,
-  moveRecipe,
-} from '@/domain/editing';
+import { captureMoveOrigin, isEmptyMove, movableRoomIds, moveRecipe } from '@/domain/editing';
 import { applyRecipe, emptyHistory, record, undo } from '@/domain/history';
+import { deleteSelection, topologyRecipe } from '@/domain/rooms';
 import {
   entitiesInRect,
   hitTest,
@@ -46,6 +41,15 @@ describe('selection helpers', () => {
     expect(hitTest(project, { x: -500, y: -500 }, opts)).toBeNull();
   });
 
+  it('a press exactly on a wall wins over a room label drawn over it', () => {
+    const wall = project.walls.find((w) => w.id === tvSocket.wallId)!;
+    const onWall = { x: wall.a.x, y: (wall.a.y + wall.b.y) / 2 };
+    // a huge label size makes the Zal label cover its own west wall
+    expect(hitTest(project, onWall, { ...opts, labelSize: 400 })).toEqual({ kind: 'wall', id: wall.id });
+    const c = { x: zal.vertices[0]!.x + 200, y: zal.vertices[0]!.y + 100 };
+    expect(hitTest(project, c, { ...opts, labelSize: 400 })).toMatchObject({ kind: 'room', part: 'label' });
+  });
+
   it('selects everything inside a marquee', () => {
     const all = selectAll(project);
     expect(all.filter((r) => r.kind === 'room')).toHaveLength(6);
@@ -83,42 +87,38 @@ describe('selection helpers', () => {
   });
 });
 
-describe('delete (undoable)', () => {
-  it('deletes a point and undo restores it', () => {
-    const { next, entry } = applyRecipe(
-      project,
-      'delete',
-      deleteSelectionRecipe([{ kind: 'point', id: tvSocket.id }], T),
-    );
+describe('delete (undoable, topology-aware)', () => {
+  let n = 0;
+  const opts = { makeId: () => `new-${++n}`, now: T };
+  const del = (sel: Parameters<typeof deleteSelection>[1]) => deleteSelection(project, sel, opts);
+
+  it('deletes a point and undo restores it exactly', () => {
+    const r = del([{ kind: 'point', id: tvSocket.id }]);
+    const { next, entry } = applyRecipe(project, 'delete', topologyRecipe(r.project));
     expect(next.points.find((p) => p.id === tvSocket.id)!.deletedAt).toBe(T);
     expect(liveSelection(next, [{ kind: 'point', id: tvSocket.id }])).toEqual([]);
-    const back = undo(next, record(emptyHistory(), entry!))!;
-    expect(back.state).toEqual(project);
+    expect(entry!.patches.length).toBeLessThan(5); // element-wise patches, not whole arrays
+    expect(undo(next, record(emptyHistory(), entry!))!.state).toEqual(project);
   });
 
-  it('deleting a room removes its points and private walls, keeps shared walls for the neighbour', () => {
-    const { next } = applyRecipe(project, 'delete', deleteSelectionRecipe([{ kind: 'room', id: zal.id }], T));
+  it('deleting a room removes its points and private walls; shared walls stay for the neighbour', () => {
+    const { project: next } = del([{ kind: 'room', id: zal.id }]);
     expect(next.rooms.find((r) => r.id === zal.id)!.deletedAt).toBe(T);
     expect(next.points.filter((p) => p.roomId === zal.id).every((p) => p.deletedAt === T)).toBe(true);
-    for (const w of next.walls.filter((x) =>
-      project.walls.find((o) => o.id === x.id)!.roomIds.includes(zal.id),
-    )) {
-      const before = project.walls.find((o) => o.id === w.id)!;
-      if (before.roomIds.length === 1) expect(w.deletedAt).toBe(T);
-      else {
-        expect(w.deletedAt).toBeNull();
-        expect(w.roomIds).not.toContain(zal.id);
-      }
-    }
-    expect(next.openings.every((o) => next.walls.find((w) => w.id === o.wallId)!.deletedAt === null)).toBe(
-      true,
-    );
+    const liveWalls = next.walls.filter((w) => w.deletedAt === null);
+    expect(liveWalls.some((w) => w.roomIds.includes(zal.id))).toBe(false);
+    const yotoq = project.rooms.find((r) => r.name === 'Yotoqxona')!;
+    const shared = project.walls.find((w) => w.roomIds.includes(zal.id) && w.roomIds.includes(yotoq.id))!;
+    expect(next.walls.find((w) => w.id === shared.id)!.deletedAt).toBeNull();
   });
 
-  it('deleting a wall removes the points on it', () => {
-    const wallId = tvSocket.wallId!;
-    const { next } = applyRecipe(project, 'delete', deleteSelectionRecipe([{ kind: 'wall', id: wallId }], T));
-    expect(next.points.filter((p) => p.wallId === wallId).every((p) => p.deletedAt === T)).toBe(true);
+  it('an outer wall cannot be deleted alone; a door can', () => {
+    const r = del([{ kind: 'wall', id: tvSocket.wallId! }]);
+    expect(r.refused).toBe('exterior');
+    const door = project.openings[project.openings.length - 1]!;
+    expect(del([{ kind: 'opening', id: door.id }]).project.openings).toHaveLength(
+      project.openings.length - 1,
+    );
   });
 });
 

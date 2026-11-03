@@ -112,3 +112,28 @@ describe('hit primitives', () => {
     expect(rectContains(r, { x: 11, y: 5 })).toBe(false);
   });
 });
+
+describe('labelAnchor', () => {
+  it('uses the centroid for convex rooms and a deep inside point for L shapes', async () => {
+    const { labelAnchor, pointInPolygon, distanceToSegment } = await import('@/domain/geometry');
+    const sq = [
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+      { x: 0, y: 100 },
+    ];
+    expect(labelAnchor(sq)).toEqual({ x: 50, y: 50 });
+    const L = [
+      { x: 0, y: 0 },
+      { x: 300, y: 0 },
+      { x: 300, y: 60 },
+      { x: 60, y: 60 },
+      { x: 60, y: 300 },
+      { x: 0, y: 300 },
+    ];
+    const a = labelAnchor(L);
+    expect(pointInPolygon(a, L)).toBe(true);
+    const d = Math.min(...L.map((p, i) => distanceToSegment(a, p, L[(i + 1) % L.length]!)));
+    expect(d).toBeGreaterThan(20);
+  });
+});

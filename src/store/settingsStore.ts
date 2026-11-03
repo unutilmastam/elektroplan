@@ -7,6 +7,7 @@ const KEY = 'deviceSettings';
 interface SettingsState extends DeviceSettings {
   loaded: boolean;
   load: () => Promise<void>;
+  update: (patch: Partial<DeviceSettings>) => Promise<void>;
   setPenOnly: (v: boolean) => Promise<void>;
 }
 
@@ -24,12 +25,14 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
       set({ loaded: true });
     }
   },
-  setPenOnly: async (penOnly) => {
-    set({ penOnly });
+  update: async (patch) => {
+    set(patch);
+    const { penOnly, autoStraighten } = get();
     try {
-      await setMeta(KEY, { penOnly: get().penOnly } satisfies DeviceSettings);
+      await setMeta(KEY, { penOnly, autoStraighten } satisfies DeviceSettings);
     } catch {
       // preference stays for this session
     }
   },
+  setPenOnly: (penOnly) => get().update({ penOnly }),
 }));

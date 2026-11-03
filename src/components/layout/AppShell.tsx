@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { ProjectDialogs } from '@/features/projects/ProjectDialogs';
 import { MobileNav } from './MobileNav';
+import { NoticeToast } from './NoticeToast';
 import { SaveErrorBanner } from './SaveErrorBanner';
 import { Sidebar } from './Sidebar';
 
@@ -18,6 +19,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <MobileNav />
       <ProjectDialogs />
       <SaveErrorBanner />
+      <NoticeToast />
     </div>
   );
 }

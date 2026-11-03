@@ -41,6 +41,8 @@ export interface RouterDeps {
   /** true while Space is held (temporary pan) */
   spaceHeld: () => boolean;
   onLongPress: (screen: Vec2, world: Vec2, kind: PointerKind) => void;
+  /** mouse / Pencil moving without pressing (snap preview) */
+  onHover?: (p: ToolPointer) => void;
   setTimer: (fn: () => void, ms: number) => unknown;
   clearTimer: (h: unknown) => void;
 }
@@ -141,7 +143,10 @@ export class GestureRouter {
 
   move(e: RawPointer): void {
     const ptr = this.pointers.get(e.pointerId);
-    if (!ptr) return;
+    if (!ptr) {
+      if (e.pointerType !== 'touch' && this.gesture.kind === 'none') this.deps.onHover?.(this.toolPointer(e));
+      return;
+    }
     ptr.p = { x: e.x, y: e.y };
     const g = this.gesture;
     if (g.kind === 'pinch') {

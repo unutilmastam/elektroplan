@@ -17,7 +17,7 @@ interface ColorSwatchesProps {
 /** Round colour picker (Rang). */
 export function ColorSwatches({ swatches, value, onChange = null }: ColorSwatchesProps) {
   return (
-    <div role="radiogroup" className="flex items-center gap-[11px]">
+    <div role="radiogroup" className="flex flex-wrap items-center gap-[11px] p-[3px]">
       {swatches.map((s) => {
         const active = value?.toLowerCase() === s.value.toLowerCase();
         return (

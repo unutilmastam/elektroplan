@@ -59,6 +59,18 @@ export const uz = {
     zoomIn: 'Kattalashtirish',
     zoomOut: 'Kichiklashtirish',
     fit: 'Ekranga sig‘dirish',
+    draw: 'Chizish asboblari',
+    roomRect: 'To‘rtburchak xona',
+    roomSquare: 'Kvadrat xona',
+    roomPolygon: 'Erkin xona',
+    sketch: 'Qo‘lda chizish',
+    wall: 'Devor',
+    door: 'Eshik',
+    window: 'Deraza',
+    finish: 'Yopish',
+    removeLast: 'Oxirgisini o‘chirish',
+    cancel: 'Bekor',
+    polygonHint: 'Burchaklarni bosing, birinchi nuqtani bosib yoping',
   },
   canvas: {
     label: 'Uy rejasi',
@@ -67,7 +79,8 @@ export const uz = {
     duplicate: 'Nusxa',
     delete: 'O‘chirish',
     emptyTitle: 'Reja hali bo‘sh',
-    emptyHint: 'Xona chizish asboblari keyingi bosqichda qo‘shiladi',
+    emptyHint:
+      'Chap paneldagi chizish asbobini tanlang — xonani sudrab yoki qo‘lda chizing. O‘lcham kerak emas.',
   },
   point: {
     panelTitle: 'Tanlangan nuqta',
@@ -91,6 +104,36 @@ export const uz = {
     },
     openPanel: 'Nuqta xususiyatlari',
     closePanel: 'Yopish',
+  },
+  walls: {
+    cannotDeleteExterior:
+      'Xonaning tashqi devorini alohida o‘chirib bo‘lmaydi — xonani o‘chiring yoki devorni suring.',
+    cannotMerge: 'Bu ikki xona bir nechta devor bilan tutashgan — avval ortiqcha devorlarni bo‘ling.',
+    panelTitle: 'Tanlangan devor',
+    split: 'Devorni bo‘lish',
+    splitShort: 'Bo‘lish',
+    delete: 'O‘chirish',
+    shared: 'Umumiy devor',
+    free: 'Alohida devor',
+    moveHint: 'Devorni surish uchun uni sudrang — bog‘liq xonalar ham o‘zgaradi.',
+  },
+  opening: {
+    door: 'Eshik',
+    window: 'Deraza',
+    delete: 'O‘chirish',
+    moveHint: 'Devor bo‘ylab sudrab joyini o‘zgartiring.',
+    placeHint: 'Eshik yoki derazani devor ustiga bosib qo‘ying.',
+    panelTitle: 'Tanlangan teshik',
+  },
+  room: {
+    panelTitle: 'Tanlangan xona',
+    name: 'Nomi',
+    color: 'Rang',
+    duplicate: 'Nusxa',
+    delete: 'O‘chirish',
+    defaultName: 'Xona',
+    points: 'nuqta',
+    colorNames: ['Standart', 'Ko‘k', 'Yashil', 'To‘q sariq', 'Binafsha', 'Moviy', 'Qizil'],
   },
   rooms: {
     title: 'Xonalar ro‘yxati',
@@ -124,7 +167,7 @@ export const uz = {
     online: 'Onlayn',
   },
   mobile: {
-    tabs: { point: 'Nuqta', rooms: 'Xonalar', wall: 'Devor', status: 'Holat' },
+    tabs: { point: 'Tanlangan', rooms: 'Xonalar', wall: 'Devor', status: 'Holat' },
     sheet: 'Panellar',
     expand: 'Panelni ochish',
     collapse: 'Panelni yig‘ish',
@@ -207,6 +250,9 @@ export const uz = {
     penOnly: 'Faqat Pencil bilan chizish',
     penOnlyHint:
       'Yoqilsa: Apple Pencil (stilus) chizadi, bitta barmoq faqat tanlaydi va rejani suradi. Ikki barmoq har doim kattalashtiradi.',
+    autoStraighten: 'Qo‘lda chizilgan shaklni avtomatik tekislash',
+    autoStraightenHint:
+      'Qiyshiq chizilgan xona to‘g‘ri burchakli toza shaklga aylanadi. Bir marta “Bekor qilish” asl chizmani qaytaradi.',
     more: 'Boshqa sozlamalar keyingi bosqichlarda qo‘shiladi.',
   },
   generic: {

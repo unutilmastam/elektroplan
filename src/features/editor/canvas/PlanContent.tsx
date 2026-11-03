@@ -2,10 +2,11 @@
 
 import { memo } from 'react';
 import { Line, Text } from 'react-konva';
-import { polygonCentroid } from '@/domain/geometry';
+import { labelAnchor } from '@/domain/geometry';
 import type { Project, Wall } from '@/domain/types';
 import { PointGlyph } from '@/features/points/PointGlyph';
 import { SYMBOLS } from '@/features/symbols/catalog';
+import { DEFAULT_ROOM_COLOR } from '@/domain/rooms';
 import { POINT_BADGE } from './decoration';
 import { WallsLayerContent } from './WallsLayer';
 
@@ -37,14 +38,14 @@ export const PlanContent = memo(function PlanContent({ project, k, fontFamily }:
           points={r.vertices.flatMap((v) => [v.x, v.y])}
           closed
           fill={r.color}
-          opacity={0.55}
+          opacity={r.color === DEFAULT_ROOM_COLOR ? 0.55 : 0.16}
           perfectDrawEnabled={false}
           listening={false}
         />
       ))}
       <WallsLayerContent walls={walls} openings={project.openings} />
       {rooms.map((r) => {
-        const c = polygonCentroid(r.vertices);
+        const c = labelAnchor(r.vertices);
         const fs = 19 * k;
         const w = 220 * k;
         return (

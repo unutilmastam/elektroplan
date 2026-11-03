@@ -1,10 +1,28 @@
 import { create } from 'zustand';
-import type { Bounds, Viewport } from '@/domain/geometry';
+import type { Bounds, Vec2, Viewport } from '@/domain/geometry';
 import { focusForSelection } from '@/domain/selectors';
 import type { PanelFocus, Selection } from '@/domain/selection';
 import type { Project, SymbolId } from '@/domain/types';
 
-export type ToolId = 'select' | 'marquee' | 'pan';
+export type DrawToolId = 'room-rect' | 'room-square' | 'room-polygon' | 'sketch' | 'wall' | 'door' | 'window';
+export type ToolId = 'select' | 'marquee' | 'pan' | DrawToolId;
+export const DRAW_TOOLS: DrawToolId[] = [
+  'room-rect',
+  'room-square',
+  'room-polygon',
+  'sketch',
+  'wall',
+  'door',
+  'window',
+];
+export const isDrawTool = (t: ToolId): t is DrawToolId => (DRAW_TOOLS as string[]).includes(t);
+
+/** In-progress drawing shown on the canvas (world units). */
+export type DraftShape =
+  | { kind: 'rect'; a: Vec2; b: Vec2 }
+  | { kind: 'polygon'; points: Vec2[]; cursor: Vec2 | null; closable: boolean }
+  | { kind: 'wall'; a: Vec2; b: Vec2 }
+  | { kind: 'stroke'; points: Vec2[] };
 
 export interface ContextMenuState {
   /** screen position relative to the canvas */
@@ -26,6 +44,13 @@ interface EditorState {
   /** live marquee rectangle in world units while dragging */
   marquee: Bounds | null;
   contextMenu: ContextMenuState | null;
+  draft: DraftShape | null;
+  /** snapped position under the Pencil / mouse before touching (hover) */
+  hover: Vec2 | null;
+  /** last draw tool, shown on the toolbar's draw button */
+  lastDrawTool: DrawToolId;
+  setDraft: (d: DraftShape | null) => void;
+  setHover: (p: Vec2 | null) => void;
   canvasSize: { width: number; height: number };
   setCanvasSize: (w: number, h: number) => void;
   setTool: (t: ToolId) => void;
@@ -52,12 +77,24 @@ export const useEditorStore = create<EditorState>()((set) => ({
   selectedWallId: null,
   marquee: null,
   contextMenu: null,
+  draft: null,
+  hover: null,
+  lastDrawTool: 'room-rect',
+  setDraft: (draft) => set({ draft }),
+  setHover: (hover) => set((s) => (s.hover === hover ? s : { hover })),
   canvasSize: { width: 0, height: 0 },
   setCanvasSize: (width, height) =>
     set((s) =>
       s.canvasSize.width === width && s.canvasSize.height === height ? s : { canvasSize: { width, height } },
     ),
-  setTool: (tool) => set({ tool, marquee: null }),
+  setTool: (tool) =>
+    set((s) => ({
+      tool,
+      marquee: null,
+      draft: null,
+      hover: null,
+      lastDrawTool: isDrawTool(tool) ? tool : s.lastDrawTool,
+    })),
   setActiveSymbol: (id) => set({ activeSymbolId: id }),
   setViewport: (viewport) => set({ viewport }),
   requestFit: () => set((s) => ({ fitRequest: s.fitRequest + 1 })),

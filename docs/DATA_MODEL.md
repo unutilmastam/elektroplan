@@ -74,6 +74,16 @@ export interface ElectricalPoint {
   createdAt: string; updatedAt: string; deletedAt: string | null;
 }
 
+/** Door / window: a visual gap in a wall (not CAD). Added in Phase 4. */
+export interface Opening {
+  id: UUID;
+  wallId: UUID;
+  kind: 'door' | 'window';
+  t: number;          // centre along the wall, 0..1
+  width: number;      // plan units
+  swing: 1 | -1;      // side the door leaf opens to
+}
+
 export interface ProjectSettings {
   gridSize: number;
   snapToGrid: boolean;
@@ -121,6 +131,16 @@ Database `elektroplan`, version 1:
 |---|---|---|
 | `projects` | `id` | full `Project` snapshot (validated by zod on read) |
 | `outbox` | auto | `{ projectId, baseRevision, ops: Patch[], createdAt }` |
-| `meta` | key | `lastOpenedProjectId`, `lastSyncAt`, schema version, `persistGranted`, `iosInstallHintShown` |
+| `meta` | key | `lastOpenedProjectId`, `deviceSettings` (`penOnly`, `autoStraighten`), `lastSyncAt`, schema version, `persistGranted`, `iosInstallHintShown` |
 
 Migrations are version-gated in `db.ts` `upgrade()`.
+
+## 5. Wall topology (Phase 4)
+
+Walls are **derived** from room outlines plus free walls (`domain/topology.ts › reconcile`):
+- every T-junction vertex is inserted into the room edges it lies on (`normalizeRooms`);
+- one wall per segment; a segment used by two rooms is one shared wall (`roomIds` = both);
+- existing wall ids are kept (the longest piece of a split wall keeps its id); walls no longer backed by a room are soft-deleted;
+- points and openings are re-attached by geometry (`wallId`, `t`), keeping their distance from the wall.
+
+> MySQL: `openings` will get its own table in Phase 12 (sync). Until then it lives in the IndexedDB project snapshot.

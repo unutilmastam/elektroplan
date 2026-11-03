@@ -1,7 +1,8 @@
 'use client';
 
 import { Eye, House, List } from 'lucide-react';
-import { NextPhase } from '@/components/common/Hint';
+import { focusRoom } from '@/features/editor/actions';
+import { DEFAULT_ROOM_COLOR } from '@/domain/rooms';
 import { selectRoomStats } from '@/domain/selectors';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
@@ -49,7 +50,13 @@ export function RoomList({ showTitle = true }: { showTitle?: boolean }) {
                 >
                   <House
                     size={21}
-                    fill={active ? '#3b8bff' : ICON_COLORS[i % ICON_COLORS.length]}
+                    fill={
+                      active
+                        ? '#3b8bff'
+                        : room.color !== DEFAULT_ROOM_COLOR
+                          ? room.color
+                          : ICON_COLORS[i % ICON_COLORS.length]
+                    }
                     className={active ? 'text-white' : 'text-[#0b1322]'}
                     strokeWidth={1.6}
                     aria-hidden
@@ -64,19 +71,18 @@ export function RoomList({ showTitle = true }: { showTitle?: boolean }) {
                     {pointCount} {uz.rooms.points}
                   </span>
                 </button>
-                <NextPhase className="flex shrink-0">
-                  <button
-                    type="button"
-                    disabled
-                    aria-label={uz.rooms.focus}
-                    className={cn(
-                      'flex h-[38px] w-11 items-center justify-center disabled:cursor-not-allowed',
-                      active ? 'text-white' : 'text-text-muted',
-                    )}
-                  >
-                    <Eye size={20} aria-hidden />
-                  </button>
-                </NextPhase>
+                <button
+                  type="button"
+                  onClick={() => focusRoom(room.id)}
+                  aria-label={`${uz.rooms.focus}: ${room.name}`}
+                  title={uz.rooms.focus}
+                  className={cn(
+                    'flex h-[38px] w-11 shrink-0 items-center justify-center rounded-[10px] hover:bg-white/[0.08]',
+                    active ? 'text-white' : 'text-text-muted',
+                  )}
+                >
+                  <Eye size={20} aria-hidden />
+                </button>
               </li>
             );
           })}

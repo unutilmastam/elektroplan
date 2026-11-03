@@ -18,6 +18,7 @@ import { cn } from '@/lib/cn';
 import { useEditorStore } from '@/store/editorStore';
 import { useProjectStore } from '@/store/projectStore';
 import { redo, undo, zoomBy } from '../actions';
+import { DrawToolsMenu } from './DrawToolsMenu';
 
 interface ToolProps {
   icon: LucideIcon;
@@ -29,6 +30,10 @@ interface ToolProps {
   toggle?: boolean;
   fillIcon?: boolean;
 }
+
+/** Shared size of toolbar buttons (compact on iPad landscape so 9 buttons fit). */
+export const BTN =
+  'flex h-9 w-9 items-center justify-center rounded-[10px] transition-colors duration-150 disabled:cursor-not-allowed sm:h-10 sm:w-11 md:h-[40px] md:w-[48px] lg:h-[50px] lg:w-[56px]';
 
 function ToolButton({
   icon: Icon,
@@ -47,13 +52,13 @@ function ToolButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        'flex h-9 w-9 items-center justify-center rounded-[10px] transition-colors duration-150 disabled:cursor-not-allowed sm:h-10 sm:w-11 md:h-10 md:w-[48px] lg:h-[54px] lg:w-[58px]',
+        BTN,
         active ? 'bg-primary/25 text-white' : 'text-text hover:bg-white/[0.07]',
         disabled && 'text-text/40',
       )}
     >
       <Icon
-        className="h-5 w-5 sm:h-[22px] sm:w-[22px] lg:h-[27px] lg:w-[27px]"
+        className="h-5 w-5 sm:h-[22px] sm:w-[22px] lg:h-[26px] lg:w-[26px]"
         strokeWidth={1.9}
         fill={fillIcon ? 'currentColor' : 'none'}
         aria-hidden
@@ -98,8 +103,6 @@ export function DrawingToolbar() {
           toggle
           fillIcon
         />
-      </Group>
-      <Group>
         <ToolButton
           icon={BoxSelect}
           label={`${uz.tools.marquee} (M)`}
@@ -109,6 +112,7 @@ export function DrawingToolbar() {
         />
       </Group>
       <Group>
+        <DrawToolsMenu buttonClass={BTN} />
         <ToolButton
           icon={Move}
           label={`${uz.tools.pan} (H)`}

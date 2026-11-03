@@ -1,5 +1,5 @@
 import { distance, type Vec2 } from '@/domain/geometry';
-import { hasRef, mergeSelection, toggleRef, type EntityRef } from '@/domain/selection';
+import { hasRef, mergeSelection, plainRef, sameRef, toggleRef, type EntityRef } from '@/domain/selection';
 import { dragSlop, type Tool, type ToolContext, type ToolPointer } from './types';
 
 type Mode =
@@ -20,6 +20,7 @@ export interface SelectToolOptions {
  */
 export function createSelectTool(ctx: ToolContext, opts: SelectToolOptions = { allowMove: true }): Tool {
   let mode: Mode = { kind: 'idle' };
+  let lastTap: { at: number; ref: EntityRef } | null = null;
 
   return {
     onDown(p) {
@@ -41,8 +42,8 @@ export function createSelectTool(ctx: ToolContext, opts: SelectToolOptions = { a
             mode = { kind: 'panning', last: p.screen };
             return;
           }
-          if (opts.allowMove && !hasRef(ctx.selection(), mode.hit)) ctx.select([mode.hit]);
-          if (opts.allowMove && ctx.beginMove()) {
+          if (opts.allowMove && !hasRef(ctx.selection(), mode.hit)) ctx.select([plainRef(mode.hit)]);
+          if (opts.allowMove && ctx.beginMove(mode.hit)) {
             mode = { kind: 'moving', start: mode.start };
             ctx.moveTo({ x: p.world.x - mode.start.world.x, y: p.world.y - mode.start.world.y });
           } else mode = { kind: 'panning', last: p.screen };
@@ -68,9 +69,15 @@ export function createSelectTool(ctx: ToolContext, opts: SelectToolOptions = { a
       if (mode.kind === 'pressEntity') {
         const sel = ctx.selection();
         const { hit, start } = mode;
-        if (start.toggle) ctx.select(toggleRef(sel, hit));
-        else if (start.shift) ctx.select(mergeSelection(sel, [hit]));
-        else ctx.select([hit]);
+        const ref = plainRef(hit);
+        if (start.toggle) ctx.select(toggleRef(sel, ref));
+        else if (start.shift) ctx.select(mergeSelection(sel, [ref]));
+        else ctx.select([ref]);
+        const now = Date.now();
+        if (lastTap && now - lastTap.at < 400 && sameRef(lastTap.ref, ref)) {
+          ctx.doubleTap(hit);
+          lastTap = null;
+        } else lastTap = { at: now, ref };
       }
       if (mode.kind === 'moving') ctx.endMove();
       if (mode.kind === 'pressEmpty' && !p.shift && !p.toggle) ctx.select([]);

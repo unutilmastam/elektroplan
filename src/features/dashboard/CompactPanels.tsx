@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useUiStore } from '@/store/uiStore';
 import { GlassPanel } from '@/components/layout/GlassPanel';
 import { ProgressCard } from '@/features/installation/ProgressCard';
-import { PointPropertiesPanel } from '@/features/points/PointPropertiesPanel';
+import { PropertiesPanel } from '@/features/editor/panels/PropertiesPanel';
 import { RoomList } from '@/features/rooms/RoomList';
 import { WallViewPanel } from '@/features/wall-view/WallViewPanel';
 import { uz } from '@/i18n/uz';
@@ -72,7 +72,7 @@ export function CompactPanels() {
         </button>
       </div>
       <div className={cn('min-h-0 flex-1', open ? 'block' : 'hidden sm:block')} role="tabpanel">
-        {tab === 'point' ? <PointPropertiesPanel showTitle={false} className="sm:hidden" /> : null}
+        {tab === 'point' ? <PropertiesPanel showTitle={false} className="sm:hidden" /> : null}
         {tab === 'rooms' || tab === 'point' ? (
           <div className={cn('h-full', tab === 'point' && 'hidden sm:block')}>
             <RoomList showTitle={false} />
@@ -120,7 +120,7 @@ export function PointSlideOver() {
         >
           <X size={20} aria-hidden />
         </button>
-        <PointPropertiesPanel />
+        <PropertiesPanel />
       </GlassPanel>
     </div>
   );
