@@ -7,7 +7,7 @@
 | 2 | Loyiha boshqaruvi | ✅ Tayyor |
 | 3 | Chizma dvigateli | ✅ Tayyor |
 | 4 | Xonalar va devorlar | ✅ Tayyor |
-| 5 | SVG belgilar | ✅ Tayyor (tasdiq kutilmoqda) |
+| 5 | SVG belgilar | ✅ Tayyor |
 | 6 | Nuqtalarni joylashtirish | — |
 | 7 | Devor ko‘rinishi | — |
 | 8 | Avtosaqlash (IndexedDB) | — |
