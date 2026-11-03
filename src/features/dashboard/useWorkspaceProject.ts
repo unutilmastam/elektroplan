@@ -24,17 +24,19 @@ export function useWorkspaceProject() {
     if (useProjectStore.getState().project) return;
     let cancelled = false;
     if (DEMO_ENABLED && new URLSearchParams(window.location.search).get('demo') === '1') {
-      void import('./demoProject').then(({ buildDemoProject, DEMO_PROJECT_COUNT, DEMO_SELECTED_POINT_ID }) => {
-        if (cancelled) return;
-        const demo = buildDemoProject();
-        const zal = demo.rooms[0]?.id ?? null;
-        load(demo, DEMO_PROJECT_COUNT);
-        setSelection({
-          selectedPointId: DEMO_SELECTED_POINT_ID,
-          selectedRoomId: zal,
-          selectedWallId: zal ? pickDefaultWallId(demo, zal) : null,
-        });
-      });
+      void import('./demoProject').then(
+        ({ buildDemoProject, DEMO_PROJECT_COUNT, DEMO_SELECTED_POINT_ID }) => {
+          if (cancelled) return;
+          const demo = buildDemoProject();
+          const zal = demo.rooms[0]?.id ?? null;
+          load(demo, DEMO_PROJECT_COUNT);
+          setSelection({
+            selectedPointId: DEMO_SELECTED_POINT_ID,
+            selectedRoomId: zal,
+            selectedWallId: zal ? pickDefaultWallId(demo, zal) : null,
+          });
+        },
+      );
     } else {
       load(createEmptyProject('local-new', uz.header.newProject, new Date().toISOString()), 0);
     }
