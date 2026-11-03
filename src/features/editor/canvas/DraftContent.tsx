@@ -98,8 +98,8 @@ export function DraftContent({
             color: SYMBOLS[draft.symbolId].defaultColor,
           }}
           size={POINT_BADGE * k}
-          rotation={0}
-          opacity={0.7}
+          rotation={SYMBOLS[draft.symbolId].rotatable ? draft.rotation : 0}
+          opacity={draft.valid ? 0.75 : 0.3}
         />
       ) : null}
       {hover ? (

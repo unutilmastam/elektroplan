@@ -9,8 +9,10 @@ interface NumberFieldProps {
   label: string;
   value: number | null;
   unit?: string;
-  /** null = read-only display (editing arrives with point editing in Phase 6) */
-  onChange?: ((value: number) => void) | null;
+  /** null = read-only display; empty input reports null */
+  onChange?: ((value: number | null) => void) | null;
+  /** called when editing ends (seal the undo step) */
+  onCommit?: () => void;
   step?: number;
   min?: number;
   max?: number;
@@ -27,6 +29,7 @@ export function NumberField({
   min = 0,
   max = 10000,
   className,
+  onCommit,
 }: NumberFieldProps) {
   const id = useId();
   const readOnly = onChange === null;
@@ -43,9 +46,13 @@ export function NumberField({
           readOnly={readOnly}
           value={value ?? ''}
           onChange={(e) => {
-            const n = Number(e.target.value);
-            if (onChange && Number.isFinite(n)) onChange(clamp(n));
+            const raw = e.target.value.trim().replace(',', '.');
+            if (!onChange) return;
+            if (raw === '') return onChange(null);
+            const n = Number(raw);
+            if (Number.isFinite(n)) onChange(clamp(Math.round(n)));
           }}
+          onBlur={onCommit}
           className="tabular w-full min-w-0 bg-transparent text-base text-text outline-none"
         />
         <div className="flex flex-col text-text-muted">
@@ -53,7 +60,10 @@ export function NumberField({
             type="button"
             aria-label={uz.point.increase}
             disabled={readOnly}
-            onClick={() => onChange?.(clamp((value ?? 0) + step))}
+            onClick={() => {
+              onChange?.(clamp((value ?? 0) + step));
+              onCommit?.();
+            }}
             className="flex h-4 w-4 items-center justify-center hover:text-text disabled:cursor-not-allowed"
           >
             <ChevronUp size={13} strokeWidth={2.4} />
@@ -62,7 +72,10 @@ export function NumberField({
             type="button"
             aria-label={uz.point.decrease}
             disabled={readOnly}
-            onClick={() => onChange?.(clamp((value ?? 0) - step))}
+            onClick={() => {
+              onChange?.(clamp((value ?? 0) - step));
+              onCommit?.();
+            }}
             className="flex h-4 w-4 items-center justify-center hover:text-text disabled:cursor-not-allowed"
           >
             <ChevronDown size={13} strokeWidth={2.4} />

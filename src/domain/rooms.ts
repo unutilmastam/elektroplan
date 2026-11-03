@@ -20,6 +20,8 @@ export const ROOM_COLORS = [
 ] as const;
 export const DEFAULT_ROOM_COLOR = ROOM_COLORS[0];
 export const WALL_THICKNESS = 16;
+/** default distance of a room name above the room centre (world units) */
+export const LABEL_LIFT = 36;
 
 const live = <T extends { deletedAt: string | null }>(xs: readonly T[]) =>
   xs.filter((x) => x.deletedAt === null);
@@ -46,7 +48,8 @@ export function addRoom(
     color: info.color ?? DEFAULT_ROOM_COLOR,
     shape,
     vertices: cleanPolygon(vertices),
-    labelOffset: { x: 0, y: 0 },
+    // name sits above the centre, where a ceiling light usually goes (as in the reference)
+    labelOffset: { x: 0, y: -LABEL_LIFT },
     order,
     createdAt: opts.now,
     updatedAt: opts.now,

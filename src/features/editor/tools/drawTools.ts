@@ -182,8 +182,7 @@ export function createOpeningTool(ctx: ToolContext, kind: Opening['kind']): Tool
 /** Belgi joylashtirish: the picked symbol follows the pointer; a tap places it. */
 export function createPlaceSymbolTool(ctx: ToolContext): Tool {
   let down: ToolPointer | null = null;
-  const ghost = (p: ToolPointer) =>
-    ctx.setDraft({ kind: 'symbol', symbolId: ctx.activeSymbol(), at: p.world });
+  const ghost = (p: ToolPointer) => ctx.setDraft(ctx.symbolPreview(p));
   return {
     onDown(p) {
       down = p;

@@ -25,7 +25,7 @@ export interface ToolContext {
   /** starts dragging (`hit` = what was pressed: a label, a single wall, or the selection); false = nothing moves */
   beginMove: (hit: EntityRef) => boolean;
   /** total world delta since beginMove (one undo step per drag) */
-  moveTo: (delta: Vec2) => void;
+  moveTo: (delta: Vec2, free?: boolean) => void;
   endMove: () => void;
   /** screen-pixel pan */
   panBy: (dx: number, dy: number) => void;
@@ -45,7 +45,9 @@ export interface ToolContext {
   placeOpening: (p: ToolPointer, kind: Opening['kind']) => void;
   /** the symbol picked in the symbol bar */
   activeSymbol: () => SymbolId;
-  /** tap with the placement tool */
+  /** where the picked symbol would go (snapped to a wall / room) for the preview */
+  symbolPreview: (p: ToolPointer) => DraftShape;
+  /** tap with the placement tool (Shift = free, no wall) */
   placeSymbol: (p: ToolPointer) => void;
 }
 

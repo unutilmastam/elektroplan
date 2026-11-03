@@ -48,6 +48,13 @@ function fakeCtx(movable = true) {
     commitSketch: () => undefined,
     placeOpening: () => undefined,
     activeSymbol: () => 'socket-single',
+    symbolPreview: (p) => ({
+      kind: 'symbol',
+      symbolId: 'socket-single',
+      at: p.world,
+      rotation: 0,
+      valid: true,
+    }),
     placeSymbol: () => void log.push('place'),
   };
   return { ctx, log, moves, sel: () => selection, marquee: () => marquee, pan: () => pan };

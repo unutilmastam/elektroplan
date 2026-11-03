@@ -19,10 +19,10 @@ test('picking a symbol starts placement mode with a preview; Escape ends it', as
     .getByRole('button', { name: 'Internet' })
     .click();
   await expect(page.getByText('Internet — joylashtirish')).toBeVisible();
-  const p = await worldToPage(page, 150, 100);
+  const p = await worldToPage(page, 150, 100); // middle of a room, far from walls
   await page.mouse.move(p.x, p.y);
   await page.mouse.click(p.x, p.y);
-  await expect(page.getByText(/keyingi bosqichda \(PHASE 6\)/)).toBeVisible();
+  await expect(page.getByText(/Belgini devor yoniga bosing/)).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByText('Internet — joylashtirish')).toBeHidden();
   await expect(page.getByRole('button', { name: /^Tanlash/ })).toHaveAttribute('aria-pressed', 'true');

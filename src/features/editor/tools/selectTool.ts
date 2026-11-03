@@ -45,11 +45,11 @@ export function createSelectTool(ctx: ToolContext, opts: SelectToolOptions = { a
           if (opts.allowMove && !hasRef(ctx.selection(), mode.hit)) ctx.select([plainRef(mode.hit)]);
           if (opts.allowMove && ctx.beginMove(mode.hit)) {
             mode = { kind: 'moving', start: mode.start };
-            ctx.moveTo({ x: p.world.x - mode.start.world.x, y: p.world.y - mode.start.world.y });
+            ctx.moveTo({ x: p.world.x - mode.start.world.x, y: p.world.y - mode.start.world.y }, p.shift);
           } else mode = { kind: 'panning', last: p.screen };
           return;
         case 'moving':
-          ctx.moveTo({ x: p.world.x - mode.start.world.x, y: p.world.y - mode.start.world.y });
+          ctx.moveTo({ x: p.world.x - mode.start.world.x, y: p.world.y - mode.start.world.y }, p.shift);
           return;
         case 'pressEmpty':
           if (distance(p.screen, mode.start.screen) < dragSlop(p.pointerType)) return;
