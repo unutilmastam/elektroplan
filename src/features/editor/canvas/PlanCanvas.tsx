@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, type ReactNode } from 'react';
 import { boundsOf, fitViewport, zoomAt } from '@/domain/geometry';
 import type { Project } from '@/domain/types';
 import { pointOnWall } from '@/domain/walls';
@@ -25,7 +25,7 @@ function planBounds(project: Project) {
 }
 
 /** Canvas area: grid + plan (Konva) with the floating drawing toolbar on the left. */
-export function PlanCanvas({ project }: { project: Project | null }) {
+export function PlanCanvas({ project, overlay }: { project: Project | null; overlay?: ReactNode }) {
   const [hostRef, size] = useElementSize<HTMLDivElement>();
   const viewport = useEditorStore((s) => s.viewport);
   const setViewport = useEditorStore((s) => s.setViewport);
@@ -59,7 +59,11 @@ export function PlanCanvas({ project }: { project: Project | null }) {
           <PlanStage project={project} width={size.width} height={size.height} viewport={viewport} />
         ) : null}
       </div>
-      {empty ? (
+      {overlay ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-16 text-center">
+          {overlay}
+        </div>
+      ) : empty ? (
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1 px-16 text-center">
           <div className="text-[17px] font-medium text-text">{uz.canvas.emptyTitle}</div>
           <div className="text-[14px] text-text-muted">{uz.canvas.emptyHint}</div>

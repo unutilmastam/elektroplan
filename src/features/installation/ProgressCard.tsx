@@ -6,7 +6,7 @@ import { ProgressRing } from '@/components/common/ProgressRing';
 import { Button } from '@/components/ui/button';
 import { computeProgress } from '@/domain/progress';
 import { uz } from '@/i18n/uz';
-import { useProjectStore } from '@/store/projectStore';
+import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
 
 function Row({ dot, label, value }: { dot: string; label: string; value: number }) {
   return (
@@ -20,7 +20,7 @@ function Row({ dot, label, value }: { dot: string; label: string; value: number 
 
 /** "Loyiha holati": completion ring + counts + "Loyiha tayyor". */
 export function ProgressCard({ showTitle = true }: { showTitle?: boolean }) {
-  const points = useProjectStore((s) => s.project?.points);
+  const points = useProjectStore((s) => selectCurrentProject(s)?.points);
   const p = computeProgress(points ?? []);
   return (
     <div className="flex h-full min-h-0 flex-col px-4 pt-3 pb-3 lg:pt-4 lg:pb-4">

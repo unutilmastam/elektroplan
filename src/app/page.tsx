@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Workspace } from '@/features/dashboard/Workspace';
 
@@ -5,7 +6,9 @@ import { Workspace } from '@/features/dashboard/Workspace';
 export default function HomePage() {
   return (
     <AppShell>
-      <Workspace />
+      <Suspense>
+        <Workspace mode="home" />
+      </Suspense>
     </AppShell>
   );
 }
