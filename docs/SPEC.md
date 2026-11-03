@@ -141,6 +141,7 @@ Features:
 * Draw rectangular rooms.
 * Draw square rooms.
 * Draw freeform rooms.
+* Sketch a room with a finger or stylus, even roughly; the app automatically straightens it into a clean shape (snap angles, rectangles, closing, snapping to existing walls). Undo restores the raw sketch.
 * Add walls.
 * Delete walls.
 * Move walls.

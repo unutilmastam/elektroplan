@@ -1,0 +1,19 @@
+import type { ReactNode } from 'react';
+import { MobileNav } from './MobileNav';
+import { Sidebar } from './Sidebar';
+
+/** Fixed-viewport app frame: sidebar / rail + content + phone bottom nav. No page scroll. */
+export function AppShell({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex h-dvh w-full flex-col overflow-hidden sm:flex-row">
+      <Sidebar />
+      <main
+        className="flex min-h-0 min-w-0 flex-1 flex-col"
+        style={{ paddingTop: 'var(--safe-top)', paddingRight: 'var(--safe-right)' }}
+      >
+        {children}
+      </main>
+      <MobileNav />
+    </div>
+  );
+}
