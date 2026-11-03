@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { useEditorStore, type DrawToolId } from '@/store/editorStore';
+import { useProjectStore } from '@/store/projectStore';
 import { getActiveTool } from '../tools/registry';
 import { deleteSelection, redo, selectEverything, undo, zoomBy } from '../actions';
 
@@ -36,6 +37,11 @@ export function useKeyboardShortcuts(): () => boolean {
       if (mod && k === 'y') {
         e.preventDefault();
         redo();
+        return;
+      }
+      if (mod && k === 's') {
+        e.preventDefault();
+        void useProjectStore.getState().flush();
         return;
       }
       if (mod && k === 'a') {

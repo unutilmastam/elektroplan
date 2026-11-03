@@ -1,6 +1,6 @@
 'use client';
 
-import { FileDown, Pencil, Play, Save } from 'lucide-react';
+import { FileDown, Pencil, Play } from 'lucide-react';
 import Link from 'next/link';
 import { Hint, NextPhase } from '@/components/common/Hint';
 import { GlassPanel } from '@/components/layout/GlassPanel';
@@ -9,6 +9,7 @@ import { uz } from '@/i18n/uz';
 import { useCurrentProject, useProjectStore } from '@/store/projectStore';
 import { useUiStore } from '@/store/uiStore';
 import { RecentProjectsMenu } from './RecentProjectsMenu';
+import { SaveButton } from './SaveButton';
 
 /** Top header: project name, customer, address + Saqlash / Eksport PDF / Montaj rejimi. */
 export function ProjectHeader() {
@@ -57,16 +58,10 @@ export function ProjectHeader() {
         ) : null}
       </div>
       <div className="flex shrink-0 items-center gap-2 lg:gap-3">
-        <NextPhase>
-          <Button
-            disabled
-            aria-label={uz.header.save}
-            className="w-11 px-0 md:w-auto md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
-          >
-            <Save size={22} aria-hidden />
-            <span className="hidden md:inline">{uz.header.save}</span>
-          </Button>
-        </NextPhase>
+        <SaveButton
+          disabled={!editable}
+          className="w-11 px-0 md:w-auto md:min-w-[150px] md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
+        />
         <NextPhase>
           <Button
             disabled

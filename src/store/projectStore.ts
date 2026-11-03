@@ -11,7 +11,7 @@ import {
   type History,
 } from '@/domain/history';
 import { uuidv7 } from '@/domain/ids';
-import type { Draft } from 'immer';
+import type { Draft, Patch } from 'immer';
 import type { ProjectInfo } from '@/domain/schemas';
 import type { Project } from '@/domain/types';
 import {
@@ -22,8 +22,11 @@ import {
   saveProject,
   setMeta,
 } from '@/infra/idb/projectRepo';
+import { stashUnsaved } from '@/infra/idb/stash';
 
 export type LoadStatus = 'idle' | 'loading' | 'ready' | 'error';
+/** saved: on disk · dirty: change waiting for the 500 ms pause · saving: writing · error: write failed */
+export type SaveState = 'saved' | 'dirty' | 'saving' | 'error';
 
 interface ProjectState {
   status: LoadStatus;
@@ -36,6 +39,11 @@ interface ProjectState {
   /** reference-image project count shown while the demo is open */
   demoProjectCount: number | null;
   saveError: boolean;
+  /** autosave state of the open project (header indicator) */
+  saveState: SaveState;
+  lastSavedAt: string | null;
+  /** projects restored from their last valid snapshot at start-up */
+  recoveredCount: number;
   /** undo/redo of the open project (in memory, reset when another project opens) */
   history: History;
   /** undoable plan edit on the open project; same `coalesceKey` merges steps (one drag = one undo) */
@@ -44,8 +52,8 @@ interface ProjectState {
   seal: () => void;
   undo: () => void;
   redo: () => void;
-  /** writes pending edits now (page hide / before navigation) */
-  flush: () => Promise<void>;
+  /** writes pending edits now; `closing` also journals them synchronously (page hide / unload) */
+  flush: (closing?: boolean) => Promise<void>;
   init: () => Promise<void>;
   create: (info: ProjectInfo) => Promise<string>;
   updateInfo: (id: string, info: ProjectInfo) => Promise<void>;
@@ -56,7 +64,7 @@ interface ProjectState {
 }
 
 const nowIso = () => new Date().toISOString();
-const EDIT_SAVE_DELAY_MS = 400;
+export const EDIT_SAVE_DELAY_MS = 500;
 const str = (v: unknown) => (typeof v === 'string' ? v : null);
 
 export const useProjectStore = create<ProjectState>()(
@@ -65,19 +73,28 @@ export const useProjectStore = create<ProjectState>()(
      * Write one project to IndexedDB BEFORE showing the change, so what the user sees is saved
      * (a reload right after an action keeps it). A failed write still updates memory and raises `saveError`.
      */
-    const persist = async (p: Project) => {
+    const persist = async (p: Project, ops: readonly unknown[]) => {
+      const saving = saveProject(p, ops); // starts the IndexedDB transaction right now (page may be closing)
+      set((s) => {
+        s.saveState = 'saving';
+      });
       try {
-        await saveProject(p);
+        await saving;
         set((s) => {
           s.saveError = false;
+          s.saveState = pending ? 'dirty' : 'saved';
+          s.lastSavedAt = nowIso();
         });
         void requestPersistentStorage();
       } catch {
         set((s) => {
           s.saveError = true;
+          s.saveState = 'error';
         });
       }
     };
+    /** whole-object op for project-level actions (create / duplicate) */
+    const snapshotOp = (p: Project) => [{ op: 'replace', path: [], value: p }];
     const replace = (p: Project) =>
       set((s) => {
         const i = s.projects.findIndex((x) => x.id === p.id);
@@ -88,21 +105,31 @@ export const useProjectStore = create<ProjectState>()(
 
     /** Plan edits are shown instantly and written after a short pause (full autosave: Phase 8). */
     let pending: Project | null = null;
+    /** patches since the last write, appended to the outbox together with the snapshot */
+    let pendingOps: Patch[] = [];
     let timer: ReturnType<typeof setTimeout> | null = null;
-    const schedule = (p: Project) => {
+    const schedule = (p: Project, ops: readonly Patch[]) => {
+      if (pending && pending.id !== p.id) void flushPending();
       pending = p;
+      pendingOps.push(...ops);
+      set((s) => {
+        s.saveState = 'dirty';
+      });
       if (timer) clearTimeout(timer);
       timer = setTimeout(() => void flushPending(), EDIT_SAVE_DELAY_MS);
     };
-    const flushPending = async () => {
+    const flushPending = async (closing = false) => {
+      if (closing && pending) stashUnsaved(pending, pendingOps);
       if (timer) clearTimeout(timer);
       timer = null;
       const p = pending;
+      const ops = pendingOps;
       pending = null;
-      if (p) await persist(p);
+      pendingOps = [];
+      if (p) await persist(p, ops);
     };
     /** Puts a new version of the open project (demo or local) into state. */
-    const commit = (next: Project, history: History) => {
+    const commit = (next: Project, history: History, ops: readonly Patch[]) => {
       const stamped = { ...next, updatedAt: nowIso() };
       set((s) => {
         s.history = history;
@@ -112,7 +139,7 @@ export const useProjectStore = create<ProjectState>()(
           if (i >= 0) s.projects[i] = stamped;
         }
       });
-      if (!get().demo) schedule(stamped);
+      if (!get().demo) schedule(stamped, ops);
     };
     const current = () => selectCurrentProject(get());
 
@@ -124,6 +151,9 @@ export const useProjectStore = create<ProjectState>()(
       demo: null,
       demoProjectCount: null,
       saveError: false,
+      saveState: 'saved',
+      lastSavedAt: null,
+      recoveredCount: 0,
       history: emptyHistory(),
 
       apply: (label, recipe, coalesceKey = null) => {
@@ -131,7 +161,7 @@ export const useProjectStore = create<ProjectState>()(
         if (!cur) return false;
         const { next, entry } = applyRecipe(cur, label, recipe, coalesceKey);
         if (!entry) return false;
-        commit(next, record(get().history, entry));
+        commit(next, record(get().history, entry), entry.patches);
         return true;
       },
 
@@ -142,17 +172,19 @@ export const useProjectStore = create<ProjectState>()(
 
       undo: () => {
         const cur = current();
+        const top = get().history.past.at(-1);
         const r = cur ? undoHistory(cur, get().history) : null;
-        if (r) commit(r.state, r.history);
+        if (r && top) commit(r.state, r.history, top.inversePatches);
       },
 
       redo: () => {
         const cur = current();
+        const next = get().history.future[0];
         const r = cur ? redoHistory(cur, get().history) : null;
-        if (r) commit(r.state, r.history);
+        if (r && next) commit(r.state, r.history, next.patches);
       },
 
-      flush: flushPending,
+      flush: (closing = false) => flushPending(closing),
 
       init: async () => {
         if (get().status !== 'idle') return;
@@ -160,9 +192,13 @@ export const useProjectStore = create<ProjectState>()(
           s.status = 'loading';
         });
         try {
-          const [{ projects }, last] = await Promise.all([loadAllProjects(), getMeta(META_LAST_OPENED, str)]);
+          const [{ projects, recoveredIds }, last] = await Promise.all([
+            loadAllProjects(),
+            getMeta(META_LAST_OPENED, str),
+          ]);
           set((s) => {
             s.projects = projects;
+            s.recoveredCount = recoveredIds.length;
             s.lastOpenedId = last;
             s.status = 'ready';
           });
@@ -175,7 +211,7 @@ export const useProjectStore = create<ProjectState>()(
 
       create: async (info) => {
         const p = createProject(info, uuidv7(), nowIso());
-        await persist(p);
+        await persist(p, snapshotOp(p));
         replace(p);
         get().open(p.id);
         return p.id;
@@ -186,7 +222,11 @@ export const useProjectStore = create<ProjectState>()(
         const cur = find(id);
         if (!cur) return;
         const p = updateProjectInfo(cur, info, nowIso());
-        await persist(p);
+        await persist(p, [
+          { op: 'replace', path: ['name'], value: p.name },
+          { op: 'replace', path: ['customerName'], value: p.customerName },
+          { op: 'replace', path: ['address'], value: p.address },
+        ]);
         replace(p);
       },
 
@@ -195,7 +235,7 @@ export const useProjectStore = create<ProjectState>()(
         const cur = find(id);
         if (!cur) return null;
         const p = duplicateProject(cur, name, () => uuidv7(), nowIso());
-        await persist(p);
+        await persist(p, snapshotOp(p));
         replace(p);
         return p.id;
       },
@@ -205,7 +245,7 @@ export const useProjectStore = create<ProjectState>()(
         const cur = find(id);
         if (!cur) return;
         const p = deleteProject(cur, nowIso());
-        await persist(p);
+        await persist(p, [{ op: 'replace', path: ['deletedAt'], value: p.deletedAt }]);
         replace(p);
         set((s) => {
           if (s.currentId === id) s.currentId = null;
