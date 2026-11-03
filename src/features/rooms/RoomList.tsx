@@ -6,13 +6,13 @@ import { pickDefaultWallId, selectRoomStats } from '@/domain/selectors';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 import { useEditorStore } from '@/store/editorStore';
-import { useProjectStore } from '@/store/projectStore';
+import { useCurrentProject } from '@/store/projectStore';
 
 const ICON_COLORS = ['#ffffff', '#22c55e', '#f59e0b', '#14b8a6', '#3b8bff', '#a78bfa'];
 
 /** "Xonalar ro'yxati". Tapping a room selects it and shows its busiest wall in the wall view. */
 export function RoomList({ showTitle = true }: { showTitle?: boolean }) {
-  const project = useProjectStore((s) => s.project);
+  const project = useCurrentProject();
   const selectedRoomId = useEditorStore((s) => s.selectedRoomId);
   const setSelection = useEditorStore((s) => s.setSelection);
   const stats = project ? selectRoomStats(project) : [];

@@ -3,12 +3,12 @@
 import { selectWallElevation } from '@/domain/selectors';
 import { uz } from '@/i18n/uz';
 import { useEditorStore } from '@/store/editorStore';
-import { useProjectStore } from '@/store/projectStore';
+import { useCurrentProject } from '@/store/projectStore';
 import { WallElevationDrawing } from './WallElevation';
 
 /** "Devor ko'rinishi (Xona – Yo'nalish devori)" panel content. */
 export function WallViewPanel({ showTitle = true }: { showTitle?: boolean }) {
-  const project = useProjectStore((s) => s.project);
+  const project = useCurrentProject();
   const wallId = useEditorStore((s) => s.selectedWallId);
   const roomId = useEditorStore((s) => s.selectedRoomId);
   const elevation = project && wallId ? selectWallElevation(project, wallId, roomId ?? undefined) : null;

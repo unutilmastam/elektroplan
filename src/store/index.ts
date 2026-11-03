@@ -1,3 +1,3 @@
 export { useEditorStore } from './editorStore';
 export type { ToolId } from './editorStore';
-export { useProjectStore } from './projectStore';
+export { useProjectStore, useCurrentProject, selectCurrentProject, selectLiveProjects } from './projectStore';

@@ -3,8 +3,8 @@
 | Phase | Nomi | Holat |
 |---|---|---|
 | 0 | Arxitektura va hujjatlar | ✅ Tayyor |
-| 1 | Poydevor + dashboard dizayni | ✅ Tayyor (tasdiq kutilmoqda) |
-| 2 | Loyiha boshqaruvi | — |
+| 1 | Poydevor + dashboard dizayni | ✅ Tayyor |
+| 2 | Loyiha boshqaruvi | ✅ Tayyor (tasdiq kutilmoqda) |
 | 3 | Chizma dvigateli | — |
 | 4 | Xonalar va devorlar | — |
 | 5 | SVG belgilar | — |
@@ -16,6 +16,31 @@
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 2 — 2026-11-03
+
+**Bajarildi**
+- `domain/ids.ts` (UUID v7 — vaqt bo‘yicha saralanadi, oflayn yaratiladi), `domain/schemas.ts` (zod: Project/Room/Wall/Point/Opening/Settings + loyiha formasi; xatolar kod sifatida, matni `uz.validation` da), `domain/commands.ts` (yaratish, tahrirlash, soft delete, chuqur nusxa — barcha ID’lar yangilanadi, progress nolga tushadi), `domain/projectList.ts` (qidiruv, saralash, xulosa, so‘nggi loyihalar, takrorlanmas nom).
+- IndexedDB repo (`infra/idb`): `elektroplan` v1 bazasi (`projects`, `outbox`, `meta`), o‘qishda har bir yozuv zod bilan tekshiriladi — buzilgan yozuv o‘tkazib yuboriladi, ilova yiqilmaydi. `navigator.storage.persist()` birinchi saqlashda so‘raladi.
+- `projectStore` (Zustand + immer): init (IndexedDB’dan), create / updateInfo / duplicate / remove / open; avval IndexedDB’ga yoziladi, keyin ekranda ko‘rinadi (yangilansa yo‘qolmaydi). Yozish xatosi bo‘lsa — o‘zbekcha ogohlantirish banneri, ma’lumot xotirada qoladi.
+- Loyihalar sahifasi: ro‘yxat (kartalar: nom, buyurtmachi, manzil, xona/nuqta soni, yangilangan vaqt, progress), qidiruv (nom/buyurtmachi/manzil, katta-kichik harf va ‘ ʻ ' farqsiz), saralash (oxirgi o‘zgargan, yaratilgan, nomi, foiz), Ochish / Tahrirlash / Nusxa olish / O‘chirish (tasdiq oynasi bilan), bo‘sh holat.
+- Forma dialogi (yaratish/tahrirlash): validatsiya xatolari o‘zbekcha; telefonda pastdan chiqadi; input shrifti 16px (iOS zoom qilmaydi).
+- Header: ✎ endi ishlaydi (tahrirlash), papka tugmasi → “So‘nggi loyihalar” menyusi (5 ta) + Barcha loyihalar + Yangi loyiha. Loyiha tanlanmaganda “Loyiha tanlanmagan” + yaratish tugmalari.
+- Bosh sahifa oxirgi ochilgan (yoki eng so‘nggi) loyihani ochadi; `/editor/?id=` — shu loyiha, yo‘q bo‘lsa “Loyiha topilmadi”. Sidebar “Jami loyihalar” — real son.
+- Demo (`?demo=1`, dev) o‘zgarmadi va saqlanmaydi.
+- Yangi bog‘liqlik: `@radix-ui/react-dialog` (shadcn/ui Dialog uchun, ARCHITECTURE §5 dagi “generated @radix-ui/*”).
+
+**Test qilindi**
+- `pnpm typecheck`, `pnpm lint`, `pnpm test` — 48 test (sxemalar, buyruqlar, ID, ro‘yxat, store + IndexedDB integratsiyasi `fake-indexeddb` bilan: “sahifani yangilash”dan keyin ham saqlanishi, buzilgan yozuv, yozish xatosi).
+- `pnpm test:e2e` — 13 ssenariy × 6 profil: 76 o‘tdi, 2 ataylab o‘tkazildi (telefonda ✎ yashirin, u yerda tahrir kartadan). Yaratish → yangilash → saqlangan; tahrir/nusxa/o‘chirish (bekor qilish bilan) → yangilashdan keyin ham to‘g‘ri; qidiruv/saralash; o‘zbekcha validatsiya xatosi; mavjud bo‘lmagan ID.
+- Phase 1 tekshirildi: demo reja 1536×1024 da avvalgidek; nav, belgilar, zoom ishlaydi.
+- Skrinshotlar: `docs/screenshots/phase-2/` (iPad landshaft/portret, iPhone, Windows). Gorizontal scroll yo‘q.
+- Topilib tuzatilgan: brauzerlarda `uz` alifbo tartibi har xil ishlashi (endi hamma qurilmada bir xil A–Z tartib), telefonda qidiruv maydoni siqilishi, loyiha yo‘qda header’da “— | —”.
+
+**Ma’lum cheklovlar**
+- Loyiha ichidagi o‘zgarishlarni avtosaqlash (debounce, outbox, beforeunload) — Phase 8. Hozir faqat loyiha darajasidagi amallar (yaratish, tahrir, nusxa, o‘chirish) saqlanadi; “Saqlash” tugmasi hali disabled.
+- O‘chirilgan loyihalar IndexedDB’da `deletedAt` bilan qoladi (keyingi sinxronizatsiya uchun); “Savat”dan tiklash yo‘q.
+- Ochish/tahrir boshqa tab’da qilinsa, ikkinchi tab o‘zgarishni faqat yangilangandan keyin ko‘radi.
 
 ## Phase 1 — 2026-11-03
 

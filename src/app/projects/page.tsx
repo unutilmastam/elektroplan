@@ -1,6 +1,10 @@
-import { PlaceholderPage } from '@/components/layout/PlaceholderPage';
-import { uz } from '@/i18n/uz';
+import { AppShell } from '@/components/layout/AppShell';
+import { ProjectsScreen } from '@/features/projects/ProjectsScreen';
 
 export default function ProjectsPage() {
-  return <PlaceholderPage title={uz.pages.projectsTitle} text={uz.pages.projectsText} />;
+  return (
+    <AppShell>
+      <ProjectsScreen />
+    </AppShell>
+  );
 }

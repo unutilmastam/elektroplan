@@ -17,10 +17,9 @@ async function noHorizontalScroll(page: Page) {
 
 test('dashboard opens with header, symbol bar and canvas', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'Yangi loyiha' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Loyiha tanlanmagan' })).toBeVisible();
   await expect(page.getByRole('toolbar', { name: 'Elektr belgilar' })).toBeVisible();
-  await expect(page.locator('.canvas-host canvas').first()).toBeAttached();
-  await expect(page.getByText('Reja hali bo‘sh')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Yangi loyiha' }).first()).toBeVisible();
   await noHorizontalScroll(page);
 });
 
@@ -40,13 +39,13 @@ test('navigation links move between pages', async ({ page }) => {
   await nav.getByRole('link', { name: /Sozlama/ }).click();
   await expect(page).toHaveURL(/\/settings\/$/);
   await nav.getByRole('link', { name: /Bosh/ }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Yangi loyiha' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Loyiha tanlanmagan' })).toBeVisible();
 });
 
 test('Montaj rejimi button opens the install route', async ({ page }) => {
   await page.goto('/');
   await page.locator('header').getByRole('link', { name: 'Montaj rejimi' }).click();
-  await expect(page).toHaveURL(/\/install\/\?id=/);
+  await expect(page).toHaveURL(/\/install\//);
 });
 
 test('later-phase buttons are disabled', async ({ page }) => {
@@ -68,5 +67,5 @@ test('symbol chips select the active symbol, Boshqa opens the rest', async ({ pa
 
 test('static export does not ship demo data', async ({ page }) => {
   await page.goto('/?demo=1');
-  await expect(page.getByText('Reja hali bo‘sh')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Loyiha tanlanmagan' })).toBeVisible();
 });

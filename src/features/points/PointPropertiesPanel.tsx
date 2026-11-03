@@ -10,7 +10,7 @@ import { SYMBOL_COLORS } from '@/features/symbols/catalog';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 import { useEditorStore } from '@/store/editorStore';
-import { useProjectStore } from '@/store/projectStore';
+import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
 
 const SWATCHES: Swatch[] = [
   { value: SYMBOL_COLORS.blue, label: uz.point.swatch.blue },
@@ -30,7 +30,7 @@ export function PointPropertiesPanel({
 }) {
   const selectedId = useEditorStore((s) => s.selectedPointId);
   const point = useProjectStore(
-    (s) => s.project?.points.find((p) => p.id === selectedId && p.deletedAt === null) ?? null,
+    (s) => selectCurrentProject(s)?.points.find((p) => p.id === selectedId && p.deletedAt === null) ?? null,
   );
 
   return (

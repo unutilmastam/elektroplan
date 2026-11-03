@@ -7,7 +7,9 @@ import { uz } from '@/i18n/uz';
 import { useProjectStore } from '@/store/projectStore';
 
 export function StatsCard() {
-  const count = useProjectStore((s) => s.projectCount);
+  const count = useProjectStore(
+    (s) => s.demoProjectCount ?? s.projects.filter((p) => p.deletedAt === null).length,
+  );
   return (
     <div className="glass flex items-center justify-between rounded-[14px] px-4 py-3.5">
       <div>

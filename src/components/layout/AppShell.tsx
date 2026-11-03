@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
+import { ProjectDialogs } from '@/features/projects/ProjectDialogs';
 import { MobileNav } from './MobileNav';
+import { SaveErrorBanner } from './SaveErrorBanner';
 import { Sidebar } from './Sidebar';
 
 /** Fixed-viewport app frame: sidebar / rail + content + phone bottom nav. No page scroll. */
@@ -14,6 +16,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </main>
       <MobileNav />
+      <ProjectDialogs />
+      <SaveErrorBanner />
     </div>
   );
 }
