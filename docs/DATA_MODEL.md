@@ -125,12 +125,13 @@ Indexes: `projects(owner_id, updated_at)`, `rooms(project_id)`, `walls(project_i
 
 ## 4. IndexedDB (`src/infra/idb`)
 
-Database `elektroplan`, version 1:
+Database `elektroplan`, version 2 (v1 → v2 adds `backups` and the `outbox.byProject` index):
 
 | Store | Key | Content |
 |---|---|---|
 | `projects` | `id` | full `Project` snapshot (validated by zod on read) |
-| `outbox` | auto | `{ projectId, baseRevision, ops: Patch[], createdAt }` |
+| `backups` | `id` | previous valid snapshot of each project (recovery when `projects` holds an unreadable record) |
+| `outbox` | auto (index `byProject`) | `{ projectId, baseRevision, ops: Patch[], createdAt }` |
 | `meta` | key | `lastOpenedProjectId`, `deviceSettings` (`penOnly`, `autoStraighten`), `lastSyncAt`, schema version, `persistGranted`, `iosInstallHintShown` |
 
 Migrations are version-gated in `db.ts` `upgrade()`.
@@ -144,3 +145,10 @@ Walls are **derived** from room outlines plus free walls (`domain/topology.ts �
 - points and openings are re-attached by geometry (`wallId`, `t`), keeping their distance from the wall.
 
 > MySQL: `openings` will get its own table in Phase 12 (sync). Until then it lives in the IndexedDB project snapshot.
+
+## 6. Autosave (Phase 8)
+
+- Every edit: UI updates at once → after a 500 ms pause one IndexedDB transaction writes the snapshot, moves the previous snapshot to `backups`, and appends the patches to `outbox`.
+- "Saqlash" / Ctrl+S / page hide / `beforeunload` / `visibilitychange` write immediately.
+- Page closing: the unsaved project is also journaled synchronously in `localStorage['elektroplan:unsaved']` (browsers may abort IndexedDB transactions during unload); on the next start a journal newer than the stored snapshot is moved into IndexedDB.
+- Reading: zod-validated; an invalid record is replaced by its backup and the user is told.

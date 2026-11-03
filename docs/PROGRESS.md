@@ -10,12 +10,33 @@
 | 5 | SVG belgilar | ✅ Tayyor |
 | 6 | Nuqtalarni joylashtirish | ✅ Tayyor |
 | 7 | Devor ko‘rinishi | ✅ Tayyor |
-| 8 | Avtosaqlash (IndexedDB) | — |
+| 8 | Avtosaqlash (IndexedDB) | ✅ Tayyor (tasdiq kutilmoqda) |
 | 9 | Montaj rejimi | — |
 | 10 | PDF eksport | — |
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 8 — 2026-11-03
+
+**Bajarildi**
+- IndexedDB **v2** (versiyali migratsiya v1 → v2): `projects`, `backups` (har loyihaning oldingi to‘g‘ri nusxasi), `outbox` (`byProject` indeksi), `meta`. O‘qishda zod.
+- Avtosaqlash: har o‘zgarish ekranda darhol, **500 ms** tanaffusdan keyin bitta tranzaksiyada: yangi nusxa + oldingisi `backups` ga + patch’lar `outbox` ga (Phase 12 sinxronizatsiya uchun tayyor; undo — teskari patch’lar; loyiha darajasidagi amallar ham yoziladi).
+- Darhol saqlash: “Saqlash” tugmasi, **Ctrl/⌘+S**, sahifa yashirilganda / yopilganda (`pagehide`, `beforeunload`, `visibilitychange`).
+- **Yopilish paytida himoya:** brauzer yopilayotgan sahifaning IndexedDB yozuvini ba’zan bekor qiladi — e2e test buni ushladi (18 tadan 2 holatda yo‘qolish). Endi: ulanish ochiq bo‘lsa yozuv sinxron boshlanadi + o‘zgarish `localStorage` jurnaliga sinxron yoziladi; keyingi ochilishda jurnal (agar saqlangandan yangi bo‘lsa) IndexedDB’ga o‘tkaziladi. Natija: 90/90.
+- Buzilgan yozuvdan tiklash: o‘qib bo‘lmagan loyiha oxirgi to‘g‘ri nusxadan tiklanadi, qayta yoziladi va foydalanuvchiga xabar beriladi.
+- `navigator.storage.persist()` — har muvaffaqiyatli saqlashdan keyin (bir marta ruxsat so‘raladi).
+- Header’dagi “Saqlash” tugmasi holatni ko‘rsatadi: O‘zgarish bor → Saqlanmoqda… → ✓ Saqlandi (ustiga olib borilsa vaqt) / Saqlanmadi (qizil).
+
+**Test qilindi**
+- `pnpm test` — 173 test. Integratsiya (fake-indexeddb, “brauzerni yopish” = ulanishni flush’siz uzib, modullarni qayta yuklash): 500 ms dan keyin saqlanadi; tanaffusgacha yopilsa flush saqlaydi; istalgan paytda yopilsa ham oldin saqlangan buzilmaydi; outbox’da patch’lar va undo’ning teskarisi; buzilgan yozuv → oxirgi to‘g‘ri nusxa, keyingi safar toza; yozish xatosi → eski ma’lumot joyida + “Saqlanmadi”; IndexedDB uzilganda jurnal saqlaydi; eski jurnal yangi ma’lumotni bosib ketmaydi; v1 bazadan migratsiya.
+- `pnpm test:e2e` — 44 ssenariy × 6 profil: 253 o‘tdi, 11 ataylab o‘tkazildi. Yangi: Saqlash tugmasi holati va darhol saqlash; **tahrirdan so‘ng darhol sahifani yangilash** (500 ms kutmasdan) — 5 marta × 6 profil takrorlab barqaror; Ctrl/⌘+S.
+- Phase 1–7 qayta tekshirildi.
+
+**Ma’lum cheklovlar**
+- Outbox hozircha faqat to‘planadi — serverga yuborish Phase 12 da.
+- Juda katta loyiha (localStorage ~5 MB dan katta) yopilish jurnaliga sig‘masa, faqat IndexedDB yozuviga tayaniladi.
+- Undo tarixi hali ham faqat xotirada (sahifa yangilansa tozalanadi).
 
 ## Phase 7 — 2026-11-03
 

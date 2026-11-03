@@ -32,7 +32,12 @@ test('selecting on the plan selects in the wall view, and the other way round', 
   const view = await wallView(page);
   const p1 = view.locator('[data-point-id="p1"]');
   await expect(p1).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByText(/Mehmonxona – Shimol devori/).filter({ visible: true }).first()).toBeVisible();
+  await expect(
+    page
+      .getByText(/Mehmonxona – Shimol devori/)
+      .filter({ visible: true })
+      .first(),
+  ).toBeVisible();
 
   // select the wall (empty wall face) → point deselected, then tap the point in the wall view
   await view.click({ position: { x: 30, y: 20 } });
