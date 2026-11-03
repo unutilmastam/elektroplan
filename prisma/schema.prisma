@@ -1,0 +1,263 @@
+// ELEKTROPLAN — PostgreSQL schema (activated in PHASE 12)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PointStatus {
+  pending
+  in_progress
+  completed
+}
+
+enum SymbolCategory {
+  socket
+  switch
+  data
+  lighting
+  climate
+  custom
+}
+
+enum SymbolPlacement {
+  wall
+  ceiling
+  any
+}
+
+enum RoomShape {
+  rect
+  square
+  polygon
+}
+
+// ───────────── Auth.js ─────────────
+
+model User {
+  id            String    @id @default(uuid()) @db.Uuid
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("electrician")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  projects      Project[]
+  symbols       Symbol[]
+  tasks         InstallationTask[]
+  history       ProjectHistory[]
+}
+
+model Account {
+  id                String  @id @default(uuid()) @db.Uuid
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  sessionToken String   @unique
+  userId       String   @db.Uuid
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ───────────── Domain ─────────────
+
+model Project {
+  id           String    @id @db.Uuid
+  ownerId      String    @db.Uuid
+  name         String
+  customerName String    @default("")
+  address      String    @default("")
+  revision     Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  owner    User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  settings ProjectSettings?
+  rooms    Room[]
+  walls    Wall[]
+  points   ElectricalPoint[]
+  history  ProjectHistory[]
+
+  @@index([ownerId, updatedAt])
+}
+
+model ProjectSettings {
+  projectId             String  @id @db.Uuid
+  gridSize              Int     @default(20)
+  snapToGrid            Boolean @default(true)
+  defaultSocketHeightCm Int     @default(30)
+  defaultSwitchHeightCm Int     @default(90)
+  wallDisplayHeightCm   Int     @default(270)
+  updatedAt             DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Room {
+  id          String    @id @db.Uuid
+  projectId   String    @db.Uuid
+  name        String
+  color       String
+  shape       RoomShape
+  vertices    Json      // Vec2[]
+  labelOffset Json      // Vec2
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  project Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  walls   WallRoom[]
+  points  ElectricalPoint[]
+
+  @@index([projectId])
+}
+
+model Wall {
+  id        String    @id @db.Uuid
+  projectId String    @db.Uuid
+  ax        Float
+  ay        Float
+  bx        Float
+  by        Float
+  thickness Float     @default(12)
+  name      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  project Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  rooms   WallRoom[]
+  points  ElectricalPoint[]
+
+  @@index([projectId])
+}
+
+model WallRoom {
+  wallId String @db.Uuid
+  roomId String @db.Uuid
+
+  wall Wall @relation(fields: [wallId], references: [id], onDelete: Cascade)
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@id([wallId, roomId])
+  @@index([roomId])
+}
+
+model Symbol {
+  id                   String          @id // 'socket-single', or uuid for custom
+  ownerId              String?         @db.Uuid // null = system symbol
+  name                 String
+  category             SymbolCategory
+  placement            SymbolPlacement @default(wall)
+  defaultColor         String
+  defaultMountHeightCm Int?
+  svg                  String?         // custom symbols only; system SVGs live in code
+  isSystem             Boolean         @default(false)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  owner  User?             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  points ElectricalPoint[]
+
+  @@index([ownerId])
+}
+
+model ElectricalPoint {
+  id                   String      @id @db.Uuid
+  projectId            String      @db.Uuid
+  roomId               String      @db.Uuid
+  wallId               String?     @db.Uuid
+  symbolId             String
+  t                    Float?
+  side                 Int         @default(1)
+  x                    Float
+  y                    Float
+  mountHeightCm        Int?
+  distanceFromCornerCm Int?
+  description          String      @default("")
+  color                String
+  label                String?
+  status               PointStatus @default(pending)
+  statusChangedAt      DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  deletedAt            DateTime?
+
+  project Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  room    Room               @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  wall    Wall?              @relation(fields: [wallId], references: [id], onDelete: SetNull)
+  symbol  Symbol             @relation(fields: [symbolId], references: [id])
+  tasks   InstallationTask[]
+
+  @@index([projectId])
+  @@index([wallId])
+  @@index([projectId, status])
+}
+
+model InstallationTask {
+  id         String      @id @default(uuid()) @db.Uuid
+  pointId    String      @db.Uuid
+  userId     String?     @db.Uuid
+  fromStatus PointStatus
+  toStatus   PointStatus
+  note       String?
+  createdAt  DateTime    @default(now())
+
+  point ElectricalPoint @relation(fields: [pointId], references: [id], onDelete: Cascade)
+  user  User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([pointId, createdAt])
+}
+
+model ProjectHistory {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  userId    String?  @db.Uuid
+  revision  Int
+  ops       Json     // immer patches
+  kind      String   @default("change") // change | conflict | restore
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, revision])
+}
