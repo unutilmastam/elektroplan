@@ -21,6 +21,7 @@ export function createEmptyProject(id: string, name: string, now: string): Proje
     walls: [],
     points: [],
     openings: [],
+    installLog: [],
     settings: { ...DEFAULT_SETTINGS },
     createdAt: now,
     updatedAt: now,

@@ -6,6 +6,7 @@ import { Group, Layer, Stage } from 'react-konva';
 import type { Bounds, Vec2, Viewport } from '@/domain/geometry';
 import type { DraftShape } from '@/store/editorStore';
 import { DraftContent } from './DraftContent';
+import { StatusLayer } from '@/features/installation/StatusLayer';
 import type { Selection } from '@/domain/selection';
 import type { Project } from '@/domain/types';
 import { decorationK } from './decoration';
@@ -22,6 +23,8 @@ export interface PlanStageProps {
   marquee: Bounds | null;
   draft: DraftShape | null;
   hover: Vec2 | null;
+  /** Montaj rejimi: status rings */
+  showStatus?: boolean;
 }
 
 /**
@@ -37,6 +40,7 @@ export default function PlanStage({
   marquee,
   draft,
   hover,
+  showStatus = false,
 }: PlanStageProps) {
   const [fontFamily, setFontFamily] = useState('sans-serif');
   useEffect(() => {
@@ -52,6 +56,7 @@ export default function PlanStage({
       <Layer listening={false}>
         <Group {...t}>
           <PlanContent project={project} k={k} fontFamily={fontFamily} />
+          {showStatus ? <StatusLayer project={project} k={k} scale={viewport.scale} /> : null}
         </Group>
       </Layer>
       <Layer listening={false}>

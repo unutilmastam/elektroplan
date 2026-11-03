@@ -43,7 +43,11 @@ export function createToolContext(): ToolContext {
       const project = proj();
       if (!project) return null;
       const s = scale();
-      return hitTest(project, p.world, {
+      const visible =
+        ed().pointFilter === 'open'
+          ? { ...project, points: project.points.filter((x) => x.status !== 'completed') }
+          : project;
+      return hitTest(visible, p.world, {
         tolerance: PICK_PX[p.pointerType] / s,
         pointRadius: pointRadiusWorld(s),
         labelSize: 19 * decorationK(s),

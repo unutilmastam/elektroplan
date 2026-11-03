@@ -86,6 +86,17 @@ export interface ElectricalPoint extends Timestamps {
   statusChangedAt: string | null;
 }
 
+/** One status change during installation (mirrors MySQL installation_tasks). Append-only. */
+export interface InstallationTask {
+  id: UUID;
+  pointId: UUID;
+  /** null until accounts exist (Phase 12) */
+  userId: UUID | null;
+  fromStatus: PointStatus;
+  toStatus: PointStatus;
+  createdAt: string;
+}
+
 export interface ProjectSettings {
   gridSize: number;
   snapToGrid: boolean;
@@ -105,5 +116,6 @@ export interface Project extends Timestamps {
   walls: Wall[];
   points: ElectricalPoint[];
   openings: Opening[];
+  installLog: InstallationTask[];
   settings: ProjectSettings;
 }
