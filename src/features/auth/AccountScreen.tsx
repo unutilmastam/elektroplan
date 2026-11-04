@@ -43,7 +43,11 @@ export function AccountScreen() {
             </div>
             <div className="rounded-xl border border-white/10 bg-[#0a1222] px-4 py-3">
               <div className="text-[15px] font-medium">{uz.sync.title}</div>
-              <p className="mt-1 text-[14px] text-text-muted" data-testid="last-sync">
+              <p
+                className="mt-1 text-[14px] text-text-muted"
+                data-testid="last-sync"
+                data-at={sync.lastSyncAt ?? ''}
+              >
                 {sync.lastSyncAt
                   ? uz.sync.lastSync.replace('{time}', formatDateTime(sync.lastSyncAt))
                   : uz.sync.never}

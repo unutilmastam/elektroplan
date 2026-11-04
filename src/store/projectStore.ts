@@ -84,6 +84,8 @@ export const useProjectStore = create<ProjectState>()(
      */
     const persist = async (p: Project, ops: readonly unknown[]) => {
       const saving = saveProject(p, ops); // starts the IndexedDB transaction right now (page may be closing)
+      const write = { p, ops };
+      inflight = write;
       set((s) => {
         s.saveState = 'saving';
       });
@@ -100,6 +102,8 @@ export const useProjectStore = create<ProjectState>()(
           s.saveError = true;
           s.saveState = 'error';
         });
+      } finally {
+        if (inflight === write) inflight = null;
       }
     };
     /** whole-object op for project-level actions (create / duplicate) */
@@ -114,6 +118,8 @@ export const useProjectStore = create<ProjectState>()(
 
     /** Plan edits are shown instantly and written after a short pause (full autosave: Phase 8). */
     let pending: Project | null = null;
+    /** the IndexedDB write currently running (journaled too if the page closes before it commits) */
+    let inflight: { p: Project; ops: readonly unknown[] } | null = null;
     /** patches since the last write, appended to the outbox together with the snapshot */
     let pendingOps: Patch[] = [];
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -128,7 +134,14 @@ export const useProjectStore = create<ProjectState>()(
       timer = setTimeout(() => void flushPending(), EDIT_SAVE_DELAY_MS);
     };
     const flushPending = async (closing = false) => {
-      if (closing && pending) stashUnsaved(pending, pendingOps);
+      if (closing) {
+        // the page is going away: journal what is not on disk yet — the pending edit and a write still in
+        // progress (a browser may abort that IndexedDB transaction during unload)
+        const busy = inflight;
+        if (pending)
+          stashUnsaved(pending, busy && busy.p.id === pending.id ? [...busy.ops, ...pendingOps] : pendingOps);
+        else if (busy) stashUnsaved(busy.p, busy.ops);
+      }
       if (timer) clearTimeout(timer);
       timer = null;
       const p = pending;
