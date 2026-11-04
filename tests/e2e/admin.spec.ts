@@ -99,6 +99,21 @@ test('admin: masters list, Pro +1 month, password reset; the master must set a n
   // the master sees Pro (after the next account refresh: open the app again)
   await m.page.goto('/pro/');
   await expect(m.page.getByTestId('pro-status')).toContainText('Pro faol', { timeout: 15_000 });
+  // with Pro: more than one project, duplicating works
+  for (const n of ['Birinchi uy', 'Ikkinchi uy']) {
+    await m.page.goto('/projects/');
+    await m.page.getByRole('button', { name: 'Yangi loyiha' }).first().click();
+    await m.page.getByRole('dialog').getByLabel('Loyiha nomi').fill(n);
+    await m.page.getByRole('dialog').getByRole('button', { name: 'Yaratish' }).click();
+    await expect(m.page).toHaveURL(/\/editor\/\?id=/);
+  }
+  await m.page.goto('/projects/');
+  await m.page
+    .getByTestId('project-card')
+    .filter({ hasText: 'Birinchi uy' })
+    .getByRole('button', { name: 'Nusxa olish' })
+    .click();
+  await expect(m.page.getByTestId('project-card')).toHaveCount(3);
 
   // password reset: temporary password shown once
   await card.getByRole('button', { name: 'Parolni tiklash' }).click();
@@ -113,7 +128,7 @@ test('admin: masters list, Pro +1 month, password reset; the master must set a n
   const gate = m.page.getByTestId('password-gate');
   await expect(gate).toBeVisible();
   await gate.getByLabel('Vaqtinchalik parol').fill(temp);
-  await gate.getByLabel('Yangi parol').fill('yangi-parol-77');
+  await gate.getByLabel(/^Yangi parol\s*\(/).fill('yangi-parol-77');
   await gate.getByLabel('Yangi parolni takrorlang').fill('yangi-parol-77');
   await gate.getByRole('button', { name: 'Saqlash' }).click();
   await expect(gate).toHaveCount(0);

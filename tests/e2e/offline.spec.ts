@@ -72,8 +72,12 @@ test('airplane mode: app opens, projects list, editor, montaj and PDF work witho
     await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible();
   }
 
-  // a new project is created and drawn with no internet, and survives an offline reload
+  // a project is deleted and a new one created and drawn with no internet (free plan: one project),
+  // and both survive an offline reload
   await page.goto('/projects/');
+  await page.getByTestId('project-card').getByRole('button', { name: 'O‘chirish' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Ha, o‘chirish' }).click();
+  await expect(page.getByTestId('project-card')).toHaveCount(0);
   await page.getByRole('button', { name: 'Yangi loyiha' }).first().click();
   await page.getByRole('dialog').getByLabel('Loyiha nomi').fill('Oflayn obyekt');
   await page.getByRole('dialog').getByRole('button', { name: 'Yaratish' }).click();
@@ -88,7 +92,8 @@ test('airplane mode: app opens, projects list, editor, montaj and PDF work witho
   await expect(page.getByRole('heading', { level: 1, name: 'Oflayn obyekt' })).toBeVisible();
   expect(liveRooms(await storedProject(page))).toHaveLength(1);
   await page.goto('/projects/');
-  await expect(page.getByTestId('project-card')).toHaveCount(2);
+  await expect(page.getByTestId('project-card')).toHaveCount(1);
+  await expect(page.getByText('Oflayn obyekt')).toBeVisible();
 
   // back online: the badge disappears
   await context.setOffline(false);

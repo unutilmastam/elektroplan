@@ -219,3 +219,29 @@ Har bosqichni Claude Code’da boshlash uchun tayyor prompt ham berilgan (▶).
 - Hujjatlar yakuniy yangilanadi.
 
 ▶ `PHASE 13 ni bajar va yakuniy hisobot ber.`
+
+---
+
+## PHASE 14 — Admin panel va Pro versiya (egasi qo‘shgan, 2026-11-04)
+
+> SPEC’dagi “umumiy admin panel qilinmasin” qoidasini egasi o‘zgartirdi: ustalar ro‘yxati, parol tiklash va Pro boshqaruvi kerak.
+
+**Vazifalar**
+- Admin: `ADMIN_LOGIN` (GitHub secret) dagi telefon/email bilan kirgan akkaunt. `/admin/`: ustalar ro‘yxati (ism, login, ro‘yxatdan o‘tgan, oxirgi kirish, loyiha/nuqta soni, montaj foizi), qidiruv.
+- Pro: 99 000 so‘m/oy. Bepul — 1 ta loyiha (hammasi bilan). Pro’ni admin qo‘lda yoqadi: +1/+3/+12 oy, o‘chirish. Cheklov ilovada ham, serverda ham. Eski loyihalar saqlanadi.
+- Parol tiklash: admin vaqtinchalik parol oladi, ustaning barcha sessiyalari yopiladi, usta keyingi kirishda yangi parol o‘rnatadi. O‘z parolini o‘zgartirish. Har amal `admin_actions` jurnalida.
+- `/pro/` sahifasi: narx, imkoniyatlar, tarif holati, sotib olish tartibi, admin kontaktlari (`SUPPORT_PHONE`, `SUPPORT_TELEGRAM` — GitHub variables).
+
+**Qabul:** server testlari (ruxsatlar, cheklov 402, Pro muddatlari, parol tiklash); e2e 6 profilda: bepul cheklov, admin → Pro → usta ko‘p loyiha yaratadi, parol tiklash → majburiy yangi parol.
+
+---
+
+## PHASE 15 — Barcha qurilmalarga moslashuv (rejada)
+
+iPhone (kichik/katta), Samsung/Android, iPad (portret/landshaft, Split View), kompyuter: har ekran tekshiriladi, tugmalar, panellar, matnlar, klaviatura/xavfsiz hududlar tuzatiladi.
+
+## PHASE 16 — Rus tili (rejada)
+
+Barcha yozuvlar ruschaga, Sozlamalarda til tanlash (O‘zbekcha / Русский), telefon tiliga qarab avtomatik, PDF ham tanlangan tilda.
+
+## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)

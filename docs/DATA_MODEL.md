@@ -185,3 +185,12 @@ Protocol (`server/lib/Sync.php`, `src/infra/sync/syncEngine.ts`):
 - On 409 the device merges with `domain/merge.ts` (field-level three-way: one-side changes always kept, both-sides → newer `updatedAt`, server on a tie; installation status never backwards; newer deletion wins; log = union) and pushes again.
 - A project with no owner is attached to the account on its first push. Projects of another account stay local and are never sent.
 - Sessions: `ep_session` cookie (64 hex, httpOnly, SameSite=Lax, Secure on HTTPS, 60 days sliding), sha256 stored. Login throttled: 10 / 15 min per IP + login, 50 / 15 min per IP; registration 10 / hour per IP. POST requests need `X-Elektroplan: 1`.
+
+## 10. Admin va Pro (Phase 14)
+
+Migration `003_admin_pro.sql`: `users.pro_until` (NULL = bepul), `users.must_change_password` (admin parolni tiklagandan keyin 1), `users.last_login_at`; `admin_actions (id, admin_id, user_id, action, detail JSON, created_at)` — `reset_password`, `pro_extend {months, until}`, `pro_cancel`.
+
+- `role = 'admin'` faqat `ADMIN_LOGIN` (config) bilan mos akkauntga beriladi, boshqalari `electrician`. Admin doim Pro.
+- Bepul: 1 ta tirik (o‘chirilmagan) loyiha. Server yangi loyiha push’ida tekshiradi → `402 pro_required`; ilova yaratish/nusxa/tiklashdan oldin tekshiradi (`domain/plan.ts`). Mavjud loyihalar sinxronlanishda davom etadi.
+- API: `GET /api/admin/users?q=`, `POST /api/admin/users/{id}/pro {months: 1..24 | cancel: true}`, `POST /api/admin/users/{id}/reset-password → {password}`, `POST /api/auth/password {current, password}`.
+- Ilova akkauntni (Pro muddati bilan) IndexedDB `meta.account` da saqlaydi — internetsiz ham Pro amal qiladi; sinxron paytida (daqiqada ko‘pi bilan bir marta) serverdan yangilanadi.

@@ -26,6 +26,14 @@ Repo → Settings → Secrets and variables → Actions → New repository secre
 | `DB_PASS` | •••• |
 | `MIGRATE_TOKEN` | uzun tasodifiy satr |
 | `SITE_URL` | `https://elektroplan.itcode.uz` (ixtiyoriy: berilsa, har deploydan keyin migratsiya avtomatik qo‘llanadi) |
+| `ADMIN_LOGIN` | admin akkauntining telefon raqami yoki emaili, masalan `+998901234567` (PHASE 14) |
+
+**Variables** (Secrets emas — ilovada ko‘rinadi): Settings → Secrets and variables → Actions → **Variables** tab:
+
+| Name | Misol |
+|---|---|
+| `SUPPORT_PHONE` | `+998901234567` — Pro sahifasidagi “Qo‘ng‘iroq qilish” |
+| `SUPPORT_TELEGRAM` | `itcode_admin` — Pro sahifasidagi “Telegram’da yozish” |
 
 ## 3. Workflow (`.github/workflows/deploy.yml`, PHASE 1 da qo‘shiladi)
 
