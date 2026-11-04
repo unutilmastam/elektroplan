@@ -1,4 +1,5 @@
 import { expect, test, type Browser, type Page, type TestInfo } from '@playwright/test';
+import { cutConnection, restoreConnection } from './fixtures/network';
 import { openSeededProject } from './fixtures/seed';
 
 /**
@@ -115,6 +116,7 @@ test('two devices edit the same project offline, reconnect: both changes and the
   page,
   context,
   browser,
+  browserName,
 }, info) => {
   test.setTimeout(90_000);
   const email = login(info);
@@ -141,8 +143,8 @@ test('two devices edit the same project offline, reconnect: both changes and the
   await offlineReady(b.page);
 
   // ---- both offline ----
-  await context.setOffline(true);
-  await b.ctx.setOffline(true);
+  await cutConnection(context, browserName);
+  await cutConnection(b.ctx, browserName);
   await editInfo(page, 'Loyiha nomi', 'Sinov uyi (iPad)');
   await editInfo(b.page, 'Manzil', 'Samarqand, Registon 1');
   await b.page.goto(`/install/?id=${id}`);
@@ -151,9 +153,9 @@ test('two devices edit the same project offline, reconnect: both changes and the
   await expect(b.page.getByText('1/2').first()).toBeVisible();
 
   // ---- back online: B first, then A (409 -> merge), then B again ----
-  await b.ctx.setOffline(false);
+  await restoreConnection(b.ctx, browserName);
   await syncNow(b.page);
-  await context.setOffline(false);
+  await restoreConnection(context, browserName);
   await syncNow(page);
   await syncNow(b.page);
 

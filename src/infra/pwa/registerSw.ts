@@ -6,9 +6,12 @@ export function registerServiceWorker(onUpdate: (waiting: ServiceWorker) => void
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
   if (process.env.NODE_ENV !== 'production') return;
   const sw = navigator.serviceWorker;
+  // A worker found while the page was already controlled is an UPDATE. The very first install is not —
+  // decided when the worker is found, because some browsers (WebKit) deliver its 'installed' event late,
+  // after the new worker has already taken control (clientsClaim), which looked like an update.
   const watch = (w: ServiceWorker | null) => {
-    if (!w) return;
-    const check = () => w.state === 'installed' && sw.controller && onUpdate(w);
+    if (!w || !sw.controller) return;
+    const check = () => w.state === 'installed' && onUpdate(w);
     check();
     w.addEventListener('statechange', check);
   };

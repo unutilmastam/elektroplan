@@ -7,10 +7,24 @@ import { useUiStore } from '@/store/uiStore';
 
 const notify = (t: string) => useUiStore.getState().notify(t);
 
+/** Backup actions compare with ALL local projects: wait until they are read from IndexedDB. */
+function projectsLoaded(): Promise<void> {
+  const ready = () => ['ready', 'error'].includes(useProjectStore.getState().status);
+  if (ready()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const unsub = useProjectStore.subscribe(() => {
+      if (!ready()) return;
+      unsub();
+      resolve();
+    });
+  });
+}
+
 /** Saves one project (`id`) or every project as `.elektroplan.json` (share sheet on touch devices). */
 export async function exportBackup(id?: string): Promise<void> {
-  const store = useProjectStore.getState();
   try {
+    await projectsLoaded();
+    const store = useProjectStore.getState();
     await store.flush();
     const all = useProjectStore.getState().projects.filter((p) => p.deletedAt === null);
     const list: Project[] = id ? all.filter((p) => p.id === id) : all;
@@ -35,6 +49,8 @@ export async function importBackup(file: File): Promise<void> {
   }
   const parsed = parseBackup(text);
   if (!parsed.ok) return notify(uz.backup.errors[parsed.error satisfies BackupError]);
+  await projectsLoaded();
+  if (useProjectStore.getState().status !== 'ready') return notify(uz.backup.failed);
   const store = useProjectStore.getState();
   const plan = planImport(store.projects, parsed.file.projects);
   try {

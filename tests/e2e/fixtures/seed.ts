@@ -101,21 +101,24 @@ export const seedProject = {
 export async function openSeededProject(page: Page, id: string = SEED_ID) {
   await page.goto('/projects/');
   await page.getByText('Hali loyiha yo‘q').waitFor();
-  await page.evaluate(async (project) => {
-    const db: IDBDatabase = await new Promise((res, rej) => {
-      const r = indexedDB.open('elektroplan');
-      r.onsuccess = () => res(r.result);
-      r.onerror = () => rej(r.error);
-    });
-    await new Promise<void>((res, rej) => {
-      const tx = db.transaction(['projects', 'meta'], 'readwrite');
-      tx.objectStore('projects').put(project, project.id);
-      tx.objectStore('meta').put(project.id, 'lastOpenedProjectId');
-      tx.oncomplete = () => res();
-      tx.onerror = () => rej(tx.error);
-    });
-    db.close();
-  }, { ...seedProject, id });
+  await page.evaluate(
+    async (project) => {
+      const db: IDBDatabase = await new Promise((res, rej) => {
+        const r = indexedDB.open('elektroplan');
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      });
+      await new Promise<void>((res, rej) => {
+        const tx = db.transaction(['projects', 'meta'], 'readwrite');
+        tx.objectStore('projects').put(project, project.id);
+        tx.objectStore('meta').put(project.id, 'lastOpenedProjectId');
+        tx.oncomplete = () => res();
+        tx.onerror = () => rej(tx.error);
+      });
+      db.close();
+    },
+    { ...seedProject, id },
+  );
   await page.goto('/');
   await page.getByRole('heading', { level: 1, name: 'Sinov uyi' }).waitFor();
   await page.locator('[data-testid="plan-canvas"][data-scale]').waitFor();
@@ -131,4 +134,16 @@ export async function worldToPage(page: Page, x: number, y: number) {
     Number(el.dataset.scale),
   ]);
   return { x: box.x + vx! + x * s!, y: box.y + vy! + y * s! };
+}
+
+/** World -> page mapping read once (fast strokes: no browser round trip per point; the view does not move while drawing). */
+export async function worldMapper(page: Page) {
+  const host = page.getByTestId('plan-canvas');
+  const box = (await host.boundingBox())!;
+  const [vx, vy, s] = await host.evaluate((el) => [
+    Number(el.dataset.vx),
+    Number(el.dataset.vy),
+    Number(el.dataset.scale),
+  ]);
+  return (x: number, y: number) => ({ x: box.x + vx! + x * s!, y: box.y + vy! + y * s! });
 }

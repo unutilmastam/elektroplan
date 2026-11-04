@@ -11,7 +11,7 @@ import {
   tapWorld,
   unit,
 } from './fixtures/app';
-import { worldToPage } from './fixtures/seed';
+import { worldMapper, worldToPage } from './fixtures/seed';
 
 const isRect = (vs: Array<{ x: number; y: number }>) =>
   vs.length === 4 && new Set(vs.map((v) => v.x)).size === 2 && new Set(vs.map((v) => v.y)).size === 2;
@@ -48,12 +48,15 @@ test('a shaky hand-drawn rectangle becomes a clean rectangle; one undo shows the
     4 * u,
     6 * u,
   );
-  const first = await worldToPage(page, ...pts[0]!);
+  const toPage = await worldMapper(page);
+  const first = toPage(...pts[0]!);
   await page.mouse.move(first.x, first.y);
   await page.mouse.down();
-  for (const q of pts.slice(1)) {
-    const s = await worldToPage(page, ...q);
+  // ~10 samples per animation frame, like a fast finger / Pencil stroke (the browser may merge them)
+  for (const [i, q] of pts.slice(1).entries()) {
+    const s = toPage(...q);
     await page.mouse.move(s.x, s.y);
+    if (i % 10 === 9) await page.waitForTimeout(16);
   }
   await page.mouse.up();
   await expectStored(page, (p) => liveRooms(p).length === 1 && isRect(liveRooms(p)[0]!.vertices));
