@@ -134,3 +134,16 @@ export async function requestPersistentStorage(): Promise<boolean> {
     return false;
   }
 }
+
+/** Changes not yet sent to the server, per project (outbox rows; emptied by sync in Phase 12). */
+export async function outboxCounts(): Promise<Record<string, number>> {
+  const db = await getDb();
+  const out: Record<string, number> = {};
+  let cursor = await db.transaction('outbox').store.index('byProject').openKeyCursor();
+  while (cursor) {
+    const k = String(cursor.key);
+    out[k] = (out[k] ?? 0) + 1;
+    cursor = await cursor.continue();
+  }
+  return out;
+}

@@ -6,6 +6,8 @@ import { useId } from 'react';
 import { GlassPanel } from '@/components/layout/GlassPanel';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
+import { AppSettings, BackupSettings } from '@/features/offline-library';
+import { OfflineBadge } from '@/features/offline-library/ConnectionBadge';
 import { useSettingsStore } from '@/store/settingsStore';
 import { ProjectDefaults } from './ProjectDefaults';
 
@@ -61,8 +63,9 @@ export function SettingsScreen() {
   const update = useSettingsStore((s) => s.update);
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-2 sm:p-2.5 lg:gap-3.5 lg:p-3.5">
-      <GlassPanel as="header" className="shrink-0 px-5 py-4">
-        <h1 className="text-[22px] font-semibold lg:text-[26px]">{uz.settings.title}</h1>
+      <GlassPanel as="header" className="flex shrink-0 items-center gap-3 px-5 py-4">
+        <h1 className="flex-1 text-[22px] font-semibold lg:text-[26px]">{uz.settings.title}</h1>
+        <OfflineBadge />
       </GlassPanel>
       <GlassPanel className="flex flex-col gap-1 p-2">
         <h2 className="px-3 pt-2 pb-1 text-[13px] font-medium tracking-wide text-text-dim uppercase">
@@ -84,6 +87,8 @@ export function SettingsScreen() {
         />
       </GlassPanel>
       <ProjectDefaults />
+      <BackupSettings />
+      <AppSettings />
       <GlassPanel className="flex flex-col gap-1 p-2">
         <h2 className="px-3 pt-2 pb-1 text-[13px] font-medium tracking-wide text-text-dim uppercase">
           {uz.settings.library}

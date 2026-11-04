@@ -13,6 +13,7 @@ const types = {
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
   '.webmanifest': 'application/manifest+json',
   '.txt': 'text/plain',
   '.ico': 'image/x-icon',
@@ -23,17 +24,20 @@ async function resolveFile(urlPath) {
   let file = join(root, safe);
   try {
     if ((await stat(file)).isDirectory()) file = join(file, 'index.html');
-    return file;
+    return { file, missing: false };
   } catch {
-    return join(root, '404.html');
+    return { file: join(root, '404.html'), missing: true };
   }
 }
 
 createServer(async (req, res) => {
-  const file = await resolveFile(new URL(req.url ?? '/', 'http://x').pathname);
+  const { file, missing } = await resolveFile(new URL(req.url ?? '/', 'http://x').pathname);
   try {
-    const body = await readFile(file);
-    res.writeHead(file.endsWith('404.html') ? 404 : 200, {
+    let body = await readFile(file);
+    // e2e hook: a context with this cookie sees a "new build" of the service worker (offline.spec.ts)
+    if (file.endsWith('sw.js') && /(?:^|;\s*)e2e-sw-build=([\w-]+)/.test(req.headers.cookie ?? ''))
+      body = Buffer.concat([body, Buffer.from(`\n// build ${RegExp.$1}\n`)]);
+    res.writeHead(missing ? 404 : 200, {
       'Content-Type': types[extname(file)] ?? 'application/octet-stream',
     });
     res.end(body);

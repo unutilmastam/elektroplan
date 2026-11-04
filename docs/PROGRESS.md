@@ -13,9 +13,34 @@
 | 8 | Avtosaqlash (IndexedDB) | ✅ Tayyor |
 | 9 | Montaj rejimi | ✅ Tayyor |
 | 10 | PDF eksport | ✅ Tayyor |
-| 11 | PWA / offline (internetsiz ishlash) | — |
+| 11 | PWA / offline (internetsiz ishlash) | ✅ Tayyor (tasdiq kutilmoqda) |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 11 — 2026-11-04
+
+**Bajarildi**
+- **Serwist** (`@serwist/next` + `serwist`, ARCHITECTURE §5 ro‘yxatida) — `src/sw/sw.ts`: statik eksportning barcha sahifalari (+ RSC `index.txt`), JS/CSS, Inter shriftlari (interfeys + PDF uchun TTF), ikonkalar oldindan keshlanadi. Birinchi tashrifdan keyin ilova **samolyot rejimida** ochiladi; `/editor/?id=…`, `/install/?id=…` query bilan ham keshdan chiqadi; noma’lum sahifa oflayn — bosh sahifa. `/api/*` hech qachon keshlanmaydi. Loyihalar faqat IndexedDB’da.
+- Manifest (`/manifest.webmanifest`, `display: standalone`), ikonkalar 192/512, **maskable** 512, **apple-touch** 180, SVG — logotipdan yasalgan (`scripts/make-icons.mjs`).
+- **Zaxira nusxa** (`domain/backup.ts`, testlar bilan): bitta loyiha (loyiha kartasidagi tugma) yoki barcha loyihalar (Sozlamalar) `.elektroplan.json` faylga — telefon/iPad’da Ulashish oynasi (Fayllar, Telegram), kompyuterda yuklab olish. “Zaxiradan tiklash”: fayl zod bilan tekshiriladi; yangi loyiha qo‘shiladi, eskirgan nusxa yangilanadi, **qurilmadagi yangiroq ish hech qachon ustidan yozilmaydi**; buzilgan fayl — aniq xabar.
+- iPhone/iPad: bir martalik “Ilovani Bosh ekranga qo‘shing” eslatmasi (Safari ma’lumotni o‘chirmasligi uchun), “Tushunarli” dan keyin qayta chiqmaydi; Bosh ekrandan ochilganda chiqmaydi.
+- Android / Windows (Chrome, Edge): `beforeinstallprompt` → Sozlamalar › Ilova › “Ilovani o‘rnatish” tugmasi; o‘rnatilgan bo‘lsa — “Ilova o‘rnatilgan”; tugma bo‘lmasa qurilmaga mos qo‘lda o‘rnatish yo‘li yoziladi.
+- **Oflayn** belgisi (loyiha sarlavhasi, Loyihalar, Montaj, Sozlamalar; telefonda faqat ikonka), har loyihada “Serverga yuborilmagan o‘zgarishlar bor” bulut belgisi (outbox soni; server sinxronizatsiyasi — Phase 12).
+- Yangi versiya chiqsa: “Ilovaning yangi versiyasi tayyor · **Yangilash** / Keyinroq” — chizish o‘rtasida o‘zi qayta yuklanmaydi; “Yangilash” avval saqlaydi, so‘ng yangi versiyaga o‘tadi.
+- PDF ulashish/yuklab olish umumiy `lib/saveFile.ts` ga ko‘chirildi (PDF va zaxira bir xil yo‘l).
+
+**Test qilindi**
+- `pnpm test` — 196 test (yangi: zaxira fayli round-trip, buzilgan/bo‘sh/boshqa fayl rad etiladi, import rejasi, fayl nomi, platforma aniqlash, iOS eslatma qoidasi).
+- `pnpm test:e2e` — 6 profilning barchasida: **samolyot rejimi** (Playwright offline context): bir marta onlayn ochiladi → internet o‘chiriladi → Loyihalar ro‘yxati, loyiha ochiladi (client-side navigatsiya ham), **PDF eksport**, Montajda holat belgilanadi va oflayn qayta yuklashda saqlanadi, Sozlamalar/Bosh sahifa ochiladi, **yangi loyiha yaratiladi va xona chiziladi**, oflayn qayta yuklashdan keyin joyida; internet qaytsa “Oflayn” yo‘qoladi. Zaxira: eksport → toza qurilmada tiklash → takror import hech narsani buzmaydi → buzilgan fayl rad etiladi; kartadan bitta loyiha. iOS eslatmasi bir marta. “Yangilash” oqimi. Manifest + ikonkalar. Chromium o‘rnatish tekshiruvi (`Page.getInstallabilityErrors` — Lighthouse “installable” auditining o‘zi) **xatosiz**.
+- Jami: 330 ssenariy — 317 o‘tdi, 13 ataylab o‘tkazildi (iOS’ga oid testlar Android/Windows’da va h.k.). Avvalgi bosqichlar (chizma, belgilar, nuqtalar, devor ko‘rinishi, avtosaqlash, montaj, PDF) to‘liq qayta o‘tdi.
+- Skrinshotlar: `docs/screenshots/phase-11/` (6 qurilma: iOS eslatma, oflayn Loyihalar va Chizma, Sozlamalar, Yangilash).
+- Topilib tuzatilgan: precache bitta fayl (404.html) xato status bersa service worker umuman o‘rnatilmasligi — test serveri Apache kabi 200 beradi; Serwist’ning internet qaytganda sahifani o‘zi qayta yuklashi o‘chirildi (chizma yo‘qolmasin).
+
+**Ma’lum cheklovlar**
+- Lighthouse 12 da alohida “PWA” bo‘limi olib tashlangan; o‘rniga Chromium’ning o‘rnatish mezonlari tekshiriladi (yuqorida). Haqiqiy iPad/iPhone’da samolyot rejimi deploydan keyin qo‘lda tekshiriladi (lokal testda Apple profillari Chromium’da, CI’da WebKit).
+- iOS’da Safari service worker’ni faqat **HTTPS** da ishlatadi (`.htaccess` HTTPS’ga yo‘naltiradi).
+- “Serverga yuborilmagan” belgisi Phase 12 gacha har tahrirdan keyin turadi — server hali yo‘q.
+- Birinchi tashrif internet bilan bo‘lishi shart (~3 MB yuklanadi).
 
 ## Phase 10 — 2026-11-03
 
