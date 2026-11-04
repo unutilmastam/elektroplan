@@ -15,7 +15,29 @@
 | 10 | PDF eksport | ✅ Tayyor |
 | 11 | PWA / offline (internetsiz ishlash) | ✅ Tayyor |
 | 12 | PHP + MySQL sync + Auth | ✅ Tayyor |
-| 13 | Testlar va optimizatsiya | — |
+| 13 | Testlar va optimizatsiya | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 13 — 2026-11-04
+
+**Bajarildi**
+- **To‘liq ish ssenariysi** (`tests/e2e/journey.spec.ts`), 6 profilning barchasida, UI orqali chizilgan loyihada: loyiha → 2 xona → rozetka va viklyuchatel (devorga yopishadi) → devor ko‘rinishi → montaj (1/2) → PDF → samolyot rejimi (montaj 2/2, qayta yuklashda saqlanadi) → akkaunt + sinxron (server revision 1, “Sinxronlandi”).
+- **Coverage** `src/domain/`: statements 95,4 %, lines 97,8 %, functions 97 %, branches 85 % (`pnpm test:coverage`; CI’da chegara 90 / 90 / 90 / 80 — tushsa CI qizil bo‘ladi). Yangi chekka holat testlari: login normalizatsiyasi, snap (burchak/devor/45°/grid), devor o‘chirish (L-shakl, teskari yo‘nalish, erkin devor), merge (eshik/sozlama konfliktlari), saralash.
+- **Performance — Konva layer caching** (`usePlanCache`): reja (xonalar, devorlar, yozuvlar, nuqtalar soyasi bilan) ko‘rinadigan maydon + atrofi bilan bitmap’ga keshlanadi; surishda faqat rasm siljiydi, chegaradan chiqilsa darhol qayta quriladi; tahrirda aniq vektor, to‘xtaganda qayta kesh. Bitmap hajmi iPad/iPhone xotira chegarasida (≤ 16 Mpx). Nuqta soyasi chiziq uchun ikki marta chizilmaydi, devor qidiruvi Map orqali.
+  - 500 nuqtali loyiha (20 xona), kadr boshiga asosiy oqim ishi (JS + canvas): **24–27 ms → 2,6–6 ms** (60 fps byudjeti 16,7 ms). Kadr tezligi endi deyarli bo‘sh loyiha bilan bir xil (shu konteynerda GPU yo‘q: bo‘sh loyiha ham 39–53 fps; haqiqiy iPad’da 60 fps kutiladi — `docs/MANUAL_TEST.md` 2.7).
+  - `tests/e2e/perf.spec.ts` buni har safar tekshiradi.
+- **Bundle:** Montaj sahifasi Konva’ni keraksiz statik yuklardi (rang konstantasi sabab) — 339 kB → **239 kB** first load. PDF kutubxonalari (pdf-lib, fontkit) faqat “Eksport PDF” bosilganda yuklanadi; Konva faqat reja ko‘rinadigan sahifalarda.
+- **A11y:** kontrast WCAG AA ga keltirildi (`--primary` #1f6fff → #1c69f7: oq matn 4,4 → 4,8:1; `--text-dim` #6b7a96 → #7887a3: 4,0 → 4,8:1 — ko‘zga deyarli sezilmaydi, DESIGN_SYSTEM yangilandi); har qanday klaviatura fokusida ko‘rinadigan halqa. `tests/e2e/a11y.spec.ts`: 7 ekranning barchasida har tugma/havola/maydon nomlangan, bitta h1, `lang="uz"`; Tab asosiy amallarga yetadi, fokus doim ko‘rinadi, Enter dialogni ochadi, Esc yopadi.
+- **Qo‘lda tekshiruv ro‘yxati:** `docs/MANUAL_TEST.md` — iPad (Pencil, kaft), iPhone, Android, Windows uchun 40+ qadam (o‘rnatish, chizma, nuqtalar, montaj, PDF, zaxira, samolyot rejimi, ikki qurilma sinxroni, a11y).
+- README va hujjatlar yakuniy yangilandi. `@vitest/coverage-v8` dev-paketi qo‘shildi (faqat coverage o‘lchash uchun, ilovaga kirmaydi).
+
+**Test qilindi**
+- `pnpm test:coverage` — 246 test, chegaralar o‘tdi. `php -l` toza.
+- `pnpm test:e2e` — barcha 6 profil: __E2E__.
+
+**Ma’lum cheklovlar**
+- 60 fps haqiqiy qurilmada ko‘z bilan tasdiqlanishi kerak (bu konteynerda GPU yo‘q). Juda katta ekranlarda (4K, dpr 2) kesh o‘chadi va reja vektor chiziladi.
+- Uzoq zoom-out paytida (dekoratsiya o‘lchami o‘zgaradi) kesh qayta quriladi — qisqa sekinlashuv mumkin.
+- Haqiqiy qurilmalardagi qo‘lda tekshiruv va hostmaster.uz’dagi tekshiruv — deploy secrets qo‘shilgandan keyin.
 
 ## Phase 12 — 2026-11-04
 

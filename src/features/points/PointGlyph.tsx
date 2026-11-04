@@ -55,6 +55,7 @@ export function PointGlyph({ point, size, rotation, opacity = 1 }: PointGlyphPro
         shadowColor={color}
         shadowBlur={8}
         shadowOpacity={0.45}
+        shadowForStrokeEnabled={false}
       />
       <Group x={-size / 2 + pad} y={-size / 2 + pad} scaleX={inner / 24} scaleY={inner / 24}>
         {def.glyph.map((g, i) =>
