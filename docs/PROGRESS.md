@@ -13,7 +13,7 @@
 | 8 | Avtosaqlash (IndexedDB) | ✅ Tayyor |
 | 9 | Montaj rejimi | ✅ Tayyor |
 | 10 | PDF eksport | ✅ Tayyor |
-| 11 | PWA / offline (internetsiz ishlash) | ✅ Tayyor (tasdiq kutilmoqda) |
+| 11 | PWA / offline (internetsiz ishlash) | ✅ Tayyor |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
 
