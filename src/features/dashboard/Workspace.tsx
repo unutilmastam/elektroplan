@@ -23,14 +23,14 @@ export function Workspace({ mode }: { mode: WorkspaceMode }) {
   const project = useCurrentProject();
   const status = useProjectStore((s) => s.status);
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 p-2 sm:gap-2.5 sm:p-2.5 md:grid md:grid-cols-[minmax(0,1fr)_268px] md:grid-rows-[auto_auto_minmax(0,1fr)_212px] md:gap-x-2.5 md:gap-y-2.5 lg:grid-cols-[minmax(0,1fr)_272px] lg:grid-rows-[auto_auto_minmax(0,1fr)_248px] lg:gap-x-3.5 lg:gap-y-3.5 lg:p-3.5">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 p-2 short:overflow-y-auto sm:gap-2.5 sm:p-2.5 md:grid md:grid-cols-[minmax(0,1fr)_268px] md:grid-rows-[auto_auto_minmax(0,1fr)_212px] md:gap-x-2.5 md:gap-y-2.5 lg:grid-cols-[minmax(0,1fr)_272px] lg:grid-rows-[auto_auto_minmax(0,1fr)_248px] lg:gap-x-3.5 lg:gap-y-3.5 lg:p-3.5">
       <div className="md:col-span-2">
         <ProjectHeader />
       </div>
       <div className="md:col-span-2">
         <SymbolBar />
       </div>
-      <div className="relative min-h-0 flex-1">
+      <div className="relative min-h-0 flex-1 short:min-h-[82dvh]!">
         <PlanCanvas
           project={project}
           overlay={project ? undefined : <NoProjectState notFound={notFound} status={status} />}

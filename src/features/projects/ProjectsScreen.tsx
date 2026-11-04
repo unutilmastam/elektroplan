@@ -86,7 +86,7 @@ export function ProjectsScreen() {
         ) : list.length === 0 ? (
           <p className="py-10 text-center text-text-muted">{uz.projects.noResults}</p>
         ) : (
-          <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:gap-3.5 xl:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-2.5 md:grid-cols-2 lg:gap-3.5 xl:grid-cols-3">
             {list.map((p) => (
               <ProjectCard
                 key={p.id}

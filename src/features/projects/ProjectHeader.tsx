@@ -24,7 +24,7 @@ export function ProjectHeader() {
   return (
     <GlassPanel
       as="header"
-      className="flex shrink-0 items-center gap-3 rounded-[14px] px-2.5 py-2 md:px-3 md:py-2.5 lg:rounded-[16px] lg:px-3.5 lg:py-3"
+      className="flex shrink-0 items-center gap-3 rounded-[14px] px-2.5 py-2 short:py-1.5! md:px-3 md:py-2.5 lg:rounded-[16px] lg:px-3.5 lg:py-3"
     >
       <RecentProjectsMenu />
       <div className="min-w-0 flex-1">
@@ -48,7 +48,7 @@ export function ProjectHeader() {
           <OfflineBadge />
         </div>
         {project ? (
-          <div className="mt-0.5 flex min-w-0 items-center gap-3 truncate text-[12.5px] text-text-muted md:text-[14px] lg:mt-1 lg:text-[16px]">
+          <div className="mt-0.5 flex min-w-0 items-center gap-3 truncate text-[12.5px] text-text-muted short:hidden! max-[359px]:hidden md:text-[14px] lg:mt-1 lg:text-[16px]">
             <span className="truncate">
               <span className="hidden sm:inline">{uz.header.customer}: </span>
               <span className="text-text/90">{project?.customerName || uz.header.empty}</span>

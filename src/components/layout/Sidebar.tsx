@@ -20,8 +20,8 @@ export function Sidebar() {
       className="hidden h-full w-[72px] shrink-0 flex-col border-r border-white/[0.06] bg-bg-elevated/80 sm:flex lg:w-[230px]"
       style={{ paddingLeft: 'var(--safe-left)' }}
     >
-      <div className="no-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto px-2 lg:px-3.5">
-        <Link href="/" className="pt-5 pb-5 lg:pt-6 lg:pb-8" aria-label={uz.app.name}>
+      <div className="no-scrollbar relative flex min-h-0 flex-1 flex-col overflow-y-auto px-2 lg:px-3.5">
+        <Link href="/" className="pt-5 pb-5 short:hidden lg:pt-6 lg:pb-8" aria-label={uz.app.name}>
           <span className="lg:hidden">
             <Logo compact />
           </span>
@@ -29,7 +29,7 @@ export function Sidebar() {
             <Logo />
           </span>
         </Link>
-        <nav aria-label={uz.nav.menu} className="flex flex-col gap-[6px] lg:gap-[5px]">
+        <nav aria-label={uz.nav.menu} className="flex flex-col gap-[6px] short:gap-1 short:pt-2 lg:gap-[5px]">
           {NAV_ITEMS.map(({ key, href, icon: Icon }) => {
             const active = isNavActive(pathname, href);
             return (
@@ -39,7 +39,7 @@ export function Sidebar() {
                 title={uz.nav[key]}
                 aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'flex h-[56px] items-center justify-center gap-3.5 rounded-[12px] text-[17px] transition-colors duration-150 lg:h-[58px] lg:justify-start lg:px-4',
+                  'flex h-[56px] items-center justify-center gap-3.5 rounded-[12px] text-[17px] transition-colors duration-150 short:h-11 lg:h-[58px] lg:justify-start lg:px-4',
                   active ? 'nav-active text-white' : 'text-text hover:bg-white/[0.05]',
                 )}
               >
@@ -55,13 +55,13 @@ export function Sidebar() {
           })}
           <AdminNavItem active={isNavActive(pathname, '/admin/')} />
         </nav>
-        <div className="mt-auto hidden flex-col gap-5 pt-6 pb-4 lg:flex">
+        <div className="mt-auto hidden flex-col gap-5 pt-6 pb-4 lg:flex short:hidden">
           <StatsCard />
           <ProCard />
         </div>
       </div>
       <div
-        className="flex justify-center border-t border-white/[0.07] px-3 py-4 lg:block lg:px-4 lg:py-5"
+        className="flex justify-center border-t border-white/[0.07] px-3 py-4 short:hidden! lg:block lg:px-4 lg:py-5"
         style={{ paddingBottom: 'calc(var(--safe-bottom) + 16px)' }}
       >
         <Link href="/login/" className="lg:hidden" aria-label={uz.auth.title}>
@@ -85,7 +85,7 @@ function AdminNavItem({ active }: { active: boolean }) {
       title={uz.admin.title}
       aria-current={active ? 'page' : undefined}
       className={cn(
-        'flex h-[56px] items-center justify-center gap-3.5 rounded-[12px] text-[17px] transition-colors duration-150 lg:h-[58px] lg:justify-start lg:px-4',
+        'flex h-[56px] items-center justify-center gap-3.5 rounded-[12px] text-[17px] transition-colors duration-150 short:h-11 lg:h-[58px] lg:justify-start lg:px-4',
         active ? 'nav-active text-white' : 'text-text hover:bg-white/[0.05]',
       )}
     >

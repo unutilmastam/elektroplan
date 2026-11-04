@@ -42,7 +42,8 @@ function SwitchRow({
         aria-checked={value}
         onClick={() => onChange(!value)}
         className={cn(
-          'relative mt-0.5 h-8 w-[52px] shrink-0 rounded-full transition-colors duration-150',
+          // the visible switch is 52×32; the ::after area makes the tap target 68×48
+          "relative mt-0.5 h-8 w-[52px] shrink-0 rounded-full transition-colors duration-150 after:absolute after:-inset-x-2 after:-inset-y-2 after:content-['']",
           value ? 'bg-primary' : 'bg-white/15',
         )}
       >

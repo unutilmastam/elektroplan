@@ -28,7 +28,7 @@ export function MobileNav() {
             aria-current={active ? 'page' : undefined}
             aria-label={uz.nav[key]}
             className={cn(
-              'flex h-[58px] flex-col items-center justify-center gap-1 text-[10.5px]',
+              'flex h-[58px] flex-col items-center justify-center gap-1 text-[11px]',
               active ? 'text-primary-hi' : 'text-text-muted',
             )}
           >
