@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { IS_DESKTOP } from '@/infra/desktop/desktop';
 import { detectPlatform, type InstallPlatform } from '@/domain/platform';
 import { getMeta, outboxCounts, setMeta } from '@/infra/idb/projectRepo';
 
@@ -54,7 +55,9 @@ export const usePwaStore = create<PwaState>()((set, get) => ({
     set({
       online: nav.onLine,
       platform: detectPlatform(nav.userAgent, nav.maxTouchPoints ?? 0),
-      standalone: nav.standalone === true || matchMedia('(display-mode: standalone)').matches,
+            // the Windows app is installed by definition: no "install the app" hints
+      standalone:
+        IS_DESKTOP || nav.standalone === true || matchMedia('(display-mode: standalone)').matches,
     });
     if (lsHint()) set({ iosHintDismissed: true });
     else

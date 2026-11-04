@@ -35,7 +35,8 @@ const withSerwist = withSerwistInit({
   swDest: 'public/sw.js',
   reloadOnOnline: false, // never reload while the electrician is drawing
   register: false, // src/infra/pwa/registerSw.ts (update waits for "Yangilash")
-  disable: process.env.NODE_ENV === 'development',
+  // dev server, and the Windows app (Tauri serves the files from the install itself)
+  disable: process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_DESKTOP === '1',
   additionalPrecacheEntries: [
     ...PAGES.map((url) => ({ url, revision })),
     // RSC payloads used by client-side navigation (next/link)

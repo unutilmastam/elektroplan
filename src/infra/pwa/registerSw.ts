@@ -5,6 +5,7 @@
 export function registerServiceWorker(onUpdate: (waiting: ServiceWorker) => void): void {
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
   if (process.env.NODE_ENV !== 'production') return;
+  if (process.env.NEXT_PUBLIC_DESKTOP === '1') return; // Windows app: files are already installed locally
   const sw = navigator.serviceWorker;
   // A worker found while the page was already controlled is an UPDATE. The very first install is not —
   // decided when the worker is found, because some browsers (WebKit) deliver its 'installed' event late,

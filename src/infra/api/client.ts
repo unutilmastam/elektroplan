@@ -10,10 +10,15 @@ import {
 } from '@/domain/auth';
 import type { Conflict } from '@/domain/merge';
 import type { Project } from '@/domain/types';
-import type { z } from 'zod';
+import { z } from 'zod';
+import { API_BASE, desktopHeaders, IS_DESKTOP, setDesktopToken } from '@/infra/desktop/desktop';
 
-/** PHP API client (server/index.php). Same origin, httpOnly cookie session. Every answer is zod-validated. */
-const BASE = '/api';
+/**
+ * PHP API client (server/index.php). Web: same origin, httpOnly cookie session. Windows app: absolute
+ * API_BASE + token header (src/infra/desktop). Every answer is zod-validated.
+ */
+const BASE = API_BASE;
+const LoginResponseSchema = UserResponseSchema.extend({ token: z.string().optional() });
 
 export class NetworkError extends Error {
   constructor() {
@@ -40,10 +45,11 @@ async function request(
   try {
     r = await fetch(`${BASE}${path}`, {
       method,
-      credentials: 'same-origin',
+      credentials: IS_DESKTOP ? 'omit' : 'same-origin',
       cache: 'no-store',
       headers: {
         Accept: 'application/json',
+        ...desktopHeaders(),
         ...(method === 'POST' ? { 'Content-Type': 'application/json', 'X-Elektroplan': '1' } : {}),
       },
       body: body === undefined ? undefined : JSON.stringify(body),
@@ -80,6 +86,12 @@ async function call<S extends z.ZodType>(schema: S, method: 'GET' | 'POST', path
   return parse(schema, status, json);
 }
 
+/** The Windows app keeps the session token it was given (the web relies on the cookie). */
+function signedIn(r: z.infer<typeof LoginResponseSchema>): User {
+  if (r.token) setDesktopToken(r.token);
+  return r.user;
+}
+
 export type SyncResult =
   { kind: 'ok'; revision: number; ownerId: string } | { kind: 'conflict'; project: Project };
 
@@ -90,11 +102,15 @@ export const api = {
     return parse(UserResponseSchema, status, json).user;
   },
   login: async (login: string, password: string): Promise<User> =>
-    (await call(UserResponseSchema, 'POST', '/auth/login', { login, password })).user,
+    signedIn(await call(LoginResponseSchema, 'POST', '/auth/login', { login, password })),
   register: async (name: string, login: string, password: string): Promise<User> =>
-    (await call(UserResponseSchema, 'POST', '/auth/register', { name, login, password })).user,
+    signedIn(await call(LoginResponseSchema, 'POST', '/auth/register', { name, login, password })),
   logout: async (): Promise<void> => {
-    await request('POST', '/auth/logout', {});
+    try {
+      await request('POST', '/auth/logout', {});
+    } finally {
+      setDesktopToken(null);
+    }
   },
   sync: async (body: {
     project: Project;

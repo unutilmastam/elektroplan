@@ -244,4 +244,14 @@ iPhone (kichik/katta), Samsung/Android, iPad (portret/landshaft, Split View), ko
 
 Barcha yozuvlar ruschaga, Sozlamalarda til tanlash (O‘zbekcha / Русский), telefon tiliga qarab avtomatik, PDF ham tanlangan tilda.
 
+## PHASE 17 — Windows dasturi (egasi qo‘shgan, 2026-11-04)
+
+Kompyuter uchun alohida o‘rnatiladigan dastur (Tauri v2, `src-tauri/`): o‘sha statik eksport ilova ichida, internetsiz ochiladi va ishlaydi, akkaunt bilan eplan.itcode.uz ga sinxronlanadi.
+
+**Qabul mezonlari**
+- GitHub Actions (`windows-latest`) `ElektroPlan-Setup.exe` (NSIS, foydalanuvchi uchun, admin huquqisiz) yig‘adi; `main` da GitHub Release va saytdagi `/download/` ga joylaydi.
+- Dastur serversiz ham ochiladi, loyihalar saqlanadi; internet bo‘lsa kirish va sinxronlash ishlaydi.
+- Server: Windows ilovasi uchun CORS (`tauri.localhost`) va `X-Elektroplan-Auth` token sessiyasi; veb cookie sessiyasi o‘zgarmaydi, token vebga hech qachon berilmaydi.
+- Tashqi havolalar (Telegram) brauzerda ochiladi; dasturda “ilovani o‘rnatish” va service worker yo‘q.
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)
