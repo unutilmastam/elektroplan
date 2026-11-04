@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronRight, PenLine, Shapes, Wand2, type LucideIcon } from 'lucide-react';
+import { ChevronRight, PenLine, Ruler, Shapes, Wand2, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useId } from 'react';
 import { GlassPanel } from '@/components/layout/GlassPanel';
@@ -63,6 +63,7 @@ function SwitchRow({
 export function SettingsScreen() {
   const penOnly = useSettingsStore((s) => s.penOnly);
   const autoStraighten = useSettingsStore((s) => s.autoStraighten);
+  const showDimensions = useSettingsStore((s) => s.showDimensions);
   const update = useSettingsStore((s) => s.update);
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-2 sm:p-2.5 lg:gap-3.5 lg:p-3.5">
@@ -89,6 +90,13 @@ export function SettingsScreen() {
           hint={uz.settings.autoStraightenHint}
           value={autoStraighten}
           onChange={(v) => void update({ autoStraighten: v })}
+        />
+        <SwitchRow
+          icon={Ruler}
+          label={uz.settings.showDimensions}
+          hint={uz.settings.showDimensionsHint}
+          value={showDimensions}
+          onChange={(v) => void update({ showDimensions: v })}
         />
       </GlassPanel>
       <ProjectDefaults />

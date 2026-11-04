@@ -254,4 +254,13 @@ Kompyuter uchun alohida o‘rnatiladigan dastur (Tauri v2, `src-tauri/`): o‘sh
 - Server: Windows ilovasi uchun CORS (`tauri.localhost`) va `X-Elektroplan-Auth` token sessiyasi; veb cookie sessiyasi o‘zgarmaydi, token vebga hech qachon berilmaydi.
 - Tashqi havolalar (Telegram) brauzerda ochiladi; dasturda “ilovani o‘rnatish” va service worker yo‘q.
 
+## PHASE 18 — Devor o‘lchamlari (egasi qo‘shgan, 2026-11-04)
+
+O‘lcham hech qachon majburiy emas. 1 reja birligi = 1 sm (devor 16 sm, to‘r 20 sm).
+
+**Qabul mezonlari**
+- Xona yoki devor chizilayotganda (barmoq, qalam, sichqoncha) uzunlik/eni-bo‘yi jonli ko‘rinadi; qo‘yib yuborilgan o‘lchamda qoladi.
+- Devor panelida “Uzunligi (ixtiyoriy)”: “3,2”, “320”, “320 sm”, “3.2 m” qabul qilinadi; xona to‘g‘ri burchakli qoladi, qo‘shni xona birga cho‘ziladi; bitta “Bekor qilish” qaytaradi.
+- Rejada devor uzunliklari (Sozlamalar → “Devor o‘lchamlari”, qurilma sozlamasi, standart: yoqilgan); qisqa devorda yozuv yashiriladi.
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)

@@ -130,7 +130,13 @@ export const uzStrings = {
     ceiling: 'Shipda / xona ichida',
     closePanel: 'Yopish',
   },
+  units: { m: 'm', cm: 'sm' },
   walls: {
+    length: 'Uzunligi',
+    lengthHint: 'ixtiyoriy',
+    lengthPlaceholder: 'Masalan 3,2 yoki 320 sm',
+    lengthInvalid: '20 sm dan 100 m gacha kiriting (masalan 3,2 yoki 320 sm)',
+    lengthCantChange: 'Bu devorning uzunligini o‘zgartirib bo‘lmaydi — devorni qo‘lda suring.',
     cannotDeleteExterior:
       'Xonaning tashqi devorini alohida o‘chirib bo‘lmaydi — xonani o‘chiring yoki devorni suring.',
     cannotMerge: 'Bu ikki xona bir nechta devor bilan tutashgan — avval ortiqcha devorlarni bo‘ling.',
@@ -344,6 +350,9 @@ export const uzStrings = {
     autoStraighten: 'Qo‘lda chizilgan shaklni avtomatik tekislash',
     autoStraightenHint:
       'Qiyshiq chizilgan xona to‘g‘ri burchakli toza shaklga aylanadi. Bir marta “Bekor qilish” asl chizmani qaytaradi.',
+    showDimensions: 'Devor o‘lchamlari',
+    showDimensionsHint:
+      'Rejada har bir devor uzunligini ko‘rsatish. Chizayotganda o‘lcham doim ko‘rinadi; qo‘yib yuborgan joyingizda qoladi.',
     more: 'Boshqa sozlamalar keyingi bosqichlarda qo‘shiladi.',
     library: 'Kutubxona',
     project: 'Loyiha',

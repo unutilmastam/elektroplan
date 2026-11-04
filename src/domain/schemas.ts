@@ -151,6 +151,12 @@ export const DeviceSettingsSchema = z.object({
   penOnly: z.boolean().default(false),
   /** straighten freehand room sketches automatically */
   autoStraighten: z.boolean().default(true),
+  /** PHASE 18: wall lengths on the plan (always shown while drawing) */
+  showDimensions: z.boolean().default(true),
 });
 export type DeviceSettings = z.infer<typeof DeviceSettingsSchema>;
-export const DEFAULT_DEVICE_SETTINGS: DeviceSettings = { penOnly: false, autoStraighten: true };
+export const DEFAULT_DEVICE_SETTINGS: DeviceSettings = {
+  penOnly: false,
+  autoStraighten: true,
+  showDimensions: true,
+};
