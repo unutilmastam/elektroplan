@@ -95,7 +95,9 @@ export function wallTarget(
   const probe = pointOnWall(w, t, cursorSide, 10);
   const room = rooms.find((r) => pointInPolygon(probe, r.vertices)) ?? rooms[0] ?? roomAt(p, probe);
   if (!room) return null;
-  const side = sideToward(w, t, room);
+  // the side that was tapped when it is inside the room (both sides of a wall standing inside one room),
+  // otherwise the room's side (a tap just outside an outer wall still lands inside)
+  const side = pointInPolygon(probe, room.vertices) ? cursorSide : sideToward(w, t, room);
   return {
     kind: 'wall',
     wallId: w.id,

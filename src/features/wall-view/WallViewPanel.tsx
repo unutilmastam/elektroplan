@@ -17,7 +17,12 @@ export function useWallView() {
   const project = useCurrentProject();
   const wallId = useEditorStore((s) => s.selectedWallId);
   const roomId = useEditorStore((s) => s.selectedRoomId);
-  const elevation = project && wallId ? selectWallElevation(project, wallId, roomId ?? undefined) : null;
+  const pointId = useEditorStore((s) => s.selectedPointId);
+  // a wall inside one room has two faces: show the face of the selected point
+  const point =
+    project && pointId ? project.points.find((p) => p.id === pointId && p.wallId === wallId) : undefined;
+  const elevation =
+    project && wallId ? selectWallElevation(project, wallId, roomId ?? undefined, point?.side) : null;
   const walls = project && elevation?.room ? roomWallIds(project, elevation.room.id) : [];
   const step = (dir: 1 | -1) => {
     if (!walls.length || !wallId) return;

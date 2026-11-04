@@ -13,6 +13,7 @@ import {
   wallTarget,
 } from '@/domain/points';
 import { createEmptyProject } from '@/domain/project';
+import { selectWallElevation } from '@/domain/selectors';
 import { addRoom, topologyRecipe } from '@/domain/rooms';
 import type { Project, Vec2 } from '@/domain/types';
 import { moveWall } from '@/domain/wallEdits';
@@ -201,5 +202,69 @@ describe('moving and editing', () => {
       distanceFromCornerCm: 190,
       status: 'pending',
     });
+  });
+});
+
+describe('a wall standing inside one room (both faces in the same room)', () => {
+  const NOW2 = '2026-11-04T00:00:00.000Z';
+  const room = {
+    id: 'R',
+    name: 'Zal',
+    color: '#0d1628',
+    shape: 'rect' as const,
+    vertices: [
+      { x: 0, y: 0 },
+      { x: 400, y: 0 },
+      { x: 400, y: 200 },
+      { x: 0, y: 200 },
+    ],
+    labelOffset: { x: 0, y: 0 },
+    order: 0,
+    createdAt: NOW2,
+    updatedAt: NOW2,
+    deletedAt: null,
+  };
+  const free = {
+    id: 'mid',
+    a: { x: 200, y: 40 },
+    b: { x: 200, y: 160 },
+    thickness: 12,
+    roomIds: [],
+    name: null,
+    createdAt: NOW2,
+    updatedAt: NOW2,
+    deletedAt: null,
+  };
+  const proj = { ...createEmptyProject('p', 'P', NOW2), rooms: [room], walls: [free] };
+  const socket = { placement: 'wall' as const, category: 'socket' as const, defaultMountHeightCm: 30 };
+
+  it('a tap on each face puts the socket on that face', () => {
+    const left = placementTarget(proj, { x: 190, y: 100 }, socket, { tolerance: 20, free: false });
+    const right = placementTarget(proj, { x: 210, y: 100 }, socket, { tolerance: 20, free: false });
+    expect(left).toMatchObject({ kind: 'wall', wallId: 'mid', roomId: 'R' });
+    expect(right).toMatchObject({ kind: 'wall', wallId: 'mid', roomId: 'R' });
+    if (left?.kind !== 'wall' || right?.kind !== 'wall') return;
+    expect(left.side).not.toBe(right.side);
+    expect(left.pos.x).toBeLessThan(200);
+    expect(right.pos.x).toBeGreaterThan(200);
+  });
+
+  it('the wall view shows one face at a time', () => {
+    const mk = (id: string, side: 1 | -1) => ({
+      ...newPoint(
+        proj,
+        placementTarget(proj, { x: side === 1 ? 190 : 210, y: 100 }, socket, { tolerance: 20, free: false })!,
+        'socket-single',
+        { ...socket, defaultColor: '#3b8bff' },
+        id,
+        NOW2,
+      ),
+    });
+    const a = mk('a', 1);
+    const b = mk('b', -1);
+    const withPts = { ...proj, points: [a, b] };
+    expect(selectWallElevation(withPts, 'mid', 'R')!.points).toHaveLength(2);
+    expect(selectWallElevation(withPts, 'mid', 'R', a.side)!.points.map((x) => x.point.id)).toEqual(['a']);
+    expect(selectWallElevation(withPts, 'mid', 'R', b.side)!.points.map((x) => x.point.id)).toEqual(['b']);
   });
 });

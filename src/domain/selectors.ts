@@ -41,7 +41,16 @@ export interface WallElevation {
 }
 
 /** docs/DATA_MODEL.md §2 selectWallElevation — points sorted left → right. */
-export function selectWallElevation(project: Project, wallId: string, roomId?: string): WallElevation | null {
+/**
+ * `side`: for a wall that does not separate two rooms (a free wall standing inside a room) both faces are in the
+ * same room — then only the points on that face are shown.
+ */
+export function selectWallElevation(
+  project: Project,
+  wallId: string,
+  roomId?: string,
+  side?: 1 | -1,
+): WallElevation | null {
   const wall = project.walls.find((w) => w.id === wallId && w.deletedAt === null);
   if (!wall) return null;
   const length = Math.hypot(wall.b.x - wall.a.x, wall.b.y - wall.a.y);
@@ -49,6 +58,7 @@ export function selectWallElevation(project: Project, wallId: string, roomId?: s
   const room = project.rooms.find((r) => r.id === preferred && r.deletedAt === null) ?? null;
   const points = project.points
     .filter((p) => p.deletedAt === null && p.wallId === wall.id && (room === null || p.roomId === room.id))
+    .filter((p) => side === undefined || wall.roomIds.length === 2 || p.side === side)
     .map((point) => ({
       point,
       distance: point.distanceFromCornerCm ?? cornerDistance(wall, point.t ?? 0, point.side),
