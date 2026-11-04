@@ -32,7 +32,7 @@
 
 **Test qilindi**
 - Unit: o‘lchamni yozish/o‘qish (m, sm, vergul, ruscha “м/см”), devor uzunligini o‘zgartirish (cho‘zish, qisqartirish, qo‘shni xona, erkin devor), o‘zgargan devorni topish.
-- E2E 6 profilda: devor “3 m” ko‘rinadi → “4” yoziladi → xona 4 m, qo‘shni xona ergashadi, noto‘g‘ri qiymat rad etiladi, “Bekor qilish” qaytaradi; Sozlamalarda o‘chirish saqlanadi.
+- To‘liq E2E 6 profilda: 422 ta o‘tdi. Yangi testlar: devor “3 m” ko‘rinadi → “4” yoziladi → xona 4 m, qo‘shni xona ergashadi, noto‘g‘ri qiymat rad etiladi, “Bekor qilish” qaytaradi; Sozlamalarda o‘chirish saqlanadi.
 - Skrinshotlar: `docs/screenshots/phase-18/`.
 
 **Ma’lum cheklovlar**
