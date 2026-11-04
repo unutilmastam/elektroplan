@@ -1,7 +1,7 @@
 'use client';
 
 import Konva from 'konva';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Group, Layer, Stage } from 'react-konva';
 import type { Bounds, Vec2, Viewport } from '@/domain/geometry';
 import type { DraftShape } from '@/store/editorStore';
@@ -13,6 +13,7 @@ import { decorationK, pointK } from './decoration';
 import { GridLayer } from './GridLayer';
 import { PlanContent } from './PlanContent';
 import { SelectionContent } from './SelectionLayer';
+import { usePlanCache } from './usePlanCache';
 
 export interface PlanStageProps {
   project: Project;
@@ -50,14 +51,20 @@ export default function PlanStage({
   const k = decorationK(viewport.scale);
   const kp = pointK(viewport.scale);
   const t = { x: viewport.x, y: viewport.y, scaleX: viewport.scale, scaleY: viewport.scale };
+  const plan = useRef<Konva.Group>(null);
+  const statusScale = showStatus ? viewport.scale : 0; // status rings are drawn in screen pixels
+  const contentKey = useMemo(() => ({}), [project, k, kp, fontFamily, statusScale]); // eslint-disable-line react-hooks/exhaustive-deps
+  usePlanCache(plan, viewport, { width, height }, contentKey);
 
   return (
     <Stage width={width} height={height} listening={false}>
       <GridLayer width={width} height={height} viewport={viewport} gridSize={project.settings.gridSize} />
       <Layer listening={false}>
         <Group {...t}>
-          <PlanContent project={project} k={k} kp={kp} fontFamily={fontFamily} />
-          {showStatus ? <StatusLayer project={project} k={kp} scale={viewport.scale} /> : null}
+          <Group ref={plan}>
+            <PlanContent project={project} k={k} kp={kp} fontFamily={fontFamily} />
+            {showStatus ? <StatusLayer project={project} k={kp} scale={viewport.scale} /> : null}
+          </Group>
         </Group>
       </Layer>
       <Layer listening={false}>

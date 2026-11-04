@@ -131,6 +131,19 @@ describe('autosave (fake-indexeddb)', () => {
     expect(app.s().projects.find((p) => p.id === id)!.name).toBe('Jurnaldan');
   });
 
+  it('closing while a save is still being written (e.g. started by sync): the journal keeps it', async () => {
+    let app = await boot();
+    const id = await app.s().create(info);
+    app.s().apply('rename', rename('Yozilmoqda'));
+    const writing = app.s().flush(); // sync / Saqlash: the write is now in flight, nothing pending any more
+    const closing = app.s().flush(true); // pagehide before that IndexedDB transaction commits
+    // the browser may abort the in-flight transaction during unload: the journal must already hold it
+    expect(localStorage.getItem('elektroplan:unsaved')).toContain('Yozilmoqda');
+    await Promise.all([writing, closing]);
+    app = await reopen(app);
+    expect(app.s().projects.find((p) => p.id === id)!.name).toBe('Yozilmoqda');
+  });
+
   it('an older journal never overwrites newer saved data', async () => {
     let app = await boot();
     const id = await app.s().create(info);

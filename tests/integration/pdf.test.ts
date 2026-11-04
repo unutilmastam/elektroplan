@@ -32,7 +32,7 @@ describe('PDF export', () => {
     const t0 = performance.now();
     const bytes = await buildPdf(project, fonts, '03.11.2026');
     const ms = performance.now() - t0;
-    expect(ms).toBeLessThan(5000);
+    expect(ms).toBeLessThan(process.env.COVERAGE ? 30_000 : 5000); // instrumented runs are slower
     writeFileSync(join(process.cwd(), 'test-results-demo.pdf'), bytes);
     const doc = await PDFDocument.load(bytes);
     const pages = doc.getPages();

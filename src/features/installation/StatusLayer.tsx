@@ -1,14 +1,9 @@
 'use client';
 
 import { Circle, Group, Path } from 'react-konva';
-import type { PointStatus, Project } from '@/domain/types';
+import type { Project } from '@/domain/types';
+import { STATUS_COLOR } from './statusColors';
 import { POINT_BADGE } from '@/features/editor/canvas/decoration';
-
-export const STATUS_COLOR: Record<PointStatus, string> = {
-  pending: '#94a3b8',
-  in_progress: '#f59e0b',
-  completed: '#22c55e',
-};
 
 /** Status ring around every point; completed points get a check badge (Montaj rejimi). World units. */
 export function StatusLayer({ project, k, scale }: { project: Project; k: number; scale: number }) {

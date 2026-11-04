@@ -4,7 +4,7 @@ import type { ElectricalPoint, Project } from '@/domain/types';
 import { SymbolIcon } from '@/features/symbols/SymbolIcon';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
-import { STATUS_COLOR } from './StatusLayer';
+import { STATUS_COLOR } from './statusColors';
 
 const STATUS_LABEL = {
   pending: uz.status.pending,

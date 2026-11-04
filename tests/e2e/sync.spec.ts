@@ -25,10 +25,15 @@ const PASSWORD = 'maxfiy-parol-1';
 
 async function syncNow(page: Page) {
   await page.goto('/login/');
+  const last = page.getByTestId('last-sync');
   const btn = page.getByRole('button', { name: 'Hozir sinxronlash' });
-  await expect(btn).toBeEnabled();
+  await expect(btn).toBeEnabled({ timeout: 15_000 }); // an automatic round may be running
+  const before = (await last.getAttribute('data-at')) ?? '';
   await btn.click();
-  await expect(page.getByRole('status').filter({ hasText: 'Sinxronlandi' }).first()).toBeVisible();
+  // a new finished round (not the badge of an earlier one)
+  await expect
+    .poll(async () => (await last.getAttribute('data-at')) ?? '', { timeout: 15_000 })
+    .not.toBe(before);
   await expect(btn).toBeEnabled();
 }
 

@@ -32,11 +32,12 @@ Elektr montaj ustalari uchun professional 2D elektr loyihalash va montaj ilovasi
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Arxitektura, hosting qarori, papkalar, offline va sinxron |
 | [`docs/DEVICES.md`](docs/DEVICES.md) | iPad / iPhone / Android / Windows moslashuvi |
 | [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md) | Domen modeli, geometriya, IndexedDB, MySQL |
-| [`server/migrations/001_init.sql`](server/migrations/001_init.sql) | MySQL sxemasi |
+| [`server/migrations/`](server/migrations/) | MySQL sxemasi (001, 002) |
 | [`docs/DESIGN_SYSTEM.md`](docs/DESIGN_SYSTEM.md) | Ranglar, shriftlar, panellar, UI matnlari |
 | [`docs/PHASES.md`](docs/PHASES.md) | 13 bosqich: vazifalar, qabul mezonlari, tayyor promptlar |
 | [`docs/DEPLOY.md`](docs/DEPLOY.md) | hostmaster.uz cPanel’ga joylashtirish |
 | [`docs/PROGRESS.md`](docs/PROGRESS.md) | Bosqichlar holati |
+| [`docs/MANUAL_TEST.md`](docs/MANUAL_TEST.md) | Haqiqiy qurilmalarda qo‘lda tekshiruv ro‘yxati |
 
 ## Qanday boshlash
 
@@ -57,5 +58,16 @@ pnpm install
 pnpm dev            # http://localhost:3000  (demo reja: /?demo=1)
 pnpm typecheck && pnpm lint && pnpm test
 pnpm build          # statik out/
-pnpm test:e2e       # 6 qurilma profili (out/ dan)
+pnpm test:coverage  # domain/ coverage (chegara: 90 %)
+pnpm test:e2e       # 6 qurilma profili (out/ dan + PHP API)
 ```
+
+Server (PHP + MariaDB) lokal:
+
+```
+scripts/test-db.sh start                       # MariaDB 127.0.0.1:3307
+EP_DB_HOST=127.0.0.1 EP_DB_PORT=3307 EP_DB_USER=root EP_DB_NAME=ep_dev php server/migrate.php
+EP_DB_HOST=127.0.0.1 EP_DB_PORT=3307 EP_DB_USER=root EP_DB_NAME=ep_dev php -S 127.0.0.1:4175 server/index.php
+```
+
+Integratsiya va e2e testlari bazani o‘zi yaratadi (`EP_DB_*`); baza bo‘lmasa server testlari o‘tkazib yuboriladi.

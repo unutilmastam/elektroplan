@@ -15,11 +15,11 @@
   --color-panel-solid: #111a2e;
   --color-panel-border: rgba(120, 150, 210, 0.14);
   --color-canvas: #0b1322;
-  --color-primary: #1f6fff;
+  --color-primary: #1c69f7;
   --color-primary-hi: #3b8bff;
   --color-text: #eef3ff;
   --color-text-muted: #9aa8c4;
-  --color-text-dim: #6b7a96;
+  --color-text-dim: #7887a3;
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-danger: #ef4444;
@@ -41,14 +41,14 @@
   --grid-line: rgba(90, 120, 180, 0.1);
 
   /* brand */
-  --primary: #1f6fff;
+  --primary: #1c69f7;
   --primary-hi: #3b8bff;
   --primary-glow: rgba(31, 111, 255, 0.45);
 
   /* text */
   --text: #eef3ff;
   --text-muted: #9aa8c4;
-  --text-dim: #6b7a96;
+  --text-dim: #7887a3;
 
   /* plan */
   --wall: #e6ebf3;
@@ -115,7 +115,7 @@ a,
 }
 
 .nav-active {
-  background: linear-gradient(90deg, #1f6fff, #1a4fc4);
+  background: linear-gradient(90deg, #1c69f7, #1a4fc4);
   box-shadow:
     0 0 22px rgba(31, 111, 255, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
@@ -152,4 +152,11 @@ a,
     transition-duration: 0ms !important;
     animation-duration: 0ms !important;
   }
+}
+
+/* A11y (PHASE 13): every keyboard-focused control shows a ring. Zero specificity, so components that draw
+   their own ring (Button: focus-visible:ring) keep it. */
+:where(a, button, input, select, textarea, summary, [role='button'], [role='tab'], [role='switch'], [role='radio'], [role='menuitem'], [role='menuitemradio'], [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: 2px solid var(--color-primary-hi);
+  outline-offset: 2px;
 }

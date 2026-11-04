@@ -16,14 +16,14 @@ Reference: `docs/design/reference-dashboard.png`. Match it; do not redesign.
   --grid-line:     rgba(90, 120, 180, 0.10);
 
   /* brand */
-  --primary:       #1f6fff;   /* electric blue — active nav, Montaj rejimi, selected tab */
+  --primary:       #1c69f7;   /* electric blue (WCAG AA: white text 4.8:1) — active nav, Montaj rejimi, selected tab */
   --primary-hi:    #3b8bff;
   --primary-glow:  rgba(31, 111, 255, 0.45);
 
   /* text */
   --text:          #eef3ff;
   --text-muted:    #9aa8c4;
-  --text-dim:      #6b7a96;
+  --text-dim:      #7887a3;   /* AA 4.8:1 on panels */
 
   /* plan */
   --wall:          #e6ebf3;   /* light grey/white walls */
@@ -53,7 +53,7 @@ Dark theme only (spec: premium dark). PDF export uses a separate light print pal
 - **Primary button:** solid `--primary`, radius 10px, glow `0 0 18px var(--primary-glow)` on hover.
 - **Secondary button:** `--panel-solid` + border, white text + icon (Saqlash, Eksport PDF, Nusxa).
 - **Danger button:** dark red tint background `rgba(239,68,68,.12)`, red border/text (O'chirish).
-- **Active nav item:** blue gradient pill `linear-gradient(90deg, #1f6fff, #1a4fc4)` with glow.
+- **Active nav item:** blue gradient pill `linear-gradient(90deg, #1c69f7, #1a4fc4)` with glow.
 - **Symbol bar chip:** outlined chip, active = solid blue.
 - **Success CTA:** dark green `rgba(34,197,94,.15)` + green border + check icon (Loyiha tayyor).
 - Radii: panels 16, buttons 10, chips 10, inputs 8. Spacing scale 4/8/12/16/24.

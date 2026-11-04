@@ -32,6 +32,7 @@ export const PlanContent = memo(function PlanContent({ project, k, kp, fontFamil
   const rooms = project.rooms.filter((r) => r.deletedAt === null);
   const walls = project.walls.filter((w) => w.deletedAt === null);
   const points = project.points.filter((p) => p.deletedAt === null);
+  const wallById = new Map(walls.map((w) => [w.id, w]));
   return (
     <>
       {rooms.map((r) => (
@@ -70,7 +71,7 @@ export const PlanContent = memo(function PlanContent({ project, k, kp, fontFamil
           key={p.id}
           point={p}
           size={POINT_BADGE * kp}
-          rotation={SYMBOLS[p.symbolId].rotatable ? wallRotation(walls.find((w) => w.id === p.wallId)) : 0}
+          rotation={SYMBOLS[p.symbolId].rotatable ? wallRotation(p.wallId ? wallById.get(p.wallId) : undefined) : 0}
         />
       ))}
     </>
