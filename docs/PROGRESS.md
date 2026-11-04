@@ -19,7 +19,7 @@
 | 14 | Admin panel va Pro versiya | ✅ Tayyor |
 | 15 | Barcha qurilmalarga moslashuv | ✅ Tayyor |
 | 16 | Rus tili | ✅ Tayyor |
-| 17 | Windows dasturi | ✅ Tayyor (tasdiq kutilmoqda) |
+| 17 | Windows dasturi | ✅ Tayyor |
 
 ## Phase 17 — 2026-11-04
 
