@@ -17,13 +17,55 @@ import { cn } from '@/lib/cn';
 import { DRAW_TOOLS, isDrawTool, useEditorStore, type DrawToolId } from '@/store/editorStore';
 
 export const DRAW_TOOL_META: Record<DrawToolId, { icon: LucideIcon; label: string; key: string }> = {
-  'room-rect': { icon: RectangleHorizontal, label: uz.tools.roomRect, key: 'R' },
-  'room-square': { icon: Square, label: uz.tools.roomSquare, key: 'Q' },
-  'room-polygon': { icon: Pentagon, label: uz.tools.roomPolygon, key: 'P' },
-  sketch: { icon: PencilLine, label: uz.tools.sketch, key: 'F' },
-  wall: { icon: BrickWall, label: uz.tools.wall, key: 'W' },
-  door: { icon: DoorOpen, label: uz.tools.door, key: 'D' },
-  window: { icon: AppWindow, label: uz.tools.window, key: 'O' },
+  'room-rect': {
+    icon: RectangleHorizontal,
+    get label() {
+      return uz.tools.roomRect;
+    },
+    key: 'R',
+  },
+  'room-square': {
+    icon: Square,
+    get label() {
+      return uz.tools.roomSquare;
+    },
+    key: 'Q',
+  },
+  'room-polygon': {
+    icon: Pentagon,
+    get label() {
+      return uz.tools.roomPolygon;
+    },
+    key: 'P',
+  },
+  sketch: {
+    icon: PencilLine,
+    get label() {
+      return uz.tools.sketch;
+    },
+    key: 'F',
+  },
+  wall: {
+    icon: BrickWall,
+    get label() {
+      return uz.tools.wall;
+    },
+    key: 'W',
+  },
+  door: {
+    icon: DoorOpen,
+    get label() {
+      return uz.tools.door;
+    },
+    key: 'D',
+  },
+  window: {
+    icon: AppWindow,
+    get label() {
+      return uz.tools.window;
+    },
+    key: 'O',
+  },
 };
 
 /** Toolbar button showing the last draw tool; opens the list of drawing tools. */

@@ -4,6 +4,7 @@ import { Eye, House, List } from 'lucide-react';
 import { focusRoom } from '@/features/editor/actions';
 import { DEFAULT_ROOM_COLOR } from '@/domain/rooms';
 import { selectRoomStats } from '@/domain/selectors';
+import { countOf } from '@/i18n/plural';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 import { useEditorStore } from '@/store/editorStore';
@@ -68,7 +69,7 @@ export function RoomList({ showTitle = true }: { showTitle?: boolean }) {
                       active ? 'text-white/90' : 'text-text-muted',
                     )}
                   >
-                    {pointCount} {uz.rooms.points}
+                    {countOf(pointCount, uz.rooms.points)}
                   </span>
                 </button>
                 <button

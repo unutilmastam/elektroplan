@@ -18,7 +18,28 @@
 | 13 | Testlar va optimizatsiya | ✅ Tayyor |
 | 14 | Admin panel va Pro versiya | ✅ Tayyor |
 | 15 | Barcha qurilmalarga moslashuv | ✅ Tayyor |
-| 16 | Rus tili | — |
+| 16 | Rus tili | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 16 — 2026-11-04
+
+**Bajarildi**
+- **Rus tili** — butun ilova: menyular, tugmalar, xabarlar, xatolar, chizma asboblari, montaj, admin panel, Pro sahifasi, zaxira, PWA xabarlari va **PDF hisobot**. Elektr atamalari ustalar tilida: Розетка, Двойная розетка, Выключатель, Двухклавишный выключатель, Люстра, Кондиционер…
+- **Til tanlash:** Sozlamalar → “Til / Язык” → O‘zbekcha / Русский. Tanlov qurilmada saqlanadi (internetsiz ham ishlaydi), butun ilova darhol o‘tadi, `<html lang>` ham o‘zgaradi.
+- **Birinchi ochilishda** telefon tiliga qarab: telefon rus tilida bo‘lsa — ruscha, aks holda — o‘zbekcha.
+- Ruscha sonlar to‘g‘ri: 1 комната / 2 комнаты / 5 комнат, 1 проект / 2 проекта (`i18n/plural.ts`).
+- Kirill harflari uchun interfeys shriftiga `cyrillic` qo‘shildi; PDF shrifti (Inter) kirill harflarini o‘z ichiga oladi.
+- Arxitektura: barcha yozuvlar `uz.*` dan o‘qiladi (komponentlar o‘zgarmadi), `uz` endi joriy til lug‘atiga yo‘naltiradi; lug‘atlar `src/i18n/dict/uz.ts` va `ru.ts`, rus lug‘ati o‘zbekchaga turi bo‘yicha bog‘langan (kalit yetishmasa — kompilyatsiya xatosi). Modul yuklanganda “muzlab qolgan” 10 ta yozuv (holat nomlari, asboblar, ranglar) har safar o‘qiladigan qilindi.
+
+**Test qilindi**
+- Unit: lug‘atlar kalitlari bir xil, bo‘sh matn yo‘q, `{n}`/`{name}` o‘rinbosarlari saqlangan, ruscha matnlarning 85 %+ kirillda; til almashtirish; telefon tilidan aniqlash; ruscha ko‘plik (1, 2, 5, 11, 21, 111…).
+- E2E 6 profilda: Sozlamalarda ruschaga o‘tish → Loyihalar, Chizma, Montaj ruscha, qayta yuklashda saqlanadi, PDF ruscha yaratiladi, o‘zbekchaga qaytish; telefon tili ru-RU bo‘lsa birinchi ochilishda ruscha.
+- Layout auditi **rus tilida** ham 15 qurilmada: 0 muammo (ruscha so‘zlar uzunroq); iPhone SE pastki menyusi uchun qisqa so‘zlar (Смета, Опции).
+- Skrinshotlar: `docs/screenshots/phase-16/`.
+
+**Ma’lum cheklovlar**
+- Foydalanuvchi kiritgan matnlar (loyiha, xona nomlari, izohlar) tarjima qilinmaydi.
+- Sahifa ochilganda bir lahzaga o‘zbekcha ko‘rinib, so‘ng ruschaga o‘tishi mumkin (statik sahifa o‘zbekcha tayyorlangan).
+- Server xatolari kod bilan keladi va ilovada tarjima qilinadi; ilova nomi (manifest) o‘zbekcha qoladi.
 
 ## Phase 15 — 2026-11-04
 

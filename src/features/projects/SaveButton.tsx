@@ -12,10 +12,18 @@ const time = (iso: string | null) =>
     : '';
 
 const LABEL: Record<SaveState, string> = {
-  saved: uz.generic.saved,
-  dirty: uz.generic.unsaved,
-  saving: uz.generic.saving,
-  error: uz.generic.saveFailed,
+  get saved() {
+    return uz.generic.saved;
+  },
+  get dirty() {
+    return uz.generic.unsaved;
+  },
+  get saving() {
+    return uz.generic.saving;
+  },
+  get error() {
+    return uz.generic.saveFailed;
+  },
 };
 
 /** "Saqlash": shows the autosave state and writes pending edits immediately when pressed. */

@@ -5,9 +5,27 @@ import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 
 const OPTIONS: Array<{ value: PointStatus; label: string; active: string }> = [
-  { value: 'pending', label: uz.status.pending, active: 'bg-white/15 text-white' },
-  { value: 'in_progress', label: uz.status.inProgress, active: 'bg-warning/25 text-[#fcd34d]' },
-  { value: 'completed', label: uz.status.done, active: 'bg-success/25 text-[#86efac]' },
+  {
+    value: 'pending',
+    get label() {
+      return uz.status.pending;
+    },
+    active: 'bg-white/15 text-white',
+  },
+  {
+    value: 'in_progress',
+    get label() {
+      return uz.status.inProgress;
+    },
+    active: 'bg-warning/25 text-[#fcd34d]',
+  },
+  {
+    value: 'completed',
+    get label() {
+      return uz.status.done;
+    },
+    active: 'bg-success/25 text-[#86efac]',
+  },
 ];
 
 /** Kutilmoqda / Jarayonda / Bajarildi segmented control. */

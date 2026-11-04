@@ -8,19 +8,25 @@ import { cn } from '@/lib/cn';
 const OPTIONS: Array<{ value: PointStatus; label: string; icon: typeof CircleCheck; on: string }> = [
   {
     value: 'pending',
-    label: uz.status.pending,
+    get label() {
+      return uz.status.pending;
+    },
     icon: CircleDashed,
     on: 'border-white/40 bg-white/15 text-white',
   },
   {
     value: 'in_progress',
-    label: uz.status.inProgress,
+    get label() {
+      return uz.status.inProgress;
+    },
     icon: Hammer,
     on: 'border-warning bg-warning/25 text-[#fde68a]',
   },
   {
     value: 'completed',
-    label: uz.status.done,
+    get label() {
+      return uz.status.done;
+    },
     icon: CircleCheck,
     on: 'border-success bg-success/25 text-[#bbf7d0]',
   },

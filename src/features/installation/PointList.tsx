@@ -7,9 +7,15 @@ import { cn } from '@/lib/cn';
 import { STATUS_COLOR } from './statusColors';
 
 const STATUS_LABEL = {
-  pending: uz.status.pending,
-  in_progress: uz.status.inProgress,
-  completed: uz.status.done,
+  get pending() {
+    return uz.status.pending;
+  },
+  get in_progress() {
+    return uz.status.inProgress;
+  },
+  get completed() {
+    return uz.status.done;
+  },
 } as const;
 
 /** Work-order list of points (56 px rows); tap selects. */

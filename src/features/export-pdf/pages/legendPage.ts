@@ -5,9 +5,15 @@ import { INK, MARGIN, type Canvas } from '../kit';
 import { drawNumber, drawSymbol } from '../symbol';
 
 const STATUS: Record<PointStatus, string> = {
-  pending: uz.status.pending,
-  in_progress: uz.status.inProgress,
-  completed: uz.status.done,
+  get pending() {
+    return uz.status.pending;
+  },
+  get in_progress() {
+    return uz.status.inProgress;
+  },
+  get completed() {
+    return uz.status.done;
+  },
 };
 
 /** Legend: every symbol used in the project + what the number colours mean. */

@@ -93,11 +93,22 @@ for (const [dname, dev] of DEVICES) {
     ...dev,
     deviceScaleFactor: 1,
     serviceWorkers: 'block',
-    storageState: { cookies: [], origins: [{ origin: base, localStorage: [{ name: 'elektroplan:iosInstallHintShown', value: '1' }] }] },
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: base,
+          localStorage: [
+            { name: 'elektroplan:iosInstallHintShown', value: '1' },
+            { name: 'elektroplan:lang', value: process.env.AUDIT_LANG ?? 'uz' }, // PHASE 16: AUDIT_LANG=ru
+          ],
+        },
+      ],
+    },
   });
   const page = await ctx.newPage();
   await page.goto(base + '/projects/');
-  await page.getByText('Hali loyiha yo‘q').waitFor();
+  await page.getByRole('heading', { level: 1 }).first().waitFor();
   await page.evaluate(async (p) => {
     const db = await new Promise((res) => { const r = indexedDB.open('elektroplan'); r.onsuccess = () => res(r.result); });
     await new Promise((res) => { const tx = db.transaction(['projects', 'meta'], 'readwrite'); tx.objectStore('projects').put(p, p.id); tx.objectStore('meta').put(p.id, 'lastOpenedProjectId'); tx.oncomplete = res; });

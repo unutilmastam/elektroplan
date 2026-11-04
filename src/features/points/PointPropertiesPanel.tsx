@@ -22,11 +22,36 @@ import { PointTypeMenu } from './PointTypeMenu';
 import { StatusPicker } from './StatusPicker';
 
 const SWATCHES: Swatch[] = [
-  { value: SYMBOL_COLORS.blue, label: uz.point.swatch.blue },
-  { value: SYMBOL_COLORS.red, label: uz.point.swatch.red },
-  { value: SYMBOL_COLORS.green, label: uz.point.swatch.green },
-  { value: SYMBOL_COLORS.yellow, label: uz.point.swatch.yellow },
-  { value: SYMBOL_COLORS.purple, label: uz.point.swatch.purple },
+  {
+    value: SYMBOL_COLORS.blue,
+    get label() {
+      return uz.point.swatch.blue;
+    },
+  },
+  {
+    value: SYMBOL_COLORS.red,
+    get label() {
+      return uz.point.swatch.red;
+    },
+  },
+  {
+    value: SYMBOL_COLORS.green,
+    get label() {
+      return uz.point.swatch.green;
+    },
+  },
+  {
+    value: SYMBOL_COLORS.yellow,
+    get label() {
+      return uz.point.swatch.yellow;
+    },
+  },
+  {
+    value: SYMBOL_COLORS.purple,
+    get label() {
+      return uz.point.swatch.purple;
+    },
+  },
 ];
 
 /** Description textarea: local text while typing, one undo step per editing session. */

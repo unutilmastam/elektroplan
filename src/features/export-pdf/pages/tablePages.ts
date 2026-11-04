@@ -4,9 +4,15 @@ import { hex, INK, MARGIN, wrap, type Canvas } from '../kit';
 import { drawNumber, drawSymbol, STATUS_HEX } from '../symbol';
 
 const STATUS = {
-  pending: uz.status.pending,
-  in_progress: uz.status.inProgress,
-  completed: uz.status.done,
+  get pending() {
+    return uz.status.pending;
+  },
+  get in_progress() {
+    return uz.status.inProgress;
+  },
+  get completed() {
+    return uz.status.done;
+  },
 } as const;
 const COLS = [26, 120, 52, 56, 84, 68] as const; // №, belgi, devor, balandlik, chap burchakdan, holat; izoh = rest
 

@@ -10,6 +10,7 @@ import { AccountRow } from '@/features/auth/AccountRow';
 import { AppSettings, BackupSettings } from '@/features/offline-library';
 import { OfflineBadge } from '@/features/offline-library/ConnectionBadge';
 import { useSettingsStore } from '@/store/settingsStore';
+import { LanguagePicker } from './LanguagePicker';
 import { ProjectDefaults } from './ProjectDefaults';
 
 function SwitchRow({
@@ -74,6 +75,7 @@ export function SettingsScreen() {
         <h2 className="px-3 pt-2 pb-1 text-[13px] font-medium tracking-wide text-text-dim uppercase">
           {uz.settings.device}
         </h2>
+        <LanguagePicker />
         <SwitchRow
           icon={PenLine}
           label={uz.settings.penOnly}

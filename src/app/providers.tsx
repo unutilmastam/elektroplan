@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { LanguageProvider } from './LanguageProvider';
 import { PwaBootstrap } from '@/features/offline-library/PwaBootstrap';
 import { SyncBootstrap } from '@/features/offline-library/SyncBootstrap';
 import { useProjectStore } from '@/store/projectStore';
@@ -40,7 +41,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <StoreBootstrap />
       <PwaBootstrap />
       <SyncBootstrap />
-      {children}
+      <LanguageProvider>{children}</LanguageProvider>
     </TooltipProvider>
   );
 }

@@ -6,6 +6,7 @@ import { Hint } from '@/components/common/Hint';
 import { Button } from '@/components/ui/button';
 import { UnsentBadge } from '@/features/offline-library/ConnectionBadge';
 import type { ProjectSummary } from '@/domain/projectList';
+import { countOf } from '@/i18n/plural';
 import { uz } from '@/i18n/uz';
 import { formatDateTime } from '@/lib/format';
 
@@ -67,12 +68,8 @@ export function ProjectCard({ project: p, onEdit, onDuplicate, onDelete, onBacku
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-text-muted">
-        <span className="tabular">
-          {p.roomCount} {uz.projects.rooms}
-        </span>
-        <span className="tabular">
-          {p.pointCount} {uz.projects.points}
-        </span>
+        <span className="tabular">{countOf(p.roomCount, uz.projects.rooms)}</span>
+        <span className="tabular">{countOf(p.pointCount, uz.projects.points)}</span>
         <span className="tabular">
           {uz.projects.updated}: {formatDateTime(p.updatedAt)}
         </span>
