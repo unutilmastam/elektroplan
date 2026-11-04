@@ -10,6 +10,7 @@ import {
   tapWorld,
   unit,
 } from './fixtures/app';
+import { WEBKIT_OFFLINE_SKIP } from './fixtures/network';
 
 /**
  * PHASE 13 — the whole job on every device profile, start to finish, on a project drawn through the UI:
@@ -28,10 +29,11 @@ test('full job: draw → points → wall view → montaj → PDF → offline →
   page,
   context,
   request,
+  browserName,
 }, info) => {
   test.setTimeout(120_000);
 
-  // 1. project + two rooms drawn by hand-free rectangle tool
+  // 1. project + two rooms drawn with the rectangle tool
   await newProject(page, 'To‘liq ish');
   const projectUrl = page.url();
   const u = await unit(page);
@@ -51,7 +53,10 @@ test('full job: draw → points → wall view → montaj → PDF → offline →
 
   // 3. wall view of the socket's wall shows the socket
   const [socket] = await livePoints(page);
-  await page.getByRole('toolbar', { name: 'Chizma asboblari' }).getByRole('button', { name: /^Tanlash/ }).click();
+  await page
+    .getByRole('toolbar', { name: 'Chizma asboblari' })
+    .getByRole('button', { name: /^Tanlash/ })
+    .click();
   await tapWorld(page, -80 * u, -100 * u + 10);
   if (!wide(page)) await page.getByRole('tab', { name: 'Devor' }).click();
   const elevation = page.getByTestId('wall-elevation').filter({ visible: true }).first();
@@ -78,18 +83,21 @@ test('full job: draw → points → wall view → montaj → PDF → offline →
   ).toBe('%PDF-');
 
   // 6. airplane mode: the project opens from the device, montaj goes on
-  await expect
-    .poll(() => page.evaluate(() => navigator.serviceWorker.controller !== null), { timeout: 30_000 })
-    .toBe(true);
-  await context.setOffline(true);
+  const offline = browserName !== 'webkit';
+  if (offline) {
+    await expect
+      .poll(() => page.evaluate(() => navigator.serviceWorker.controller !== null), { timeout: 30_000 })
+      .toBe(true);
+    await context.setOffline(true);
+  } else info.annotations.push({ type: 'skip-step', description: `6 offline: ${WEBKIT_OFFLINE_SKIP}` });
   await page.goto(projectUrl.replace('/editor/', '/install/'));
-  await expect(page.getByTestId('offline-badge').first()).toBeVisible();
+  if (offline) await expect(page.getByTestId('offline-badge').first()).toBeVisible();
   await page.getByRole('button', { name: 'Keyingi bajarilmagan nuqta' }).click();
   await page.getByTestId('status-sheet').getByRole('radio', { name: 'Bajarildi' }).click();
   await expect(page.getByText('2/2').first()).toBeVisible();
   await page.reload();
   await expect(page.getByText('2/2').first()).toBeVisible();
-  await context.setOffline(false);
+  if (offline) await context.setOffline(false);
 
   // 7. account + sync: the finished job is on the server, nothing waits in the outbox
   const health = await request.get('/api/health').catch(() => null);

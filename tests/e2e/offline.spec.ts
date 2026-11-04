@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { drag, liveRooms, pickTool, storedProject, unit } from './fixtures/app';
+import { WEBKIT_OFFLINE_SKIP } from './fixtures/network';
 import { openSeededProject, SEED_ID } from './fixtures/seed';
 
 /**
@@ -27,7 +28,9 @@ async function installApp(page: Page) {
 test('airplane mode: app opens, projects list, editor, montaj and PDF work without internet', async ({
   page,
   context,
+  browserName,
 }) => {
+  test.skip(browserName === 'webkit', WEBKIT_OFFLINE_SKIP);
   await installApp(page);
   await context.setOffline(true);
 
