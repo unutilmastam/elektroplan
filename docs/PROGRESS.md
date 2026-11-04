@@ -17,8 +17,27 @@
 | 12 | PHP + MySQL sync + Auth | ✅ Tayyor |
 | 13 | Testlar va optimizatsiya | ✅ Tayyor |
 | 14 | Admin panel va Pro versiya | ✅ Tayyor |
-| 15 | Barcha qurilmalarga moslashuv | — |
+| 15 | Barcha qurilmalarga moslashuv | ✅ Tayyor (tasdiq kutilmoqda) |
 | 16 | Rus tili | — |
+
+## Phase 15 — 2026-11-04
+
+**Bajarildi**
+- **Audit** (`scripts/audit-layout.mjs`): 8 ta ekran × 15 ta qurilma o‘lchami — iPhone SE (320 va 375), iPhone 14, iPhone 15 Pro Max, iPhone yotiq holatda, Galaxy S24, Galaxy A55, Galaxy Tab S9, iPad mini (tik/yotiq), iPad Air (tik/yotiq), iPad Pro 13, noutbuk 1366, kompyuter 1920. Avtomatik tekshiradi: ekrandan chiqib ketish, sahifa skroli, barmoq uchun kichik tugmalar (<36 px), juda mayda matn, matn toshib ketishi; har holat skrinshoti.
+- **Telefon yotiq holatda** (eng katta muammo edi): Chizma ekranida reja ko‘rinmay qolardi, chap menyu kesilardi, butun sahifa siljirdi. Endi past ekranlar uchun ixcham rejim: menyu ixcham, pastki panel yig‘iladi (tab bosilganda ochiladi), sarlavha ixcham, reja ekranning ~80 % ini oladi, Montaj rejasi ham to‘liq; chizish asboblari ustuni sig‘masa suriladi.
+- **Barmoq uchun:** balandlik/masofa maydonlaridagi 16×16 px strelkalar o‘rniga 36×44 px “−” va “+” tugmalari (nuqta xususiyatlari, devor ko‘rinishi, sozlamalar); almashtirgichlar (switch) bosish maydoni kengaytirildi; loyiha nomi havolasi kattaroq.
+- **Planshet (Galaxy Tab, iPad mini tik):** loyiha kartalari ikki ustunda siqilib, tugmalar 30 px ga tushardi — endi 1024 px dan keng ekranda ikki ustun.
+- Telefon pastki menyusi yozuvlari 10,5 → 11 px; iPhone SE (320 px) da sarlavhadagi o‘qib bo‘lmaydigan “buyurtmachi · manzil” qatori yashiriladi; Pro sahifasidagi uzun tugma matni kichik telefonlarda ikki qatorga o‘tadi.
+
+**Test qilindi**
+- Audit tuzatishlardan keyin: **0 muammo** (oldin: yotiq telefonda 8 ekranda sahifa skroli, 6 ekranda mayda matn, 60+ kichik tugma, 3 matn toshishi).
+- Yangi `tests/e2e/layout.spec.ts`: 7 ta qurilma × 7 ekran — yon skrol yo‘q, hech narsa ekrandan chiqmaydi, sahifa o‘zi skroll bo‘lmaydi.
+- `pnpm test` — 259; `pnpm test:e2e` — 6 profil: 385 o‘tdi; perf testi parallel yuklamada 8 ms chegarasini 0,4 ms ga oshgani uchun chegara 10 ms ga ko‘tarildi (yolg‘iz o‘lchovda ~5 ms).
+- Skrinshotlar: `docs/screenshots/phase-15/` (oldin / keyin).
+
+**Ma’lum cheklovlar**
+- Telefon yotiq holatda Chizma va Montaj ekranlari vertikal suriladi (reja ekranning katta qismini oladi); reja ustida surish rejani siljitadi, sahifani esa sarlavha qismidan surasiz.
+- Haqiqiy qurilmalarda (ayniqsa Samsung brauzeri va iPhone yotiq) ko‘z bilan tekshirish — `docs/MANUAL_TEST.md`.
 
 ## Phase 14 — 2026-11-04
 
