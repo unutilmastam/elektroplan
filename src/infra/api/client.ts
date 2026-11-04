@@ -1,4 +1,6 @@
 import {
+  AdminUsersSchema,
+  TempPasswordSchema,
   ApiErrorSchema,
   PullResponseSchema,
   SyncConflictSchema,
@@ -106,5 +108,15 @@ export const api = {
     return { kind: 'ok', ...parse(SyncOkSchema, status, json) };
   },
   pull: async (have: Record<string, number>) => call(PullResponseSchema, 'POST', '/pull', { have }),
+  changePassword: async (current: string, password: string): Promise<User> =>
+    (await call(UserResponseSchema, 'POST', '/auth/password', { current, password })).user,
+  admin: {
+    users: async (q: string) =>
+      (await call(AdminUsersSchema, 'GET', `/admin/users?q=${encodeURIComponent(q)}`)).users,
+    resetPassword: async (id: string) =>
+      (await call(TempPasswordSchema, 'POST', `/admin/users/${id}/reset-password`, {})).password,
+    setPro: async (id: string, body: { months: number } | { cancel: true }): Promise<User> =>
+      (await call(UserResponseSchema, 'POST', `/admin/users/${id}/pro`, body)).user,
+  },
 };
 export type Api = typeof api;

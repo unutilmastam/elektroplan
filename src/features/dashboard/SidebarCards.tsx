@@ -2,9 +2,10 @@
 
 import { Crown, Folder, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { NextPhase } from '@/components/common/Hint';
 import { uz } from '@/i18n/uz';
 import Link from 'next/link';
+import { isPro } from '@/domain/plan';
+import { formatDate } from '@/lib/format';
 import { useAuthStore } from '@/store/authStore';
 import { useProjectStore } from '@/store/projectStore';
 
@@ -23,19 +24,26 @@ export function StatsCard() {
   );
 }
 
+/** Sidebar Pro card: plan status and the way to Pro (PHASE 14). */
 export function ProCard() {
+  const user = useAuthStore((st) => st.user);
+  const pro = isPro(user);
   return (
     <div className="glass rounded-[14px] px-4 pt-4 pb-4">
       <div className="flex items-center gap-2.5">
         <Crown size={26} className="text-pro-gold" fill="currentColor" strokeWidth={1.4} aria-hidden />
         <span className="text-[16px] font-medium text-text">{uz.sidebar.proTitle}</span>
       </div>
-      <div className="mt-2.5 text-[16px] text-pro-gold">{uz.sidebar.proText}</div>
-      <NextPhase className="mt-3 flex w-full">
-        <Button variant="gold" size="md" disabled className="w-full">
-          {uz.sidebar.upgrade}
+      <div className="mt-2.5 text-[16px] text-pro-gold">
+        {pro && user?.proUntil
+          ? uz.pro.active.replace('{date}', formatDate(user.proUntil))
+          : uz.sidebar.proText}
+      </div>
+      {pro ? null : (
+        <Button asChild variant="gold" size="md" className="mt-3 w-full">
+          <Link href="/pro/">{uz.sidebar.upgrade}</Link>
         </Button>
-      </NextPhase>
+      )}
     </div>
   );
 }

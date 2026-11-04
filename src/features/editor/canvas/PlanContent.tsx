@@ -71,7 +71,9 @@ export const PlanContent = memo(function PlanContent({ project, k, kp, fontFamil
           key={p.id}
           point={p}
           size={POINT_BADGE * kp}
-          rotation={SYMBOLS[p.symbolId].rotatable ? wallRotation(p.wallId ? wallById.get(p.wallId) : undefined) : 0}
+          rotation={
+            SYMBOLS[p.symbolId].rotatable ? wallRotation(p.wallId ? wallById.get(p.wallId) : undefined) : 0
+          }
         />
       ))}
     </>

@@ -51,7 +51,12 @@ export interface PhpApi {
 export async function startApi(): Promise<PhpApi> {
   const dbName = `ep_test_${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
   php(`${pdo} $p->exec('CREATE DATABASE ${dbName} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');`);
-  const full = { ...env, EP_DB_NAME: dbName, EP_MIGRATE_TOKEN: 'test-token' };
+  const full = {
+    ...env,
+    EP_DB_NAME: dbName,
+    EP_MIGRATE_TOKEN: 'test-token',
+    EP_ADMIN_LOGIN: 'admin@test.uz',
+  };
   execFileSync('php', ['server/migrate.php'], { env: { ...process.env, ...full }, encoding: 'utf8' });
   const port = await freePort();
   const proc: ChildProcess = spawn('php', ['-S', `127.0.0.1:${port}`, 'server/index.php'], {

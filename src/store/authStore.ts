@@ -16,7 +16,13 @@ interface AuthState {
   logout: () => Promise<void>;
   /** the server said the session is gone (401) */
   expired: () => Promise<void>;
+  /** a fresher copy of the account from the server (Pro turned on by the admin, password changed…) */
+  setUser: (user: User) => Promise<void>;
+  /** re-read the account from the server (at most once a minute) */
+  refresh: () => Promise<void>;
 }
+
+let lastRefresh = 0;
 
 const parseUser = (v: unknown) => {
   const r = UserSchema.safeParse(v);
@@ -58,5 +64,18 @@ export const useAuthStore = create<AuthState>()((set, get) => {
       await signedOut();
     },
     expired: signedOut,
+    setUser: async (user) => {
+      await signedIn(user);
+    },
+    refresh: async () => {
+      if (!get().user || Date.now() - lastRefresh < 60_000) return;
+      lastRefresh = Date.now();
+      try {
+        const me = await api.me();
+        if (me) await signedIn(me);
+      } catch {
+        // offline: keep the cached account
+      }
+    },
   };
 });

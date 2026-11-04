@@ -10,6 +10,7 @@ import { useProjectStore } from '@/store/projectStore';
 import { useUiStore } from '@/store/uiStore';
 import { OfflineBadge } from '@/features/offline-library/ConnectionBadge';
 import { exportBackup } from '@/features/offline-library/backupActions';
+import { hasProjectSlot } from '@/features/pro/limits';
 import { ProjectCard } from './ProjectCard';
 
 const SORTS: ProjectSort[] = ['updated', 'created', 'name', 'progress'];
@@ -91,8 +92,11 @@ export function ProjectsScreen() {
                 key={p.id}
                 project={p}
                 onEdit={() => openEdit(p.id)}
-                onDuplicate={() =>
-                  void duplicate(p.id, uniqueName(`${p.name} ${uz.projects.copySuffix}`, projects))
+                onDuplicate={
+                  () =>
+                    hasProjectSlot()
+                      ? void duplicate(p.id, uniqueName(`${p.name} ${uz.projects.copySuffix}`, projects))
+                      : openCreate() // shows the Pro dialog
                 }
                 onDelete={() => openDelete(p.id)}
                 onBackup={() => void exportBackup(p.id)}

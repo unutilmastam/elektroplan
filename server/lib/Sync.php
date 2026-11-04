@@ -28,6 +28,10 @@ final class Sync
             if ($row && $row['owner_id'] !== $user['id']) {
                 throw new ApiError(403, 'forbidden');
             }
+            // free plan: one project; Pro (or admin) unlimited. Existing projects always keep syncing.
+            if (!$row && $project['deletedAt'] === null && !Plan::isPro($user) && Plan::liveProjects($user['id']) >= Plan::FREE_PROJECTS) {
+                throw new ApiError(402, 'pro_required');
+            }
             $current = $row ? (int) $row['revision'] : 0;
             if ($row && $current !== $base) {
                 $pdo->rollBack();

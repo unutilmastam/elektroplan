@@ -14,7 +14,7 @@ final class Db
     {
         $file = __DIR__ . '/../config.php';
         $c = is_file($file) ? (require $file) : [];
-        foreach (['db_host', 'db_port', 'db_name', 'db_user', 'db_pass', 'migrate_token', 'rate_limit'] as $k) {
+        foreach (['db_host', 'db_port', 'db_name', 'db_user', 'db_pass', 'migrate_token', 'rate_limit', 'admin_login'] as $k) {
             $env = getenv('EP_' . strtoupper($k));
             if ($env !== false) {
                 $c[$k] = $env;

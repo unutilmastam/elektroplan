@@ -53,8 +53,9 @@ final class Auth
             "INSERT INTO users (id, name, $kind, password_hash) VALUES (?, ?, ?, ?)",
             [$id, $name, $value, password_hash($password, PASSWORD_BCRYPT)],
         );
+        Db::run('UPDATE users SET last_login_at = ? WHERE id = ?', [Db::now(), $id]);
         self::startSession($id);
-        return self::publicUser(Db::one('SELECT * FROM users WHERE id = ?', [$id]));
+        return self::publicUser(self::withRole(Db::one('SELECT * FROM users WHERE id = ?', [$id])));
     }
 
     public static function login(array $b): array
@@ -74,8 +75,9 @@ final class Auth
             Db::run('UPDATE users SET password_hash = ? WHERE id = ?', [password_hash($password, PASSWORD_BCRYPT), $user['id']]);
         }
         RateLimit::clear('login:' . $ip . ':' . $login[1]);
+        Db::run('UPDATE users SET last_login_at = ? WHERE id = ?', [Db::now(), $user['id']]);
         self::startSession($user['id']);
-        return self::publicUser($user);
+        return self::publicUser(self::withRole($user));
     }
 
     public static function logout(): void
@@ -105,6 +107,7 @@ final class Auth
         if (!$row) {
             return $user = null;
         }
+        $row = self::withRole($row);
         $left = strtotime($row['expires_at'] . ' UTC') - time();
         if ($left < self::TTL_DAYS * 86400 / 2) {
             $exp = time() + self::TTL_DAYS * 86400;
@@ -125,7 +128,47 @@ final class Auth
 
     public static function publicUser(array $u): array
     {
-        return ['id' => $u['id'], 'name' => $u['name'], 'phone' => $u['phone'], 'email' => $u['email'], 'role' => $u['role']];
+        return [
+            'id' => $u['id'],
+            'name' => $u['name'],
+            'phone' => $u['phone'],
+            'email' => $u['email'],
+            'role' => $u['role'],
+            'proUntil' => Db::toIso($u['pro_until'] ?? null),
+            'isPro' => Plan::isPro($u),
+            'mustChangePassword' => (bool) ($u['must_change_password'] ?? false),
+        ];
+    }
+
+    /** The account whose login equals ADMIN_LOGIN (config / EP_ADMIN_LOGIN) is the admin. */
+    private static function withRole(array $u): array
+    {
+        $admin = self::normalizeLogin((string) (Db::config()['admin_login'] ?? ''));
+        $isAdmin = $admin !== null && ($u[$admin[0]] ?? null) === $admin[1];
+        $role = $isAdmin ? 'admin' : ($u['role'] === 'admin' ? 'electrician' : $u['role']);
+        if ($role !== $u['role']) {
+            Db::run('UPDATE users SET role = ? WHERE id = ?', [$role, $u['id']]);
+            $u['role'] = $role;
+        }
+        return $u;
+    }
+
+    /** Own password change; required after an admin reset. Other sessions are signed out. */
+    public static function changePassword(array $u, array $b): array
+    {
+        $current = (string) ($b['current'] ?? '');
+        $next = (string) ($b['password'] ?? '');
+        if (strlen($next) < 8 || strlen($next) > 200) {
+            throw new ApiError(422, 'validation', '', ['fields' => ['password' => 'password_short']]);
+        }
+        RateLimit::hit('pwd:' . $u['id'], 10, 900);
+        if (!password_verify($current, $u['password_hash'])) {
+            throw new ApiError(422, 'validation', '', ['fields' => ['current' => 'bad_credentials']]);
+        }
+        Db::run('UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?', [password_hash($next, PASSWORD_BCRYPT), $u['id']]);
+        $token = (string) ($_COOKIE[self::COOKIE] ?? '');
+        Db::run('DELETE FROM sessions WHERE user_id = ? AND id <> ?', [$u['id'], hash('sha256', $token)]);
+        return self::publicUser(Db::one('SELECT * FROM users WHERE id = ?', [$u['id']]));
     }
 
     private static function startSession(string $userId): void

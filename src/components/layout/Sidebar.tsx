@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation';
 import { ProCard, StatsCard, UserAvatar, UserCard } from '@/features/dashboard/SidebarCards';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
+import { ShieldCheck } from 'lucide-react';
+import { useAuthStore } from '@/store/authStore';
 import { Logo } from './Logo';
 import { NAV_ITEMS, isNavActive } from './navigation';
 
@@ -51,6 +53,7 @@ export function Sidebar() {
               </Link>
             );
           })}
+          <AdminNavItem active={isNavActive(pathname, '/admin/')} />
         </nav>
         <div className="mt-auto hidden flex-col gap-5 pt-6 pb-4 lg:flex">
           <StatsCard />
@@ -69,5 +72,30 @@ export function Sidebar() {
         </span>
       </div>
     </aside>
+  );
+}
+
+/** Admin panel entry, only for the admin account (PHASE 14). */
+function AdminNavItem({ active }: { active: boolean }) {
+  const isAdmin = useAuthStore((s) => s.user?.role === 'admin');
+  if (!isAdmin) return null;
+  return (
+    <Link
+      href="/admin/"
+      title={uz.admin.title}
+      aria-current={active ? 'page' : undefined}
+      className={cn(
+        'flex h-[56px] items-center justify-center gap-3.5 rounded-[12px] text-[17px] transition-colors duration-150 lg:h-[58px] lg:justify-start lg:px-4',
+        active ? 'nav-active text-white' : 'text-text hover:bg-white/[0.05]',
+      )}
+    >
+      <ShieldCheck
+        size={26}
+        strokeWidth={1.8}
+        className={active ? 'text-white' : 'text-[#aab6cc]'}
+        aria-hidden
+      />
+      <span className="sr-only lg:not-sr-only">{uz.admin.title}</span>
+    </Link>
   );
 }

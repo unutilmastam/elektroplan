@@ -1,6 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { ProLimitDialog } from '@/features/pro/ProLimitDialog';
+import { hasProjectSlot } from '@/features/pro/limits';
+import { useAuthStore } from '@/store/authStore';
 import { uz } from '@/i18n/uz';
 import { useProjectStore } from '@/store/projectStore';
 import { useUiStore } from '@/store/uiStore';
@@ -21,7 +24,11 @@ export function ProjectDialogs() {
   const updateInfo = useProjectStore((s) => s.updateInfo);
   const remove = useProjectStore((s) => s.remove);
 
-  const formOpen = dialog?.kind === 'create' || (dialog?.kind === 'edit' && target !== null);
+  // re-evaluated when the account (Pro) or the project list changes
+  useAuthStore((s) => s.user);
+  useProjectStore((s) => s.projects.length);
+  const blocked = dialog?.kind === 'create' && !hasProjectSlot();
+  const formOpen = (dialog?.kind === 'create' && !blocked) || (dialog?.kind === 'edit' && target !== null);
 
   return (
     <>
@@ -45,6 +52,7 @@ export function ProjectDialogs() {
           }
         }}
       />
+      <ProLimitDialog open={blocked} onClose={close} />
       <ConfirmDeleteDialog
         name={dialog?.kind === 'delete' && target ? target.name || uz.header.newProject : null}
         onCancel={close}

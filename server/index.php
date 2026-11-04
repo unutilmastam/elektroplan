@@ -5,7 +5,9 @@ declare(strict_types=1);
  * ELEKTROPLAN API (public_html/api). JSON in, JSON out.
  *   GET  /api/health              POST /api/auth/register   POST /api/auth/login
  *   POST /api/auth/logout         GET  /api/auth/me
- *   POST /api/sync                POST /api/pull            GET  /api/migrate?token=…
+ *   POST /api/auth/password       POST /api/sync            POST /api/pull
+ *   GET  /api/admin/users?q=      POST /api/admin/users/{id}/reset-password   POST /api/admin/users/{id}/pro
+ *   GET  /api/migrate?token=…
  * State-changing requests must carry `X-Elektroplan: 1` (with SameSite=Lax cookies this blocks CSRF).
  */
 ini_set('display_errors', '0');
@@ -15,7 +17,9 @@ require __DIR__ . '/lib/Db.php';
 require __DIR__ . '/lib/RateLimit.php';
 require __DIR__ . '/lib/Auth.php';
 require __DIR__ . '/lib/ProjectRepo.php';
+require __DIR__ . '/lib/Plan.php';
 require __DIR__ . '/lib/Sync.php';
+require __DIR__ . '/lib/Admin.php';
 require __DIR__ . '/lib/Migrator.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -43,6 +47,11 @@ try {
         case 'GET /auth/me':
             $u = Auth::current();
             $u ? Http::json(200, ['user' => Auth::publicUser($u)]) : Http::json(401, ['error' => 'unauthorized']);
+        case 'POST /auth/password':
+            Http::json(200, ['user' => Auth::changePassword(Auth::require(), Http::body())]);
+        case 'GET /admin/users':
+            Admin::require();
+            Http::json(200, ['users' => Admin::users((string) ($_GET['q'] ?? ''))]);
         case 'POST /sync':
             [$status, $body] = Sync::push(Auth::require(), Http::body());
             Http::json($status, $body);
@@ -55,6 +64,10 @@ try {
             }
             Http::json(200, ['applied' => Migrator::run(Db::pdo())]);
         default:
+            if ($method === 'POST' && preg_match('#^/admin/users/([0-9a-f-]{36})/(reset-password|pro)$#', $path, $m)) {
+                $admin = Admin::require();
+                Http::json(200, $m[2] === 'pro' ? Admin::setPro($admin, $m[1], Http::body()) : Admin::resetPassword($admin, $m[1]));
+            }
             throw new ApiError(404, 'not_found');
     }
 } catch (ApiError $e) {

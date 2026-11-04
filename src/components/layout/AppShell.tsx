@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { PasswordGate } from '@/features/auth/PasswordGate';
 import { PwaNotices } from '@/features/offline-library/PwaNotices';
 import { ProjectDialogs } from '@/features/projects/ProjectDialogs';
 import { MobileNav } from './MobileNav';
@@ -22,6 +23,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <SaveErrorBanner />
       <NoticeToast />
       <PwaNotices />
+      <PasswordGate />
     </div>
   );
 }
