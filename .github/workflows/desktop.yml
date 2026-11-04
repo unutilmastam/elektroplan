@@ -15,7 +15,9 @@ on:
       - 'scripts/build-desktop.mjs'
       - '.github/workflows/desktop.yml'
   workflow_dispatch: {}
-concurrency: { group: desktop-${{ github.ref }}, cancel-in-progress: true }
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: true
 permissions: { contents: write }
 jobs:
   windows:
