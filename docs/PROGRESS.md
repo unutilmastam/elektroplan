@@ -15,7 +15,7 @@
 | 10 | PDF eksport | ✅ Tayyor |
 | 11 | PWA / offline (internetsiz ishlash) | ✅ Tayyor |
 | 12 | PHP + MySQL sync + Auth | ✅ Tayyor |
-| 13 | Testlar va optimizatsiya | ✅ Tayyor (tasdiq kutilmoqda) |
+| 13 | Testlar va optimizatsiya | ✅ Tayyor |
 
 ## Phase 13 — 2026-11-04
 
