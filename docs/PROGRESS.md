@@ -17,7 +17,7 @@
 | 12 | PHP + MySQL sync + Auth | ✅ Tayyor |
 | 13 | Testlar va optimizatsiya | ✅ Tayyor |
 | 14 | Admin panel va Pro versiya | ✅ Tayyor |
-| 15 | Barcha qurilmalarga moslashuv | ✅ Tayyor (tasdiq kutilmoqda) |
+| 15 | Barcha qurilmalarga moslashuv | ✅ Tayyor |
 | 16 | Rus tili | — |
 
 ## Phase 15 — 2026-11-04
