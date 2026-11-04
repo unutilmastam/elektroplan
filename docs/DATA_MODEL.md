@@ -125,14 +125,15 @@ Indexes: `projects(owner_id, updated_at)`, `rooms(project_id)`, `walls(project_i
 
 ## 4. IndexedDB (`src/infra/idb`)
 
-Database `elektroplan`, version 2 (v1 → v2 adds `backups` and the `outbox.byProject` index):
+Database `elektroplan`, version 3 (v1 → v2 adds `backups` and the `outbox.byProject` index; v2 → v3 adds `synced`):
 
 | Store | Key | Content |
 |---|---|---|
 | `projects` | `id` | full `Project` snapshot (validated by zod on read) |
 | `backups` | `id` | previous valid snapshot of each project (recovery when `projects` holds an unreadable record) |
-| `outbox` | auto (index `byProject`) | `{ projectId, baseRevision, ops: Patch[], createdAt }` |
-| `meta` | key | `lastOpenedProjectId`, `deviceSettings` (`penOnly`, `autoStraighten`), `lastSyncAt`, schema version, `persistGranted`, `iosInstallHintShown` |
+| `outbox` | auto (index `byProject`) | `{ projectId, baseRevision, ops: Patch[], createdAt }` — rows are deleted once the server stored the project |
+| `synced` | `id` | the project version last agreed with the server (base of the three-way merge) |
+| `meta` | key | `lastOpenedProjectId`, `deviceSettings` (`penOnly`, `autoStraighten`), `lastSyncAt`, schema version, `persistGranted`, `iosInstallHintShown`, `account` (signed-in user, for offline start) |
 
 Migrations are version-gated in `db.ts` `upgrade()`.
 
@@ -168,3 +169,19 @@ Walls are **derived** from room outlines plus free walls (`domain/topology.ts �
 ## 8. Service worker cache (Phase 11)
 
 Serwist (`src/sw/sw.ts` → `/sw.js`) precaches every exported page (+ its RSC `index.txt`), all `_next/static` chunks/CSS/fonts and every file in `public/` (incl. `/fonts/Inter-*.ttf` for the PDF and the icons). Page URLs are matched without their query (`/editor/?id=…` → `/editor/`). Projects are **never** in the SW cache — they live only in IndexedDB. `/api/*` is network-only. A new build waits in `waiting` until the user taps "Yangilash".
+
+## 9. Server sync (Phase 12)
+
+MySQL migration `002_sync.sql`: child tables are keyed by **(project_id, id)** (entity ids are unique inside a project, made on the device); every list keeps the device order in `seq`; `openings` table; heights/distances `DOUBLE`; `installation_tasks.project_id`; `rate_limits`; 11 system symbols seeded.
+
+Protocol (`server/lib/Sync.php`, `src/infra/sync/syncEngine.ts`):
+
+| Call | Body | Answer |
+|---|---|---|
+| `POST /api/pull` | `{ have: { projectId: revision } }` | `{ projects: Project[] (newer than have), revisions }` |
+| `POST /api/sync` | `{ project, baseRevision, ops, conflicts }` | `200 { revision, ownerId }` · `409 { error: 'conflict', project }` · `403` other owner · `422` invalid |
+
+- The server stores the whole project in one transaction when `baseRevision` equals its revision (revision + 1, `project_history` row `change`; merge conflicts reported by the device are logged as `conflict`).
+- On 409 the device merges with `domain/merge.ts` (field-level three-way: one-side changes always kept, both-sides → newer `updatedAt`, server on a tie; installation status never backwards; newer deletion wins; log = union) and pushes again.
+- A project with no owner is attached to the account on its first push. Projects of another account stay local and are never sent.
+- Sessions: `ep_session` cookie (64 hex, httpOnly, SameSite=Lax, Secure on HTTPS, 60 days sliding), sha256 stored. Login throttled: 10 / 15 min per IP + login, 50 / 15 min per IP; registration 10 / hour per IP. POST requests need `X-Elektroplan: 1`.

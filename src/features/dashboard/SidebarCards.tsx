@@ -4,6 +4,8 @@ import { Crown, Folder, UserRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { NextPhase } from '@/components/common/Hint';
 import { uz } from '@/i18n/uz';
+import Link from 'next/link';
+import { useAuthStore } from '@/store/authStore';
 import { useProjectStore } from '@/store/projectStore';
 
 export function StatsCard() {
@@ -59,14 +61,22 @@ export function UserAvatar({ size = 50 }: { size?: number }) {
   );
 }
 
+/** Account at the bottom of the sidebar: the signed-in user, or "Mehmon · Kirish". Opens /login. */
 export function UserCard() {
+  const user = useAuthStore((st) => st.user);
   return (
-    <div className="flex items-center gap-3 px-1">
+    <Link
+      href="/login/"
+      data-testid="user-card"
+      className="-mx-1 flex items-center gap-3 rounded-xl px-2 py-1.5 hover:bg-white/[0.05]"
+    >
       <UserAvatar />
       <div className="min-w-0">
-        <div className="truncate text-[16px] font-medium">{uz.sidebar.userName}</div>
-        <div className="truncate text-[13px] text-text-muted">{uz.sidebar.userRole}</div>
+        <div className="truncate text-[16px] font-medium">{user ? user.name : uz.auth.guest}</div>
+        <div className="truncate text-[13px] text-text-muted">
+          {user ? uz.sidebar.userRole : uz.auth.guestHint}
+        </div>
       </div>
-    </div>
+    </Link>
   );
 }

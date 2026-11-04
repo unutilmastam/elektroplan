@@ -98,7 +98,7 @@ export const seedProject = {
 };
 
 /** Opens the app once (creates the DB), writes the seed project, marks it last opened, reloads home. */
-export async function openSeededProject(page: Page) {
+export async function openSeededProject(page: Page, id: string = SEED_ID) {
   await page.goto('/projects/');
   await page.getByText('Hali loyiha yo‘q').waitFor();
   await page.evaluate(async (project) => {
@@ -115,7 +115,7 @@ export async function openSeededProject(page: Page) {
       tx.onerror = () => rej(tx.error);
     });
     db.close();
-  }, seedProject);
+  }, { ...seedProject, id });
   await page.goto('/');
   await page.getByRole('heading', { level: 1, name: 'Sinov uyi' }).waitFor();
   await page.locator('[data-testid="plan-canvas"][data-scale]').waitFor();

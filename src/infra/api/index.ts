@@ -1,2 +1,1 @@
-// Module placeholder — implemented in a later phase (see docs/PHASES.md).
-export {};
+export { api, ApiFailure, NetworkError, type Api, type SyncResult } from './client';

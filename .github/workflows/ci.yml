@@ -6,6 +6,21 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    services:
+      # same engine as hostmaster.uz cPanel (MariaDB 10.x); API integration + e2e sync tests use it
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: '1'
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      EP_DB_HOST: 127.0.0.1
+      EP_DB_PORT: '3306'
+      EP_DB_USER: root
+      EP_DB_PASS: ''
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -18,6 +33,8 @@ jobs:
       - run: pnpm build
       - name: PHP syntax
         run: find server -name '*.php' -print0 | xargs -0 -r -n1 php -l
+      - name: PHP has pdo_mysql
+        run: php -m | grep -qi pdo_mysql
       - name: E2E (all device profiles, WebKit for Apple devices)
         env: { E2E_WEBKIT: '1' }
         run: |

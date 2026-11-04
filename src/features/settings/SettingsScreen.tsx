@@ -6,6 +6,7 @@ import { useId } from 'react';
 import { GlassPanel } from '@/components/layout/GlassPanel';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
+import { AccountRow } from '@/features/auth/AccountRow';
 import { AppSettings, BackupSettings } from '@/features/offline-library';
 import { OfflineBadge } from '@/features/offline-library/ConnectionBadge';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -67,6 +68,7 @@ export function SettingsScreen() {
         <h1 className="flex-1 text-[22px] font-semibold lg:text-[26px]">{uz.settings.title}</h1>
         <OfflineBadge />
       </GlassPanel>
+      <AccountRow />
       <GlassPanel className="flex flex-col gap-1 p-2">
         <h2 className="px-3 pt-2 pb-1 text-[13px] font-medium tracking-wide text-text-dim uppercase">
           {uz.settings.device}

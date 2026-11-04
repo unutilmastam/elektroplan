@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { PwaBootstrap } from '@/features/offline-library/PwaBootstrap';
+import { SyncBootstrap } from '@/features/offline-library/SyncBootstrap';
 import { useProjectStore } from '@/store/projectStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useUiStore } from '@/store/uiStore';
@@ -38,6 +39,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <TooltipProvider delayDuration={250} skipDelayDuration={100}>
       <StoreBootstrap />
       <PwaBootstrap />
+      <SyncBootstrap />
       {children}
     </TooltipProvider>
   );

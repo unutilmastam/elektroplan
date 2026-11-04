@@ -1,6 +1,10 @@
-import { PlaceholderPage } from '@/components/layout/PlaceholderPage';
-import { uz } from '@/i18n/uz';
+import { AppShell } from '@/components/layout/AppShell';
+import { AccountScreen } from '@/features/auth/AccountScreen';
 
 export default function LoginPage() {
-  return <PlaceholderPage title={uz.pages.loginTitle} text={uz.pages.loginText} />;
+  return (
+    <AppShell>
+      <AccountScreen />
+    </AppShell>
+  );
 }

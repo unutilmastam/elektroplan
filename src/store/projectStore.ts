@@ -62,6 +62,13 @@ interface ProjectState {
   /** writes projects restored from a backup file (already validated and planned by domain/backup) */
   importProjects: (projects: readonly Project[]) => Promise<void>;
   open: (id: string | null) => void;
+  /**
+   * Sync: writes a version that came from (or was merged with) the server. Refused (false) when the local copy
+   * changed since `expectedUpdatedAt` was read or has unsaved edits — the next sync round handles it.
+   */
+  saveFromServer: (p: Project, needsPush: boolean, expectedUpdatedAt: string | null) => Promise<boolean>;
+  /** Sync: the server stored this project as `revision` (content untouched, no new outbox row). */
+  markPushed: (id: string, revision: number, ownerId: string) => Promise<void>;
   loadDemo: (project: Project, projectCount: number) => void;
 }
 
@@ -276,6 +283,27 @@ export const useProjectStore = create<ProjectState>()(
           if (id) s.lastOpenedId = id;
         });
         if (id) void setMeta(META_LAST_OPENED, id).catch(() => undefined);
+      },
+
+      saveFromServer: async (p, needsPush, expectedUpdatedAt) => {
+        const cur = get().projects.find((x) => x.id === p.id) ?? null;
+        if ((cur?.updatedAt ?? null) !== expectedUpdatedAt || pending?.id === p.id) return false;
+        replace(p);
+        if (cur && get().currentId === p.id)
+          set((s) => {
+            s.history = emptyHistory();
+          });
+        await persist(p, needsPush ? [{ op: 'merge', path: [], value: p.revision }] : []);
+        return true;
+      },
+
+      markPushed: async (id, revision, ownerId) => {
+        if (pending?.id === id) pending = { ...pending, revision, ownerId };
+        const cur = get().projects.find((x) => x.id === id);
+        if (!cur) return;
+        const next = { ...cur, revision, ownerId };
+        replace(next);
+        if (pending?.id !== id) await persist(next, []);
       },
 
       loadDemo: (project, projectCount) =>

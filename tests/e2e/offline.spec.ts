@@ -134,7 +134,10 @@ test('web app manifest and icons are valid for install (Android / Windows / iOS)
   await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#05080f');
 });
 
-test('Chromium installability check passes (what Lighthouse "installable" audits)', async ({ page, browserName }) => {
+test('Chromium installability check passes (what Lighthouse "installable" audits)', async ({
+  page,
+  browserName,
+}) => {
   test.skip(browserName !== 'chromium', 'CDP is Chromium only');
   await installApp(page);
   const cdp = await page.context().newCDPSession(page);

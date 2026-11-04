@@ -61,9 +61,9 @@ export function Sidebar() {
         className="flex justify-center border-t border-white/[0.07] px-3 py-4 lg:block lg:px-4 lg:py-5"
         style={{ paddingBottom: 'calc(var(--safe-bottom) + 16px)' }}
       >
-        <span className="lg:hidden">
+        <Link href="/login/" className="lg:hidden" aria-label={uz.auth.title}>
           <UserAvatar size={42} />
-        </span>
+        </Link>
         <span className="hidden lg:block">
           <UserCard />
         </span>
