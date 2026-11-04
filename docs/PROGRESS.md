@@ -16,7 +16,7 @@
 | 11 | PWA / offline (internetsiz ishlash) | ✅ Tayyor |
 | 12 | PHP + MySQL sync + Auth | ✅ Tayyor |
 | 13 | Testlar va optimizatsiya | ✅ Tayyor |
-| 14 | Admin panel va Pro versiya | ✅ Tayyor (tasdiq kutilmoqda) |
+| 14 | Admin panel va Pro versiya | ✅ Tayyor |
 | 15 | Barcha qurilmalarga moslashuv | — |
 | 16 | Rus tili | — |
 
