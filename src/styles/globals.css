@@ -156,7 +156,21 @@ a,
 
 /* A11y (PHASE 13): every keyboard-focused control shows a ring. Zero specificity, so components that draw
    their own ring (Button: focus-visible:ring) keep it. */
-:where(a, button, input, select, textarea, summary, [role='button'], [role='tab'], [role='switch'], [role='radio'], [role='menuitem'], [role='menuitemradio'], [tabindex]:not([tabindex='-1'])):focus-visible {
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role='button'],
+  [role='tab'],
+  [role='switch'],
+  [role='radio'],
+  [role='menuitem'],
+  [role='menuitemradio'],
+  [tabindex]:not([tabindex='-1'])
+):focus-visible {
   outline: 2px solid var(--color-primary-hi);
   outline-offset: 2px;
 }

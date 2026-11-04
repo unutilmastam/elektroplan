@@ -103,8 +103,8 @@ export async function syncOnce(d: SyncDeps): Promise<SyncReport> {
           conflicts,
         });
       } catch (e) {
-        // refused for this project only (invalid data / another account's id): keep it local, go on
-        if (e instanceof ApiFailure && (e.status === 403 || e.status === 422)) {
+        // refused for this project only (free-plan limit / invalid data / another account's id): keep it local, go on
+        if (e instanceof ApiFailure && (e.status === 402 || e.status === 403 || e.status === 422)) {
           report.rejected.push({ id: project.id, code: e.code });
           break;
         }

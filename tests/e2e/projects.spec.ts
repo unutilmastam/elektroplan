@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { seedProjects } from './fixtures/seed';
 
 async function createProject(page: Page, name: string, customer = '', address = '') {
   await page.goto('/projects/');
@@ -37,7 +38,9 @@ test('created project survives a reload and opens from home', async ({ page }) =
   await expect(page.getByText('1 ta loyiha')).toBeVisible();
 });
 
-test('edit, duplicate and delete (with confirmation) persist', async ({ page }) => {
+test('edit and delete (with confirmation) persist; duplicating needs Pro on the free plan', async ({
+  page,
+}) => {
   await createProject(page, 'Yunusobod uy');
   await page.goto('/projects/');
   const card = cards(page).first();
@@ -48,28 +51,32 @@ test('edit, duplicate and delete (with confirmation) persist', async ({ page }) 
   await dialog.getByRole('button', { name: 'Saqlash' }).click();
   await expect(cards(page).first()).toContainText('Yunusobod hovli');
 
+  // free plan (1 project): a copy would be a second project
   await cards(page).first().getByRole('button', { name: 'Nusxa olish' }).click();
-  await expect(cards(page)).toHaveCount(2);
-  await expect(page.getByText('Yunusobod hovli (nusxa)')).toBeVisible();
-
-  await cards(page).filter({ hasText: '(nusxa)' }).getByRole('button', { name: 'O‘chirish' }).click();
-  const confirm = page.getByRole('alertdialog');
-  await expect(confirm).toContainText('Yunusobod hovli (nusxa)');
-  await confirm.getByRole('button', { name: 'Bekor qilish' }).click();
-  await expect(cards(page)).toHaveCount(2);
-  await cards(page).filter({ hasText: '(nusxa)' }).getByRole('button', { name: 'O‘chirish' }).click();
-  await page.getByRole('alertdialog').getByRole('button', { name: 'Ha, o‘chirish' }).click();
+  await expect(page.getByTestId('pro-limit')).toBeVisible();
+  await page.getByTestId('pro-limit').getByRole('button', { name: 'Keyinroq' }).click();
   await expect(cards(page)).toHaveCount(1);
+
+  await cards(page).first().getByRole('button', { name: 'O‘chirish' }).click();
+  const confirm = page.getByRole('alertdialog');
+  await expect(confirm).toContainText('Yunusobod hovli');
+  await confirm.getByRole('button', { name: 'Bekor qilish' }).click();
+  await expect(cards(page)).toHaveCount(1);
+  await cards(page).first().getByRole('button', { name: 'O‘chirish' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Ha, o‘chirish' }).click();
+  await expect(cards(page)).toHaveCount(0);
 
   await page.reload();
-  await expect(cards(page)).toHaveCount(1);
-  await expect(cards(page).first()).toContainText('Yunusobod hovli');
+  await expect(cards(page)).toHaveCount(0);
+  // the slot is free again
+  await createProject(page, 'Yangi uy');
 });
 
 test('search and sort the project list', async ({ page }) => {
-  await createProject(page, 'Chilonzor', 'Karimov');
-  await createProject(page, 'Sergeli', 'Aliyev');
-  await page.goto('/projects/');
+  await seedProjects(page, [
+    { id: 'p-chilonzor', name: 'Chilonzor', customerName: 'Karimov' },
+    { id: 'p-sergeli', name: 'Sergeli', customerName: 'Aliyev' },
+  ]);
   await expect(cards(page).first()).toContainText('Sergeli');
   await page.getByLabel('Saralash').selectOption('name');
   await expect(cards(page).first()).toContainText('Chilonzor');
@@ -82,8 +89,12 @@ test('search and sort the project list', async ({ page }) => {
 });
 
 test('header: edit pencil and recent projects menu', async ({ page, viewport }) => {
-  await createProject(page, 'Birinchi');
-  await createProject(page, 'Ikkinchi');
+  await seedProjects(page, [
+    { id: 'p-birinchi', name: 'Birinchi' },
+    { id: 'p-ikkinchi', name: 'Ikkinchi' },
+  ]);
+  await page.goto('/editor/?id=p-ikkinchi');
+  await expect(page.getByRole('heading', { level: 1, name: 'Ikkinchi' })).toBeVisible();
   await page.getByRole('button', { name: 'Loyihani almashtirish' }).click();
   const menu = page.getByRole('menu', { name: 'So‘nggi loyihalar' });
   await menu.getByRole('menuitem', { name: /Birinchi/ }).click();

@@ -5,3 +5,8 @@ export function formatDateTime(iso: string): string {
   const p = (n: number) => String(n).padStart(2, '0');
   return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
+
+/** dd.mm.yyyy in local time; '' for invalid input. */
+export function formatDate(iso: string): string {
+  return formatDateTime(iso).slice(0, 10);
+}

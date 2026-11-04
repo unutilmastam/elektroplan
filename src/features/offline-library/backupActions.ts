@@ -2,6 +2,8 @@ import { backupFileName, buildBackup, parseBackup, planImport, type BackupError 
 import type { Project } from '@/domain/types';
 import { uz } from '@/i18n/uz';
 import { saveFile } from '@/lib/saveFile';
+import { FREE_PROJECTS } from '@/domain/plan';
+import { hasProjectSlot } from '@/features/pro/limits';
 import { useProjectStore } from '@/store/projectStore';
 import { useUiStore } from '@/store/uiStore';
 
@@ -53,6 +55,8 @@ export async function importBackup(file: File): Promise<void> {
   if (useProjectStore.getState().status !== 'ready') return notify(uz.backup.failed);
   const store = useProjectStore.getState();
   const plan = planImport(store.projects, parsed.file.projects);
+  if (plan.added > 0 && !hasProjectSlot(plan.added))
+    return notify(uz.pro.limitImport.replace('{limit}', String(FREE_PROJECTS)));
   try {
     await store.importProjects(plan.write);
     notify(

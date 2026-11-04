@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/authStore';
 import { usePwaStore } from '@/store/pwaStore';
 import { useSyncStore } from '@/store/syncStore';
 import { useUiStore } from '@/store/uiStore';
+import { AccountExtras } from './AccountExtras';
 import { AuthForm } from './AuthForm';
 
 /** /login: sign in / create an account, or — when signed in — the account and its sync state. */
@@ -65,6 +66,7 @@ export function AccountScreen() {
                 {sync.state === 'syncing' ? uz.sync.syncing : uz.sync.now}
               </Button>
             </div>
+            <AccountExtras />
             <div>
               <Button
                 variant="danger"

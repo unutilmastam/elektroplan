@@ -27,6 +27,7 @@ export const AUTH_CODES = [
   'login_taken',
   'bad_credentials',
   'too_many_attempts',
+  'password_mismatch',
   'network',
   'server',
 ] as const;
@@ -48,6 +49,10 @@ export const UserSchema = z.object({
   phone: z.string().nullable(),
   email: z.string().nullable(),
   role: z.string(),
+  // PHASE 14 (defaults keep accounts cached by older versions valid)
+  proUntil: z.string().nullable().default(null),
+  isPro: z.boolean().default(false),
+  mustChangePassword: z.boolean().default(false),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -58,6 +63,25 @@ export const PullResponseSchema = z.object({
   projects: z.array(ProjectSchema),
   revisions: z.record(z.string(), z.number().int()),
 });
+export const AdminUserSchema = UserSchema.extend({
+  createdAt: z.string().nullable(),
+  lastLoginAt: z.string().nullable(),
+  projects: z.number().int(),
+  points: z.number().int(),
+  done: z.number().int(),
+});
+export type AdminUser = z.infer<typeof AdminUserSchema>;
+export const AdminUsersSchema = z.object({ users: z.array(AdminUserSchema) });
+export const TempPasswordSchema = z.object({ password: z.string().min(1) });
+
+export const PasswordFormSchema = z
+  .object({
+    current: z.string().min(1, { error: 'password_short' }),
+    password: z.string().min(8, { error: 'password_short' }).max(200, { error: 'password_short' }),
+    repeat: z.string(),
+  })
+  .refine((v) => v.password === v.repeat, { path: ['repeat'], error: 'password_mismatch' });
+
 export const ApiErrorSchema = z.object({
   error: z.string(),
   message: z.string().optional(),

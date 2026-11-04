@@ -147,3 +147,37 @@ export async function worldMapper(page: Page) {
   ]);
   return (x: number, y: number) => ({ x: box.x + vx! + x * s!, y: box.y + vy! + y * s! });
 }
+
+/**
+ * Writes several projects straight into IndexedDB (like projects made before the free-plan limit existed,
+ * or restored data): the list, search and recent-projects menu are tested without needing Pro.
+ */
+export async function seedProjects(
+  page: Page,
+  items: Array<{ id: string; name: string; customerName?: string }>,
+) {
+  await page.goto('/projects/');
+  await page.getByRole('heading', { level: 1, name: 'Loyihalar' }).waitFor();
+  const base = Date.parse('2026-11-03T10:00:00.000Z');
+  await page.evaluate(
+    async (list) => {
+      const db: IDBDatabase = await new Promise((res, rej) => {
+        const r = indexedDB.open('elektroplan');
+        r.onsuccess = () => res(r.result);
+        r.onerror = () => rej(r.error);
+      });
+      await new Promise<void>((res, rej) => {
+        const tx = db.transaction('projects', 'readwrite');
+        for (const p of list) tx.objectStore('projects').put(p, p.id);
+        tx.oncomplete = () => res();
+        tx.onerror = () => rej(tx.error);
+      });
+      db.close();
+    },
+    items.map((it, i) => {
+      const at = new Date(base + i * 60_000).toISOString();
+      return { ...seedProject, ...it, customerName: it.customerName ?? '', createdAt: at, updatedAt: at };
+    }),
+  );
+  await page.reload();
+}

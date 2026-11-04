@@ -13,6 +13,7 @@ const env = {
   EP_DB_NAME: process.env.EP_DB_NAME ?? 'ep_e2e',
   EP_MIGRATE_TOKEN: 'e2e',
   EP_RATE_LIMIT: '0',
+  EP_ADMIN_LOGIN: 'admin@e2e.uz',
 };
 try {
   execFileSync(

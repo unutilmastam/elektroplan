@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { uuidv7 } from '@/domain/ids';
+import { FREE_PROJECTS } from '@/domain/plan';
 import { uz } from '@/i18n/uz';
 import { api, ApiFailure, NetworkError } from '@/infra/api';
 import { getSynced, pendingOutbox, putSynced, removeOutbox, syncedRevisions } from '@/infra/idb/syncRepo';
@@ -43,6 +44,7 @@ export const useSyncStore = create<SyncStoreState>()((set, get) => ({
       const store = useProjectStore.getState;
       try {
         await store().flush();
+        void useAuthStore.getState().refresh(); // Pro turned on / off by the admin
         const report = await syncOnce({
           userId: user.id,
           api,
@@ -63,6 +65,8 @@ export const useSyncStore = create<SyncStoreState>()((set, get) => ({
         });
         const notify = useUiStore.getState().notify;
         if (report.attached) notify(uz.sync.attached.replace('{n}', String(report.attached)));
+        else if (report.rejected.some((r) => r.code === 'pro_required'))
+          notify(uz.pro.syncRefused.replace('{limit}', String(FREE_PROJECTS)));
         else if (report.rejected.length)
           notify(uz.sync.rejected.replace('{n}', String(report.rejected.length)));
         else if (reason === 'manual') notify(uz.sync.done);

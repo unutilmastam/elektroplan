@@ -17,6 +17,9 @@ jobs:
         env:
           # Optional repository variable: set ENABLE_DEMO=1 to allow ?demo=1 on the live site.
           NEXT_PUBLIC_ENABLE_DEMO: ${{ vars.ENABLE_DEMO }}
+          # Pro page: administrator contacts (repository variables, not secrets — they are shown in the app)
+          NEXT_PUBLIC_SUPPORT_PHONE: ${{ vars.SUPPORT_PHONE }}
+          NEXT_PUBLIC_SUPPORT_TELEGRAM: ${{ vars.SUPPORT_TELEGRAM }}
         run: pnpm build
       - name: Assemble upload folder
         run: |
@@ -30,9 +33,10 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASS: ${{ secrets.DB_PASS }}
           MIGRATE_TOKEN: ${{ secrets.MIGRATE_TOKEN }}
+          ADMIN_LOGIN: ${{ secrets.ADMIN_LOGIN }}
         run: |
           umask 077
-          php -r '$c=["db_host"=>getenv("DB_HOST"),"db_name"=>getenv("DB_NAME"),"db_user"=>getenv("DB_USER"),"db_pass"=>getenv("DB_PASS"),"migrate_token"=>getenv("MIGRATE_TOKEN")]; file_put_contents("deploy/api/config.php","<?php\nreturn ".var_export($c,true).";\n");'
+          php -r '$c=["db_host"=>getenv("DB_HOST"),"db_name"=>getenv("DB_NAME"),"db_user"=>getenv("DB_USER"),"db_pass"=>getenv("DB_PASS"),"migrate_token"=>getenv("MIGRATE_TOKEN"),"admin_login"=>getenv("ADMIN_LOGIN")]; file_put_contents("deploy/api/config.php","<?php\nreturn ".var_export($c,true).";\n");'
           php -l deploy/api/config.php
       - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

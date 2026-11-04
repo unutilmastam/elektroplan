@@ -16,6 +16,27 @@
 | 11 | PWA / offline (internetsiz ishlash) | ✅ Tayyor |
 | 12 | PHP + MySQL sync + Auth | ✅ Tayyor |
 | 13 | Testlar va optimizatsiya | ✅ Tayyor |
+| 14 | Admin panel va Pro versiya | ✅ Tayyor (tasdiq kutilmoqda) |
+| 15 | Barcha qurilmalarga moslashuv | — |
+| 16 | Rus tili | — |
+
+## Phase 14 — 2026-11-04
+
+**Bajarildi**
+- **Admin:** `ADMIN_LOGIN` (GitHub secret) dagi telefon/email bilan kirgan akkaunt admin bo‘ladi. `/admin/` (kompyuter/iPad’da yon menyuda, telefonda Akkaunt sahifasida): ustalar ro‘yxati — ism, telefon/email, ro‘yxatdan o‘tgan sana, oxirgi kirish, loyiha va nuqta soni, montaj foizi, tarif; qidiruv.
+- **Pro (99 000 so‘m/oy):** bepul — 1 ta loyiha (hamma imkoniyatlar bilan). Yangi loyiha / nusxa / zaxiradan tiklashda chegara bo‘lsa “Yangi loyiha uchun Pro kerak” oynasi. Server ham tekshiradi (402). Admin: +1 / +3 / +12 oy (joriy muddatga qo‘shiladi), “Pro’ni o‘chirish”. Eski loyihalar saqlanadi va tahrirlanadi.
+- **`/pro/` sahifasi:** narx, imkoniyatlar, tarif holati (necha kun qoldi), sotib olish tartibi, akkaunt raqami, admin telefoni / Telegram (`SUPPORT_PHONE`, `SUPPORT_TELEGRAM`). Sidebar’dagi “Yangilash” tugmasi endi shu sahifani ochadi.
+- **Parol tiklash:** admin vaqtinchalik parol oladi (masalan `kx7-m2p-9qa`, bir marta ko‘rinadi, nusxa tugmasi), ustaning barcha qurilmalardagi kirishi yopiladi; usta shu parol bilan kirganda majburiy “Yangi parol o‘rnating” oynasi. Akkaunt sahifasida o‘z parolini o‘zgartirish. Har amal `admin_actions` jurnalida.
+- Migratsiya `003_admin_pro.sql`; deploy `admin_login` ni config’ga yozadi, kontaktlarni build’ga beradi.
+
+**Test qilindi**
+- `pnpm test:coverage` — 259 test (yangi: tarif qoidalari; server: ruxsatlar, bepul cheklov 402, Pro muddatlari, parol tiklash — haqiqiy PHP + MariaDB). `domain/` coverage 95 %.
+- `pnpm test:e2e` — 6 profil: **385 o‘tdi, 0 yiqildi** (23 ataylab o‘tkazildi). Yangi: bepul cheklov (yangi loyiha, nusxa), Pro sahifasi; admin → ustani topadi → +1 oy → usta Pro’ni ko‘radi va 3 ta loyiha yaratadi → parol tiklash → usta vaqtinchalik parol bilan kirib, yangi parol o‘rnatadi; oddiy usta admin panelni ko‘rmaydi. Ko‘p loyiha yaratgan eski testlar bepul cheklovga moslandi.
+- Skrinshotlar: `docs/screenshots/phase-14/`.
+
+**Ma’lum cheklovlar**
+- To‘lov hozircha qo‘lda: usta adminga pul o‘tkazadi, admin Pro’ni yoqadi. Payme/Click onlayn to‘lov — merchant shartnomasidan keyin.
+- Pro muddati qurilma vaqti bo‘yicha tekshiriladi (internetsiz ham ishlashi uchun); server baribir o‘zi tekshiradi.
 
 ## Phase 13 — keyingi tuzatishlar (GitHub CI, WebKit) — 2026-11-04
 

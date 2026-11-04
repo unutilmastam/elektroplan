@@ -89,11 +89,14 @@ test('keyboard: Tab reaches the main actions and focus is always visible', async
       seen.some((s) => s.includes(must)),
       must,
     ).toBe(true);
-  // Enter on a focused control does its action: open the create dialog, Escape closes it
-  await page.getByRole('button', { name: 'Yangi loyiha' }).first().focus();
+  // Enter on a focused control does its action (free plan with one project: the Pro dialog), focus moves
+  // into the dialog, Escape closes it
+  const create = page.getByRole('button', { name: 'Yangi loyiha' }).first();
+  await create.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByRole('dialog').getByLabel('Loyiha nomi')).toBeFocused();
+  const dlg = page.getByRole('dialog');
+  await expect(dlg).toBeVisible();
+  expect(await dlg.evaluate((d) => d.contains(document.activeElement))).toBe(true);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
 });
