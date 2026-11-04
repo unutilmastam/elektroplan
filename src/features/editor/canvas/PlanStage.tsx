@@ -26,6 +26,8 @@ export interface PlanStageProps {
   hover: Vec2 | null;
   /** Montaj rejimi: status rings */
   showStatus?: boolean;
+  /** PHASE 18: wall lengths on the plan */
+  showDimensions?: boolean;
 }
 
 /**
@@ -42,6 +44,7 @@ export default function PlanStage({
   draft,
   hover,
   showStatus = false,
+  showDimensions = false,
 }: PlanStageProps) {
   const [fontFamily, setFontFamily] = useState('sans-serif');
   useEffect(() => {
@@ -53,7 +56,7 @@ export default function PlanStage({
   const t = { x: viewport.x, y: viewport.y, scaleX: viewport.scale, scaleY: viewport.scale };
   const plan = useRef<Konva.Group>(null);
   const statusScale = showStatus ? viewport.scale : 0; // status rings are drawn in screen pixels
-  const contentKey = useMemo(() => ({}), [project, k, kp, fontFamily, statusScale]); // eslint-disable-line react-hooks/exhaustive-deps
+  const contentKey = useMemo(() => ({}), [project, k, kp, fontFamily, statusScale, showDimensions]); // eslint-disable-line react-hooks/exhaustive-deps
   usePlanCache(plan, viewport, { width, height }, contentKey);
 
   return (
@@ -62,7 +65,13 @@ export default function PlanStage({
       <Layer listening={false}>
         <Group {...t}>
           <Group ref={plan}>
-            <PlanContent project={project} k={k} kp={kp} fontFamily={fontFamily} />
+            <PlanContent
+              project={project}
+              k={k}
+              kp={kp}
+              fontFamily={fontFamily}
+              showDimensions={showDimensions}
+            />
             {showStatus ? <StatusLayer project={project} k={kp} scale={viewport.scale} /> : null}
           </Group>
         </Group>
@@ -76,7 +85,7 @@ export default function PlanStage({
             k={kp}
             scale={viewport.scale}
           />
-          <DraftContent draft={draft} hover={hover} scale={viewport.scale} />
+          <DraftContent draft={draft} hover={hover} scale={viewport.scale} fontFamily={fontFamily} />
         </Group>
       </Layer>
     </Stage>

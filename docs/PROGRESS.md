@@ -20,6 +20,25 @@
 | 15 | Barcha qurilmalarga moslashuv | ✅ Tayyor |
 | 16 | Rus tili | ✅ Tayyor |
 | 17 | Windows dasturi | ✅ Tayyor |
+| 18 | Devor o‘lchamlari | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 18 — 2026-11-04
+
+**Bajarildi**
+- **Chizayotganda o‘lcham ko‘rinadi:** to‘rtburchak xona — eni va bo‘yi, devor — uzunligi, erkin xona — har bir tomon va hozir chizilayotgan tomon. Barmoqni qo‘yib yuborgan joyingizda shu o‘lcham qoladi (to‘r bo‘yicha 20 sm qadam).
+- **Devor uzunligini yozish (ixtiyoriy):** devorni tanlang → “Uzunligi” → masalan `3,2`, `320`, `320 sm` yoki `3.2 m`. Xona to‘g‘ri burchakli qoladi, yonidagi xona ham birga o‘zgaradi (devorni qo‘lda surgandek). Noto‘g‘ri qiymatga maslahat chiqadi, hech narsa buzilmaydi. Bitta “Bekor qilish” qaytaradi.
+- **Rejada devor uzunliklari** (“3 m”, “2,4 m”, “85 sm”) har devor ustida. Sozlamalar → “Devor o‘lchamlari” bilan o‘chiriladi. Juda qisqa devorda yozuv chiqmaydi, Montaj rejimida yashirin.
+- O‘lcham hech qachon majburiy emas: 1 reja birligi = 1 sm, shuning uchun chizilgan har bir reja avtomatik o‘lchamga ega. Server/baza o‘zgarmadi.
+
+**Test qilindi**
+- Unit: o‘lchamni yozish/o‘qish (m, sm, vergul, ruscha “м/см”), devor uzunligini o‘zgartirish (cho‘zish, qisqartirish, qo‘shni xona, erkin devor), o‘zgargan devorni topish.
+- E2E 6 profilda: devor “3 m” ko‘rinadi → “4” yoziladi → xona 4 m, qo‘shni xona ergashadi, noto‘g‘ri qiymat rad etiladi, “Bekor qilish” qaytaradi; Sozlamalarda o‘chirish saqlanadi.
+- Skrinshotlar: `docs/screenshots/phase-18/`.
+
+**Ma’lum cheklovlar**
+- Eski loyihalar ham shu masshtabda o‘lchanadi: o‘lchamsiz chizilgan xonalar real o‘lchamga to‘g‘ri kelmasligi mumkin — kerakli devorga uzunlikni yozib to‘g‘rilang.
+- Qiya (to‘g‘ri burchakli bo‘lmagan) burchakdagi devorni o‘zgartirganda qo‘shni devor ham qiyalikni saqlab suriladi.
+- PDF’da devor uzunliklari hali chiqmaydi.
 
 ## Phase 17 — 2026-11-04
 

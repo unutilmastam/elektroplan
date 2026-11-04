@@ -27,9 +27,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   },
   update: async (patch) => {
     set(patch);
-    const { penOnly, autoStraighten } = get();
+    const { penOnly, autoStraighten, showDimensions } = get();
     try {
-      await setMeta(KEY, { penOnly, autoStraighten } satisfies DeviceSettings);
+      await setMeta(KEY, { penOnly, autoStraighten, showDimensions } satisfies DeviceSettings);
     } catch {
       // preference stays for this session
     }

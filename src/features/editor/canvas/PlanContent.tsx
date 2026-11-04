@@ -8,6 +8,7 @@ import { PointGlyph } from '@/features/points/PointGlyph';
 import { SYMBOLS } from '@/features/symbols/catalog';
 import { DEFAULT_ROOM_COLOR } from '@/domain/rooms';
 import { POINT_BADGE } from './decoration';
+import { DimensionLabel } from './DimensionLabel';
 import { WallsLayerContent } from './WallsLayer';
 
 function wallRotation(wall: Wall | undefined): number {
@@ -25,10 +26,18 @@ interface PlanContentProps {
   /** decoration multiplier for point badges */
   kp: number;
   fontFamily: string;
+  /** PHASE 18: wall lengths on the plan (device setting) */
+  showDimensions?: boolean;
 }
 
 /** Rooms → walls → labels → points, in world units. Memoised: panning does not re-render it. */
-export const PlanContent = memo(function PlanContent({ project, k, kp, fontFamily }: PlanContentProps) {
+export const PlanContent = memo(function PlanContent({
+  project,
+  k,
+  kp,
+  fontFamily,
+  showDimensions = false,
+}: PlanContentProps) {
   const rooms = project.rooms.filter((r) => r.deletedAt === null);
   const walls = project.walls.filter((w) => w.deletedAt === null);
   const points = project.points.filter((p) => p.deletedAt === null);
@@ -66,6 +75,18 @@ export const PlanContent = memo(function PlanContent({ project, k, kp, fontFamil
           />
         );
       })}
+      {showDimensions
+        ? walls.map((w) => (
+            <DimensionLabel
+              key={`d-${w.id}`}
+              a={w.a}
+              b={w.b}
+              size={12 * k}
+              fontFamily={fontFamily}
+              hideIfShort
+            />
+          ))
+        : null}
       {points.map((p) => (
         <PointGlyph
           key={p.id}

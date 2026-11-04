@@ -6,6 +6,7 @@ import { PointGlyph } from '@/features/points/PointGlyph';
 import { SYMBOLS } from '@/features/symbols/catalog';
 import type { DraftShape } from '@/store/editorStore';
 import { pointK, POINT_BADGE } from './decoration';
+import { DimensionLabel } from './DimensionLabel';
 
 const BLUE = '#3b8bff';
 const flat = (pts: readonly Vec2[]) => pts.flatMap((p) => [p.x, p.y]);
@@ -15,12 +16,19 @@ export function DraftContent({
   draft,
   hover,
   scale,
+  fontFamily,
 }: {
   draft: DraftShape | null;
   hover: Vec2 | null;
   scale: number;
+  fontFamily?: string;
 }) {
   const px = 1 / scale;
+  // PHASE 18: live sizes while drawing (screen-constant 14 px); what is shown on release is what stays
+  const dim = (a: Vec2, b: Vec2, lift: number, key?: string) =>
+    Math.hypot(b.x - a.x, b.y - a.y) > 0.5 ? (
+      <DimensionLabel key={key} a={a} b={b} size={14 * px} fontFamily={fontFamily} lift={lift} accent />
+    ) : null;
   const k = pointK(scale);
   return (
     <>
@@ -37,6 +45,20 @@ export function DraftContent({
           listening={false}
         />
       ) : null}
+      {draft?.kind === 'rect' ? (
+        <>
+          {dim(
+            { x: Math.min(draft.a.x, draft.b.x), y: Math.min(draft.a.y, draft.b.y) },
+            { x: Math.max(draft.a.x, draft.b.x), y: Math.min(draft.a.y, draft.b.y) },
+            -1.6,
+          )}
+          {dim(
+            { x: Math.min(draft.a.x, draft.b.x), y: Math.min(draft.a.y, draft.b.y) },
+            { x: Math.min(draft.a.x, draft.b.x), y: Math.max(draft.a.y, draft.b.y) },
+            1.6, // vertical text reads bottom-to-top: +lift is the outer (left) side
+          )}
+        </>
+      ) : null}
       {draft?.kind === 'wall' ? (
         <Line
           points={flat([draft.a, draft.b])}
@@ -46,6 +68,7 @@ export function DraftContent({
           listening={false}
         />
       ) : null}
+      {draft?.kind === 'wall' ? dim(draft.a, draft.b, -1.2 - 8 / (14 * px)) : null}
       {draft?.kind === 'stroke' ? (
         <Line
           points={flat(draft.points)}
@@ -75,6 +98,8 @@ export function DraftContent({
               listening={false}
             />
           ) : null}
+          {draft.points.slice(1).map((p, i) => dim(draft.points[i]!, p, -1.6, `d${i}`))}
+          {draft.cursor ? dim(draft.points[draft.points.length - 1]!, draft.cursor, -1.6) : null}
           {draft.points.map((p, i) => (
             <Circle
               key={i}

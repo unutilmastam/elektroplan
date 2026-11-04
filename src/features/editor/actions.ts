@@ -19,6 +19,7 @@ import {
   topologyRecipe,
 } from '@/domain/rooms';
 import { splitWall } from '@/domain/wallEdits';
+import { lengthCm, resizedWall, setWallLength } from '@/domain/dimensions';
 import { liveSelection, plainRef, selectAll } from '@/domain/selection';
 import { uz } from '@/i18n/uz';
 import { useUiStore } from '@/store/uiStore';
@@ -134,6 +135,29 @@ export function splitSelectedWall(wallId: string) {
     .getState()
     .apply('Devorni bo‘lish', topologyRecipe(splitWall(p, wallId, 0.5, grid, topoOpts())));
   refreshSelection();
+}
+
+/** Optional exact wall length (cm). False when the geometry cannot take it (nothing changes then). */
+export function setSelectedWallLength(wallId: string, cm: number): boolean {
+  const p = project();
+  if (!p) return false;
+  const wall = p.walls.find((w) => w.id === wallId);
+  if (!wall) return false;
+  if (lengthCm(wall.a, wall.b) === cm) return true;
+  const next = setWallLength(p, wallId, cm, topoOpts());
+  if (next === p) return false;
+  useProjectStore.getState().apply('Devor uzunligi', topologyRecipe(next));
+  // the wall may come back under a new id after the topology pass: keep the same wall selected
+  const after = project();
+  if (after && !after.walls.some((w) => w.id === wallId && w.deletedAt === null)) {
+    const same = resizedWall(after, wall, cm);
+    if (same) {
+      useEditorStore.getState().select(after, [{ kind: 'wall', id: same }]);
+      return true;
+    }
+  }
+  refreshSelection();
+  return true;
 }
 
 /** Panel edits on a point; typing in one field stays one undo step (sealed on blur). */

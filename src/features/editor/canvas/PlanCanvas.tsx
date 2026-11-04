@@ -9,6 +9,7 @@ import { DrawingToolbar, ViewToolbar } from '@/features/editor/toolbar/DrawingTo
 import { uz } from '@/i18n/uz';
 import { useElementSize } from '@/lib/useElementSize';
 import { useEditorStore } from '@/store/editorStore';
+import { useSettingsStore } from '@/store/settingsStore';
 import { selectCurrentProject, useProjectStore } from '@/store/projectStore';
 import { useCanvasInput } from '../hooks/useCanvasInput';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
@@ -51,6 +52,7 @@ export function PlanCanvas({
   /** 'install': view + tap only, status rings, zoom toolbar */
   mode?: 'edit' | 'install';
 }) {
+  const showDimensions = useSettingsStore((st) => st.showDimensions);
   const install = mode === 'install';
   const pointFilter = useEditorStore((s) => s.pointFilter);
   const shown =
@@ -110,6 +112,7 @@ export function PlanCanvas({
           <PlanStage
             project={shown!}
             showStatus={install}
+            showDimensions={showDimensions && !install}
             width={size.width}
             height={size.height}
             viewport={viewport}
