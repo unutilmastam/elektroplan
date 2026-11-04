@@ -59,6 +59,8 @@ interface ProjectState {
   updateInfo: (id: string, info: ProjectInfo) => Promise<void>;
   duplicate: (id: string, name: string) => Promise<string | null>;
   remove: (id: string) => Promise<void>;
+  /** writes projects restored from a backup file (already validated and planned by domain/backup) */
+  importProjects: (projects: readonly Project[]) => Promise<void>;
   open: (id: string | null) => void;
   loadDemo: (project: Project, projectCount: number) => void;
 }
@@ -238,6 +240,19 @@ export const useProjectStore = create<ProjectState>()(
         await persist(p, snapshotOp(p));
         replace(p);
         return p.id;
+      },
+
+      importProjects: async (projects) => {
+        await flushPending();
+        for (const p of projects) {
+          await persist(p, snapshotOp(p));
+          replace(p);
+        }
+        // the open project was replaced by a newer version: its undo stack no longer applies
+        if (projects.some((p) => p.id === get().currentId))
+          set((s) => {
+            s.history = emptyHistory();
+          });
       },
 
       remove: async (id) => {

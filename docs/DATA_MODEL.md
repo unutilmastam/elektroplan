@@ -152,3 +152,19 @@ Walls are **derived** from room outlines plus free walls (`domain/topology.ts �
 - "Saqlash" / Ctrl+S / page hide / `beforeunload` / `visibilitychange` write immediately.
 - Page closing: the unsaved project is also journaled synchronously in `localStorage['elektroplan:unsaved']` (browsers may abort IndexedDB transactions during unload); on the next start a journal newer than the stored snapshot is moved into IndexedDB.
 - Reading: zod-validated; an invalid record is replaced by its backup and the user is told.
+
+## 7. Backup file — "Zaxira nusxa" (Phase 11)
+
+`<nom>-YYYY-MM-DD.elektroplan.json` (`domain/backup.ts`), validated by zod on import:
+
+```json
+{ "format": "elektroplan-backup", "version": 1, "exportedAt": "ISO", "projects": [ Project, … ] }
+```
+
+- Export: one project (project card) or all live projects (Sozlamalar). Soft-deleted projects are left out.
+- Import (`planImport`): a project not on the device is added; a local copy is replaced **only when the file's `updatedAt` is newer** (or the local one was deleted); equal / newer local work is never overwritten. `revision` keeps the higher value. Every write goes through the normal save path (snapshot + backup + outbox).
+- Meta flag `iosInstallHintShown` (mirrored in `localStorage['elektroplan:iosInstallHintShown']`) hides the one-time iOS "Bosh ekranga qo‘shing" hint.
+
+## 8. Service worker cache (Phase 11)
+
+Serwist (`src/sw/sw.ts` → `/sw.js`) precaches every exported page (+ its RSC `index.txt`), all `_next/static` chunks/CSS/fonts and every file in `public/` (incl. `/fonts/Inter-*.ttf` for the PDF and the icons). Page URLs are matched without their query (`/editor/?id=…` → `/editor/`). Projects are **never** in the SW cache — they live only in IndexedDB. `/api/*` is network-only. A new build waits in `waiting` until the user taps "Yangilash".

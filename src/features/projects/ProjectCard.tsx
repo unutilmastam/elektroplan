@@ -1,9 +1,10 @@
 'use client';
 
-import { Copy, Folder, Pencil, Trash2 } from 'lucide-react';
+import { Copy, Folder, FolderDown, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { Hint } from '@/components/common/Hint';
 import { Button } from '@/components/ui/button';
+import { UnsentBadge } from '@/features/offline-library/ConnectionBadge';
 import type { ProjectSummary } from '@/domain/projectList';
 import { uz } from '@/i18n/uz';
 import { formatDateTime } from '@/lib/format';
@@ -13,6 +14,7 @@ interface ProjectCardProps {
   onEdit: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
+  onBackup: () => void;
 }
 
 function IconAction({
@@ -36,7 +38,7 @@ function IconAction({
 }
 
 /** One project in the "Loyihalar" list. */
-export function ProjectCard({ project: p, onEdit, onDuplicate, onDelete }: ProjectCardProps) {
+export function ProjectCard({ project: p, onEdit, onDuplicate, onDelete, onBackup }: ProjectCardProps) {
   const href = `/editor/?id=${encodeURIComponent(p.id)}`;
   return (
     <li className="glass flex flex-col gap-3 p-4" data-testid="project-card">
@@ -65,6 +67,7 @@ export function ProjectCard({ project: p, onEdit, onDuplicate, onDelete }: Proje
         <span className="tabular">
           {uz.projects.updated}: {formatDateTime(p.updatedAt)}
         </span>
+        <UnsentBadge projectId={p.id} className="ml-auto" />
       </div>
       <div className="flex items-center gap-3">
         <div
@@ -91,6 +94,9 @@ export function ProjectCard({ project: p, onEdit, onDuplicate, onDelete }: Proje
         </IconAction>
         <IconAction label={uz.projects.duplicate} onClick={onDuplicate}>
           <Copy size={18} aria-hidden />
+        </IconAction>
+        <IconAction label={uz.backup.exportOne} onClick={onBackup}>
+          <FolderDown size={18} aria-hidden />
         </IconAction>
         <IconAction label={uz.projects.delete} onClick={onDelete} danger>
           <Trash2 size={18} aria-hidden />

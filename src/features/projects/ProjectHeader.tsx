@@ -4,6 +4,7 @@ import { Pencil, Play } from 'lucide-react';
 import Link from 'next/link';
 import { Hint } from '@/components/common/Hint';
 import { ExportPdfButton } from '@/features/export-pdf/ExportPdfButton';
+import { OfflineBadge, UnsentBadge } from '@/features/offline-library/ConnectionBadge';
 import { GlassPanel } from '@/components/layout/GlassPanel';
 import { Button } from '@/components/ui/button';
 import { uz } from '@/i18n/uz';
@@ -43,6 +44,8 @@ export function ProjectHeader() {
               </button>
             </Hint>
           ) : null}
+          {editable ? <UnsentBadge projectId={project.id} className="hidden md:inline-flex" /> : null}
+          <OfflineBadge />
         </div>
         {project ? (
           <div className="mt-0.5 flex min-w-0 items-center gap-3 truncate text-[12.5px] text-text-muted md:text-[14px] lg:mt-1 lg:text-[16px]">

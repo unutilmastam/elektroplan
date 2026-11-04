@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { PwaNotices } from '@/features/offline-library/PwaNotices';
 import { ProjectDialogs } from '@/features/projects/ProjectDialogs';
 import { MobileNav } from './MobileNav';
 import { NoticeToast } from './NoticeToast';
@@ -20,6 +21,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <ProjectDialogs />
       <SaveErrorBanner />
       <NoticeToast />
+      <PwaNotices />
     </div>
   );
 }

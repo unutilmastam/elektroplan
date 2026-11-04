@@ -8,6 +8,8 @@ import { filterAndSortProjects, uniqueName, type ProjectSort } from '@/domain/pr
 import { uz } from '@/i18n/uz';
 import { useProjectStore } from '@/store/projectStore';
 import { useUiStore } from '@/store/uiStore';
+import { OfflineBadge } from '@/features/offline-library/ConnectionBadge';
+import { exportBackup } from '@/features/offline-library/backupActions';
 import { ProjectCard } from './ProjectCard';
 
 const SORTS: ProjectSort[] = ['updated', 'created', 'name', 'progress'];
@@ -32,6 +34,7 @@ export function ProjectsScreen() {
             {liveCount} {uz.projects.count}
           </p>
         </div>
+        <OfflineBadge />
         <Button variant="primary" onClick={openCreate} className="lg:h-[52px] lg:px-5 lg:text-[16px]">
           <Plus size={20} aria-hidden />
           {uz.projects.create}
@@ -92,6 +95,7 @@ export function ProjectsScreen() {
                   void duplicate(p.id, uniqueName(`${p.name} ${uz.projects.copySuffix}`, projects))
                 }
                 onDelete={() => openDelete(p.id)}
+                onBackup={() => void exportBackup(p.id)}
               />
             ))}
           </ul>

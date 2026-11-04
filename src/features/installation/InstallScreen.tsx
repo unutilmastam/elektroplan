@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { ProgressRing } from '@/components/common/ProgressRing';
 import { GlassPanel } from '@/components/layout/GlassPanel';
+import { OfflineBadge } from '@/features/offline-library/ConnectionBadge';
 import { Button } from '@/components/ui/button';
 import { nextOpenPoint, roomProgress, workOrder } from '@/domain/installation';
 import { computeProgress } from '@/domain/progress';
@@ -81,6 +82,7 @@ export function InstallScreen() {
             {total.total} · {uz.status.remaining} {total.remaining}
           </p>
         </div>
+        <OfflineBadge />
         <ProgressRing
           percent={total.percent}
           size={52}

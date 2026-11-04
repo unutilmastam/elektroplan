@@ -12,3 +12,6 @@ test-results/
 deploy/
 .playwright/
 test-results-demo.pdf
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js
