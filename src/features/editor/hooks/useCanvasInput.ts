@@ -96,11 +96,14 @@ export function useCanvasInput(
         metaKey: e.metaKey,
       };
     };
-    const queued = new Map<number, RawPointer>();
+    // Moves are handled once per animation frame, but EVERY sample of the frame is replayed (incl. the
+    // browser's coalesced ones: Apple Pencil reports up to 240 Hz), so fast freehand strokes keep their shape.
+    const MAX_SAMPLES = 64;
+    const queued = new Map<number, RawPointer[]>();
     let frame = 0;
     const flushMoves = () => {
       frame = 0;
-      for (const ev of queued.values()) router.move(ev);
+      for (const evs of queued.values()) for (const ev of evs) router.move(ev);
       queued.clear();
     };
     const flushNow = () => {
@@ -116,7 +119,11 @@ export function useCanvasInput(
       }
     };
     const onMove = (e: PointerEvent) => {
-      queued.set(e.pointerId, raw(e));
+      const list = queued.get(e.pointerId) ?? [];
+      const coalesced = typeof e.getCoalescedEvents === 'function' ? e.getCoalescedEvents() : [];
+      for (const c of coalesced.length ? coalesced : [e]) list.push(raw(c));
+      if (list.length > MAX_SAMPLES) list.splice(0, list.length - MAX_SAMPLES);
+      queued.set(e.pointerId, list);
       if (!frame) frame = requestAnimationFrame(flushMoves);
     };
     const onUp = (e: PointerEvent) => {

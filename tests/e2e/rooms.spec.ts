@@ -52,9 +52,11 @@ test('a shaky hand-drawn rectangle becomes a clean rectangle; one undo shows the
   const first = toPage(...pts[0]!);
   await page.mouse.move(first.x, first.y);
   await page.mouse.down();
-  for (const q of pts.slice(1)) {
+  // ~10 samples per animation frame, like a fast finger / Pencil stroke (the browser may merge them)
+  for (const [i, q] of pts.slice(1).entries()) {
     const s = toPage(...q);
     await page.mouse.move(s.x, s.y);
+    if (i % 10 === 9) await page.waitForTimeout(16);
   }
   await page.mouse.up();
   await expectStored(page, (p) => liveRooms(p).length === 1 && isRect(liveRooms(p)[0]!.vertices));
