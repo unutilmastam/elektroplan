@@ -22,6 +22,7 @@
 - **Topilgan holat:** GitHub CI (iPad/iPhone profillari haqiqiy WebKit’da) phase-4 dan beri qizil edi; oldingi hisobotlardagi “hammasi o‘tdi” faqat lokal Chromium uchun to‘g‘ri edi. Endi CI yashil.
 - **Ilovadagi tuzatishlar:**
   - Chizish: har kadrda faqat oxirgi pointer nuqtasi olinardi — tez qo‘lda chizmada (Apple Pencil 240 Hz) shakl buzilishi mumkin edi. Endi kadrdagi barcha nuqtalar (`getCoalescedEvents` ham) ishlatiladi.
+  - Zaxira: sahifa ochilib, loyihalar hali yuklanmasdan tiklash bosilsa, qurilmadagi loyiha “yangi” deb hisoblanib, yangiroq ish eski zaxira bilan ustidan yozilishi mumkin edi. Endi zaxira amallari loyihalar yuklanishini kutadi (integratsiya testi bilan).
   - PWA: WebKit birinchi tashrifda noto‘g‘ri “Yangi versiya tayyor” xabarini ko‘rsatardi (tugmalarni to‘sardi). Endi faqat haqiqiy yangilanishda chiqadi.
 - **Testlar:** Playwright WebKit oflayn holatda service worker’dan sahifa ocha olmaydi — WebKit profillarida “oflayn” server ulanishini uzish bilan sinaladi; to‘liq samolyot rejimi Chromium profillarida va haqiqiy Safari’da (`docs/MANUAL_TEST.md` §5). Qo‘lda chizish testi har nuqtada brauzerga murojaat qilmaydi.
 - CI (`ci-webkit`): 348 o‘tdi, 0 yiqildi.
