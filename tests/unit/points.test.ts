@@ -14,7 +14,8 @@ import {
 } from '@/domain/points';
 import { createEmptyProject } from '@/domain/project';
 import { selectWallElevation } from '@/domain/selectors';
-import { addRoom, topologyRecipe } from '@/domain/rooms';
+import { reconcile } from '@/domain/topology';
+import { addRoom, renameWallRecipe, topologyRecipe } from '@/domain/rooms';
 import type { Project, Vec2 } from '@/domain/types';
 import { moveWall } from '@/domain/wallEdits';
 import { SYMBOLS } from '@/features/symbols/catalog';
@@ -266,5 +267,81 @@ describe('a wall standing inside one room (both faces in the same room)', () => 
     expect(selectWallElevation(withPts, 'mid', 'R')!.points).toHaveLength(2);
     expect(selectWallElevation(withPts, 'mid', 'R', a.side)!.points.map((x) => x.point.id)).toEqual(['a']);
     expect(selectWallElevation(withPts, 'mid', 'R', b.side)!.points.map((x) => x.point.id)).toEqual(['b']);
+  });
+});
+
+describe('a room drawn inside another room', () => {
+  const NOW3 = '2026-11-04T00:00:00.000Z';
+  const rect = (id: string, x0: number, y0: number, x1: number, y1: number, order: number) => ({
+    id,
+    name: id,
+    color: '#0d1628',
+    shape: 'rect' as const,
+    vertices: [
+      { x: x0, y: y0 },
+      { x: x1, y: y0 },
+      { x: x1, y: y1 },
+      { x: x0, y: y1 },
+    ],
+    labelOffset: { x: 0, y: 0 },
+    order,
+    createdAt: NOW3,
+    updatedAt: NOW3,
+    deletedAt: null,
+  });
+  // outer hall 0..600 × 0..400, a small room (wardrobe) inside 200..400 × 100..300
+  const base = {
+    ...createEmptyProject('n', 'N', NOW3),
+    rooms: [rect('hall', 0, 0, 600, 400, 0), rect('wc', 200, 100, 400, 300, 1)],
+  };
+  const proj = {
+    ...base,
+    ...reconcile(base, {
+      makeId: (() => {
+        let i = 0;
+        return () => `nw${++i}`;
+      })(),
+      now: NOW3,
+    }),
+  };
+  const socket = { placement: 'wall' as const, category: 'socket' as const, defaultMountHeightCm: 30 };
+
+  it('the inner room’s wall takes sockets on both faces: inside → inner room, outside → the room around it', () => {
+    const inside = placementTarget(proj, { x: 300, y: 112 }, socket, { tolerance: 20, free: false });
+    const outside = placementTarget(proj, { x: 300, y: 88 }, socket, { tolerance: 20, free: false });
+    expect(inside).toMatchObject({ kind: 'wall', roomId: 'wc' });
+    expect(outside).toMatchObject({ kind: 'wall', roomId: 'hall' });
+    if (inside?.kind !== 'wall' || outside?.kind !== 'wall') return;
+    expect(inside.wallId).toBe(outside.wallId);
+    expect(inside.side).not.toBe(outside.side);
+    expect(inside.pos.y).toBeGreaterThan(100);
+    expect(outside.pos.y).toBeLessThan(100);
+  });
+
+  it('a tap just outside the house still lands inside (outer wall)', () => {
+    const t = placementTarget(proj, { x: 300, y: -10 }, socket, { tolerance: 20, free: false });
+    expect(t).toMatchObject({ kind: 'wall', roomId: 'hall' });
+    if (t?.kind === 'wall') expect(t.pos.y).toBeGreaterThan(0);
+  });
+});
+
+describe('wall names', () => {
+  it('optional name, trimmed; empty removes it', () => {
+    const NOW4 = '2026-11-04T00:00:00.000Z';
+    const w = {
+      id: 'w',
+      a: { x: 0, y: 0 },
+      b: { x: 100, y: 0 },
+      thickness: 12,
+      roomIds: [],
+      name: null,
+      createdAt: NOW4,
+      updatedAt: NOW4,
+      deletedAt: null,
+    };
+    const p = { ...createEmptyProject('p', 'P', NOW4), walls: [w] };
+    const named = applyRecipe(p, 'n', renameWallRecipe('w', '  TV devori ', '2026-11-04T01:00:00.000Z')).next;
+    expect(named.walls[0]).toMatchObject({ name: 'TV devori', updatedAt: '2026-11-04T01:00:00.000Z' });
+    expect(applyRecipe(named, 'n', renameWallRecipe('w', '   ', NOW4)).next.walls[0]!.name).toBeNull();
   });
 });

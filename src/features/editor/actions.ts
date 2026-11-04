@@ -14,6 +14,7 @@ import {
   deleteSelection as deleteFromProject,
   duplicateRoom,
   renameRoomRecipe,
+  renameWallRecipe,
   roomColorRecipe,
   topologyRecipe,
 } from '@/domain/rooms';
@@ -96,6 +97,10 @@ export function renameRoom(roomId: string, name: string) {
   const trimmed = name.trim().slice(0, 60);
   if (trimmed)
     useProjectStore.getState().apply('Nomlash', renameRoomRecipe(roomId, trimmed, new Date().toISOString()));
+}
+
+export function renameWall(wallId: string, name: string) {
+  useProjectStore.getState().apply('Nomlash', renameWallRecipe(wallId, name, new Date().toISOString()));
 }
 
 export function setRoomColor(roomId: string, color: string) {

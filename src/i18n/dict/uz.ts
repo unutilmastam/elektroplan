@@ -141,6 +141,8 @@ export const uzStrings = {
     shared: 'Umumiy devor',
     free: 'Alohida devor',
     moveHint: 'Devorni surish uchun uni sudrang — bog‘liq xonalar ham o‘zgaradi.',
+    name: 'Devor nomi',
+    namePlaceholder: 'Masalan: TV devori (ixtiyoriy)',
   },
   opening: {
     door: 'Eshik',

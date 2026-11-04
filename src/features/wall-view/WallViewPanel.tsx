@@ -36,10 +36,16 @@ export function useWallView() {
         elevation?.room ? [{ kind: 'room', id: elevation.room.id }] : undefined,
       );
   };
-  const subtitle =
+  const place =
     elevation?.room && elevation.direction
       ? `${elevation.room.name} – ${uz.wallView.directions[elevation.direction]}`
       : '';
+  // a named wall ("TV devori") shows its name first
+  const subtitle = elevation?.wall.name
+    ? place
+      ? `${elevation.wall.name} · ${place}`
+      : elevation.wall.name
+    : place;
   return { elevation, subtitle, step, canStep: walls.length > 1 };
 }
 

@@ -233,6 +233,16 @@ export const renameRoomRecipe = (roomId: string, name: string, now: string) => (
   }
 };
 
+/** Optional wall name ("TV devori"); empty = no name. */
+export const renameWallRecipe = (wallId: string, name: string | null, now: string) => (d: Draft<Project>) => {
+  const w = d.walls.find((x) => x.id === wallId);
+  const next = name && name.trim() ? name.trim().slice(0, 60) : null;
+  if (w && w.name !== next) {
+    w.name = next;
+    w.updatedAt = now;
+  }
+};
+
 export const roomColorRecipe = (roomId: string, color: string, now: string) => (d: Draft<Project>) => {
   const r = d.rooms.find((x) => x.id === roomId);
   if (r && r.color !== color) {

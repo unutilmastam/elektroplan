@@ -9,7 +9,8 @@ const PER_PAGE = 3;
 
 function drawWall(c: Canvas, w: ReportWall, x: number, y: number, width: number, height: number) {
   const e = w.elevation;
-  const title = `${e.room?.name ?? ''}${e.direction ? ` – ${uz.wallView.directions[e.direction]}` : ''}`;
+  const place = `${e.room?.name ?? ''}${e.direction ? ` – ${uz.wallView.directions[e.direction]}` : ''}`;
+  const title = e.wall.name ? `${e.wall.name}${place ? ` · ${place}` : ''}` : place;
   c.text(title, x, y, { size: 11.5, font: c.fonts.semibold });
   c.text(countOf(e.points.length, uz.wallView.points), x + width, y + 1, {
     size: 9.5,

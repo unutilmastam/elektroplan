@@ -36,7 +36,13 @@
 - Layout auditi **rus tilida** ham 15 qurilmada: 0 muammo (ruscha so‘zlar uzunroq); iPhone SE pastki menyusi uchun qisqa so‘zlar (Смета, Опции).
 - Skrinshotlar: `docs/screenshots/phase-16/`.
 
+**Shu bosqichda qo‘shimcha (egasining so‘rovi bilan)**
+- **Xona ichidagi xona:** ichki xona devorining **tashqi** tomoniga ham rozetka/viklyuchatel qo‘yiladi (tashqi xonaga tegishli bo‘ladi); oldin faqat ichki tomonga yopishardi.
+- **Devor nomi** (ixtiyoriy): devorni tanlang → “Devor nomi” (masalan “TV devori”). Devor ko‘rinishi sarlavhasida va PDF’dagi devor sahifasida ko‘rinadi; bo‘sh qoldirilsa olib tashlanadi; devor surilsa saqlanadi.
+- Xona nomini barcha qurilmalarda panel orqali o‘zgartirish e2e testi qo‘shildi (telefon, planshet, iPad, kompyuter).
+
 **Ma’lum cheklovlar**
+- Devor bo‘linganda nom uzunroq bo‘lagida qoladi.
 - Foydalanuvchi kiritgan matnlar (loyiha, xona nomlari, izohlar) tarjima qilinmaydi.
 - Sahifa ochilganda bir lahzaga o‘zbekcha ko‘rinib, so‘ng ruschaga o‘tishi mumkin (statik sahifa o‘zbekcha tayyorlangan).
 - Server xatolari kod bilan keladi va ilovada tarjima qilinadi; ilova nomi (manifest) o‘zbekcha qoladi.
