@@ -1,8 +1,9 @@
 'use client';
 
-import { FileDown, Pencil, Play } from 'lucide-react';
+import { Pencil, Play } from 'lucide-react';
 import Link from 'next/link';
-import { Hint, NextPhase } from '@/components/common/Hint';
+import { Hint } from '@/components/common/Hint';
+import { ExportPdfButton } from '@/features/export-pdf/ExportPdfButton';
 import { GlassPanel } from '@/components/layout/GlassPanel';
 import { Button } from '@/components/ui/button';
 import { uz } from '@/i18n/uz';
@@ -62,16 +63,10 @@ export function ProjectHeader() {
           disabled={!editable}
           className="w-11 px-0 md:w-auto md:min-w-[150px] md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
         />
-        <NextPhase>
-          <Button
-            disabled
-            aria-label={uz.header.exportPdf}
-            className="w-11 px-0 md:w-auto md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
-          >
-            <FileDown size={22} aria-hidden />
-            <span className="hidden md:inline">{uz.header.exportPdf}</span>
-          </Button>
-        </NextPhase>
+        <ExportPdfButton
+          disabled={!editable}
+          className="w-11 px-0 md:w-auto md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
+        />
         <Button
           asChild
           variant="primary"

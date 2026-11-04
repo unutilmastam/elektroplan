@@ -11,3 +11,4 @@ test-results/
 .vercel
 deploy/
 .playwright/
+test-results-demo.pdf
