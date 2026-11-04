@@ -130,7 +130,7 @@ export function PlanCanvas({
           <div className="text-[14px] text-text-muted">{uz.canvas.emptyHint}</div>
         </div>
       ) : null}
-      <div className="absolute top-2 left-2 md:top-2.5 md:left-2.5 lg:top-4 lg:left-2">
+      <div className="no-scrollbar absolute top-2 bottom-2 left-2 overflow-y-auto md:top-2.5 md:left-2.5 lg:top-4 lg:left-2">
         {install ? <ViewToolbar /> : <DrawingToolbar />}
       </div>
       {install ? null : (

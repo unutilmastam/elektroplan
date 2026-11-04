@@ -28,7 +28,7 @@ export function SymbolGallery() {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-y-auto p-2 sm:p-2.5 lg:gap-3.5 lg:p-3.5">
       <GlassPanel as="header" className="flex shrink-0 items-center gap-3 px-4 py-3 lg:px-5 lg:py-4">
-        <Button asChild size="icon" aria-label={uz.settings.title}>
+        <Button asChild size="icon" className="shrink-0" aria-label={uz.settings.title}>
           <Link href="/settings/">
             <ArrowLeft size={20} aria-hidden />
           </Link>

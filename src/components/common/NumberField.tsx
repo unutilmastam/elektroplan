@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
 import { useId } from 'react';
 import { cn } from '@/lib/cn';
 import { uz } from '@/i18n/uz';
@@ -19,7 +19,7 @@ interface NumberFieldProps {
   className?: string;
 }
 
-/** Label + compact number input with stepper chevrons (Pol'dan balandlik / Chap burchakdan). */
+/** Label + number input with finger-sized − / + buttons (Pol'dan balandlik / Chap burchakdan). */
 export function NumberField({
   label,
   value,
@@ -39,7 +39,19 @@ export function NumberField({
       <label htmlFor={id} className="min-w-0 flex-1 truncate text-[14.5px] text-text">
         {label}
       </label>
-      <div className="flex h-11 w-[66px] items-center rounded-lg border border-white/12 bg-[#0a1222] pl-2.5 pr-1 focus-within:border-primary-hi/70">
+      <div className="flex h-11 shrink-0 items-center rounded-lg border border-white/12 bg-[#0a1222] focus-within:border-primary-hi/70">
+        <button
+          type="button"
+          aria-label={uz.point.decrease}
+          disabled={readOnly}
+          onClick={() => {
+            onChange?.(clamp((value ?? 0) - step));
+            onCommit?.();
+          }}
+          className="flex h-11 w-9 items-center justify-center rounded-l-lg text-text-muted hover:bg-white/[0.06] hover:text-text disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Minus size={16} strokeWidth={2.4} aria-hidden />
+        </button>
         <input
           id={id}
           inputMode="numeric"
@@ -53,34 +65,20 @@ export function NumberField({
             if (Number.isFinite(n)) onChange(clamp(Math.round(n)));
           }}
           onBlur={onCommit}
-          className="tabular w-full min-w-0 bg-transparent text-base text-text outline-none"
+          className="tabular h-full w-12 min-w-0 bg-transparent text-center text-base text-text outline-none"
         />
-        <div className="flex flex-col text-text-muted">
-          <button
-            type="button"
-            aria-label={uz.point.increase}
-            disabled={readOnly}
-            onClick={() => {
-              onChange?.(clamp((value ?? 0) + step));
-              onCommit?.();
-            }}
-            className="flex h-4 w-4 items-center justify-center hover:text-text disabled:cursor-not-allowed"
-          >
-            <ChevronUp size={13} strokeWidth={2.4} />
-          </button>
-          <button
-            type="button"
-            aria-label={uz.point.decrease}
-            disabled={readOnly}
-            onClick={() => {
-              onChange?.(clamp((value ?? 0) - step));
-              onCommit?.();
-            }}
-            className="flex h-4 w-4 items-center justify-center hover:text-text disabled:cursor-not-allowed"
-          >
-            <ChevronDown size={13} strokeWidth={2.4} />
-          </button>
-        </div>
+        <button
+          type="button"
+          aria-label={uz.point.increase}
+          disabled={readOnly}
+          onClick={() => {
+            onChange?.(clamp((value ?? 0) + step));
+            onCommit?.();
+          }}
+          className="flex h-11 w-9 items-center justify-center rounded-r-lg text-text-muted hover:bg-white/[0.06] hover:text-text disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Plus size={16} strokeWidth={2.4} aria-hidden />
+        </button>
       </div>
       {unit ? <span className="w-5 text-[14.5px] text-text">{unit}</span> : null}
     </div>

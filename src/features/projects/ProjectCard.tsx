@@ -30,7 +30,13 @@ function IconAction({
 }) {
   return (
     <Hint label={label} side="top">
-      <Button variant={danger ? 'danger' : 'secondary'} size="icon" aria-label={label} onClick={onClick}>
+      <Button
+        variant={danger ? 'danger' : 'secondary'}
+        size="icon"
+        className="shrink-0"
+        aria-label={label}
+        onClick={onClick}
+      >
         {children}
       </Button>
     </Hint>
@@ -48,7 +54,10 @@ export function ProjectCard({ project: p, onEdit, onDuplicate, onDelete, onBacku
         </div>
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-[17px] font-semibold">
-            <Link href={href} className="hover:text-primary-hi">
+            <Link
+              href={href}
+              className="-my-2 inline-block max-w-full truncate py-2 align-top hover:text-primary-hi"
+            >
               {p.name}
             </Link>
           </h2>

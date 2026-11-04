@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 
 /* Breakpoints: docs/DEVICES.md §1 (layout depends on width only) */
+/* PHASE 15: short screens = phones in landscape (and small windows): compact chrome so the plan keeps room */
+@custom-variant short (@media (max-height: 520px));
+
 @theme {
   --breakpoint-sm: 600px; /* tablet: icon rail, slide-over, tabs */
   --breakpoint-md: 1024px; /* iPad landscape: reference layout, compact */

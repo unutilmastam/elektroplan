@@ -79,7 +79,12 @@ export function ProScreen() {
                 </div>
               </div>
             ) : (
-              <Button asChild variant="primary" size="lg">
+              <Button
+                asChild
+                variant="primary"
+                size="lg"
+                className="h-auto min-h-[52px] py-2.5 text-center whitespace-normal"
+              >
                 <Link href="/login/">{uz.pro.needAccount}</Link>
               </Button>
             )}

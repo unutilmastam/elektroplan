@@ -16,14 +16,14 @@ const TABS: TabKey[] = ['point', 'rooms', 'wall', 'status'];
 
 /**
  * <1024px bottom area. Tablet (600–1023): always-open tabs (rooms / wall / status).
- * Phone (<600): bottom sheet — tab bar always visible, content expands on tap.
+ * Phone (<600) and short screens (phone in landscape): bottom sheet — tab bar always visible, content expands on tap.
  */
 export function CompactPanels() {
   const [tab, setTab] = useState<TabKey>('rooms');
   const [open, setOpen] = useState(false);
   useOnPropertiesRequest(() => {
     // phone: open the sheet on "Nuqta"; tablet uses the slide-over instead
-    if (window.matchMedia('(max-width: 599px)').matches) {
+    if (window.matchMedia('(max-width: 599px), (max-height: 520px)').matches) {
       setTab('point');
       setOpen(true);
     }
@@ -41,7 +41,7 @@ export function CompactPanels() {
     <GlassPanel
       className={cn(
         'flex shrink-0 flex-col overflow-hidden rounded-[14px] md:hidden sm:h-[268px]',
-        open ? 'h-[46dvh]' : 'h-auto',
+        open ? 'h-[46dvh] short:h-[72dvh]!' : 'h-auto short:h-auto!',
       )}
       aria-label={uz.mobile.sheet}
     >
@@ -66,12 +66,12 @@ export function CompactPanels() {
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-label={open ? uz.mobile.collapse : uz.mobile.expand}
-          className="flex h-10 w-10 items-center justify-center rounded-[9px] text-text-muted sm:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-[9px] text-text-muted sm:hidden short:flex!"
         >
           {open ? <ChevronDown size={20} aria-hidden /> : <ChevronUp size={20} aria-hidden />}
         </button>
       </div>
-      <div className={cn('min-h-0 flex-1', open ? 'block' : 'hidden sm:block')} role="tabpanel">
+      <div className={cn('min-h-0 flex-1', open ? 'block' : 'hidden sm:block short:hidden!')} role="tabpanel">
         {tab === 'point' ? <PropertiesPanel showTitle={false} className="sm:hidden" /> : null}
         {tab === 'rooms' || tab === 'point' ? (
           <div className={cn('h-full', tab === 'point' && 'hidden sm:block')}>

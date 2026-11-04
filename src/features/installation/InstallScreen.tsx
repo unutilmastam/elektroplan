@@ -67,7 +67,7 @@ export function InstallScreen() {
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-2 p-2 sm:gap-2.5 sm:p-2.5 md:grid md:grid-cols-[minmax(0,1fr)_340px] lg:grid-cols-[minmax(0,1fr)_400px] md:grid-rows-[auto_auto_minmax(0,1fr)] md:gap-3.5 md:p-3.5">
+    <div className="flex min-h-0 flex-1 flex-col gap-2 p-2 short:overflow-y-auto sm:gap-2.5 sm:p-2.5 md:grid md:grid-cols-[minmax(0,1fr)_340px] lg:grid-cols-[minmax(0,1fr)_400px] md:grid-rows-[auto_auto_minmax(0,1fr)] md:gap-3.5 md:p-3.5">
       <GlassPanel as="header" className="flex shrink-0 items-center gap-3 px-3 py-2.5 md:col-span-2 md:px-4">
         <Button asChild size="icon" aria-label={uz.install.back} title={uz.install.back}>
           <Link href={`/editor/?id=${encodeURIComponent(project.id)}`}>
@@ -148,7 +148,10 @@ export function InstallScreen() {
       </div>
 
       <div
-        className={cn('relative min-h-0 flex-1 md:block', view === 'plan' ? 'block' : 'hidden')}
+        className={cn(
+          'relative min-h-0 flex-1 short:min-h-[82dvh]! md:block',
+          view === 'plan' ? 'block' : 'hidden',
+        )}
         data-testid="install-plan"
       >
         <PlanCanvas project={project} mode="install" />
