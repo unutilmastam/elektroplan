@@ -104,3 +104,13 @@ Deploydan keyin brauzerda bir marta:
 - Talab: PHP 8.1+ (`pdo_mysql`), MySQL 5.7+ / MariaDB 10.2+ (utf8mb4).
 - Tekshirish: `https://<sayt>/api/health` → `{"ok":true}`.
 - Lokal: `scripts/test-db.sh start` (MariaDB 3307 portda) → `EP_DB_HOST=127.0.0.1 EP_DB_PORT=3307 EP_DB_USER=root EP_DB_NAME=ep_dev php server/migrate.php` → `php -S 127.0.0.1:4175 server/index.php`.
+
+## 8. Windows dasturi (PHASE 17)
+
+- `.github/workflows/desktop.yml` (`windows-latest`): `pnpm tauri build` → `ElektroPlan-Setup.exe`. Har push’da artefakt; `main` da:
+  - GitHub Releases → `desktop-N` (eng oxirgisi “Latest”);
+  - saytga: `https://eplan.itcode.uz/download/ElektroPlan-Setup.exe` (o‘sha FTP secrets bilan). Sozlamalar → “Windows uchun dastur” shu faylni yuklaydi.
+- Yangi secret kerak emas. Dastur API manzili: `https://eplan.itcode.uz/api` (`EP_DESKTOP_API` bilan o‘zgartiriladi).
+- Imzolanmagan: birinchi ishga tushirishda Windows SmartScreen → **Batafsil (More info) → Baribir ishga tushirish (Run anyway)**.
+- Ma’lumotlar: `%LOCALAPPDATA%\uz.itcode.elektroplan\` (WebView2 IndexedDB). Dasturni o‘chirsangiz ham loyihalar shu yerda qoladi; akkaunt bilan serverda ham bor.
+- Lokal: `pnpm tauri build` (Windows’da) yoki Linux’da `cargo build --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol` (WebKitGTK kerak).

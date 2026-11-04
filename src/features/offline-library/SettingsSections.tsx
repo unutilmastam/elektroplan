@@ -7,6 +7,7 @@ import {
   FolderDown,
   FolderUp,
   Loader2,
+  Monitor,
   type LucideIcon,
 } from 'lucide-react';
 import { useRef, useState, type ReactNode } from 'react';
@@ -17,6 +18,10 @@ import { useProjectStore } from '@/store/projectStore';
 import { usePwaStore } from '@/store/pwaStore';
 import { exportBackup, importBackup } from './backupActions';
 import { BACKUP_EXT } from '@/domain/backup';
+import { IS_DESKTOP } from '@/infra/desktop/desktop';
+
+/** Windows installer, uploaded next to the site by .github/workflows/desktop.yml. */
+const WINDOWS_SETUP = '/download/ElektroPlan-Setup.exe';
 
 function Row({
   icon: Icon,
@@ -75,6 +80,16 @@ export function AppSettings() {
           ) : null}
         </Row>
       )}
+      {platform === 'desktop' && !IS_DESKTOP ? (
+        <Row icon={Monitor} title={uz.pwa.windowsApp} text={uz.pwa.windowsAppHint}>
+          <Button asChild variant="secondary">
+            <a href={WINDOWS_SETUP} download data-testid="windows-download">
+              <Download size={18} aria-hidden />
+              {uz.pwa.windowsDownload}
+            </a>
+          </Button>
+        </Row>
+      ) : null}
       <Row icon={CloudOff} title={uz.pwa.offlineReady} text={uz.pwa.offlineReadyHint} />
     </GlassPanel>
   );

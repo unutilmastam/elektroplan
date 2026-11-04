@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { routeExternalLinks } from '@/infra/desktop/desktop';
 import { registerServiceWorker } from '@/infra/pwa/registerSw';
 import { useProjectStore } from '@/store/projectStore';
 import { usePwaStore, type BeforeInstallPromptEvent } from '@/store/pwaStore';
@@ -11,6 +12,7 @@ export function PwaBootstrap() {
     const pwa = usePwaStore.getState();
     pwa.init();
     registerServiceWorker((w) => usePwaStore.getState().setWaiting(w));
+    const unlinks = routeExternalLinks();
     const online = () => usePwaStore.getState().setOnline(true);
     const offline = () => usePwaStore.getState().setOnline(false);
     const prompt = (e: Event) => {
@@ -36,6 +38,7 @@ export function PwaBootstrap() {
       window.removeEventListener('beforeinstallprompt', prompt);
       window.removeEventListener('appinstalled', installed);
       unsub();
+      unlinks();
     };
   }, []);
   return null;

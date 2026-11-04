@@ -10,6 +10,20 @@ final class Auth
     public const COOKIE = 'ep_session';
     private const TTL_DAYS = 60;
 
+    /** Token of the session started by this request (handed to the desktop app, which cannot use cookies). */
+    public static ?string $issuedToken = null;
+
+    /** Session token: the cookie (web) or the `X-Elektroplan-Auth` header (Windows app, cross-origin). */
+    public static function token(): string
+    {
+        $header = $_SERVER['HTTP_X_ELEKTROPLAN_AUTH'] ?? '';
+        if (is_string($header) && $header !== '') {
+            return $header;
+        }
+        $cookie = $_COOKIE[self::COOKIE] ?? '';
+        return is_string($cookie) ? $cookie : '';
+    }
+
     /** "+998 90 123-45-67", "901234567" -> "+998901234567"; emails lower-cased. Null when invalid. */
     public static function normalizeLogin(string $login): ?array
     {
@@ -82,8 +96,8 @@ final class Auth
 
     public static function logout(): void
     {
-        $token = $_COOKIE[self::COOKIE] ?? '';
-        if (is_string($token) && $token !== '') {
+        $token = self::token();
+        if ($token !== '') {
             Db::run('DELETE FROM sessions WHERE id = ?', [hash('sha256', $token)]);
         }
         self::setCookie('', time() - 3600);
@@ -96,8 +110,8 @@ final class Auth
         if ($user !== false) {
             return $user;
         }
-        $token = $_COOKIE[self::COOKIE] ?? '';
-        if (!is_string($token) || !preg_match('/^[a-f0-9]{64}$/', $token)) {
+        $token = self::token();
+        if (!preg_match('/^[a-f0-9]{64}$/', $token)) {
             return $user = null;
         }
         $row = Db::one(
@@ -166,7 +180,7 @@ final class Auth
             throw new ApiError(422, 'validation', '', ['fields' => ['current' => 'bad_credentials']]);
         }
         Db::run('UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?', [password_hash($next, PASSWORD_BCRYPT), $u['id']]);
-        $token = (string) ($_COOKIE[self::COOKIE] ?? '');
+        $token = self::token();
         Db::run('DELETE FROM sessions WHERE user_id = ? AND id <> ?', [$u['id'], hash('sha256', $token)]);
         return self::publicUser(Db::one('SELECT * FROM users WHERE id = ?', [$u['id']]));
     }
@@ -180,6 +194,7 @@ final class Auth
             [hash('sha256', $token), $userId, substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255), gmdate('Y-m-d H:i:s', $exp), Db::now()],
         );
         Db::run('DELETE FROM sessions WHERE expires_at < ?', [Db::now()]);
+        self::$issuedToken = $token;
         self::setCookie($token, $exp);
     }
 

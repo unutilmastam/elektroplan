@@ -18,7 +18,30 @@
 | 13 | Testlar va optimizatsiya | ✅ Tayyor |
 | 14 | Admin panel va Pro versiya | ✅ Tayyor |
 | 15 | Barcha qurilmalarga moslashuv | ✅ Tayyor |
-| 16 | Rus tili | ✅ Tayyor (tasdiq kutilmoqda) |
+| 16 | Rus tili | ✅ Tayyor |
+| 17 | Windows dasturi | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 17 — 2026-11-04
+
+**Bajarildi**
+- **Windows dasturi** (Tauri v2, `src-tauri/`): kompyuterga o‘rnatiladigan alohida dastur — o‘z oynasi, ish stolida belgi, Start menyusida. Ilovaning o‘zi dastur ichida, shuning uchun **internetsiz ochiladi va to‘liq ishlaydi**; loyihalar kompyuterda saqlanadi.
+- Akkaunt bilan kirilsa, internet bo‘lganda loyihalar eplan.itcode.uz ga sinxronlanadi (iPhone/iPad’dagi loyihalar ham shu yerda ko‘rinadi).
+- O‘rnatuvchi: `ElektroPlan-Setup.exe` (administrator huquqi kerak emas). GitHub Actions (`.github/workflows/desktop.yml`) Windows’da yig‘adi; `main` ga har push’dan keyin GitHub Releases’ga va saytga (`/download/ElektroPlan-Setup.exe`) joylaydi.
+- Saytda: Sozlamalar → “Windows uchun dastur” → **Yuklab olish (.exe)** (kompyuterdan kirilganda).
+- Server: Windows dasturi uchun CORS (`tauri.localhost`) va token sessiyasi (`X-Elektroplan-Auth` sarlavhasi). Token faqat dasturga beriladi (`X-Elektroplan-Client: desktop`), veb sayt avvalgidek httpOnly cookie bilan ishlaydi. Chiqish tokenni serverda bekor qiladi.
+- Dasturda service worker va “ilovani o‘rnatish” maslahatlari yo‘q; Telegram kabi tashqi havolalar odatiy brauzerda ochiladi.
+
+**Test qilindi**
+- Integratsiya (haqiqiy PHP + MariaDB): preflight faqat dastur manziliga ruxsat, ro‘yxatdan o‘tish/kirish token qaytaradi, token bilan `me`/`pull`, chiqishdan keyin token ishlamaydi, vebga token berilmaydi, CSRF sarlavhasisiz POST rad etiladi.
+- Unit: token saqlash/tozalash, API manzili, kirish va chiqish, tashqi havolalar.
+- Dastur Linux’da (WebKitGTK, virtual ekran) yig‘ilib ishga tushirildi: ochildi → kirish → loyiha yaratildi va serverga yetdi → server o‘chirilib dastur qayta ochildi: loyiha joyida, akkaunt saqlangan. Skrinshotlar: `docs/screenshots/phase-17/`.
+- Windows `.exe` GitHub Actions’da yig‘iladi.
+- Avvalgi bosqichlar: unit/integratsiya 288 ta, E2E 6 profilda (natija quyida).
+
+**Ma’lum cheklovlar**
+- Dastur imzolanmagan: birinchi ishga tushirishda Windows SmartScreen ogohlantiradi → “Batafsil” → “Baribir ishga tushirish”.
+- Avtomatik yangilanish yo‘q: yangi versiya uchun `.exe` ni qayta yuklab o‘rnatish kerak (loyihalar saqlanib qoladi).
+- Dastur va brauzerdagi sayt ma’lumotlari alohida: bir kompyuterda ikkalasida ham ishlasangiz, loyihalar akkaunt orqali (yoki zaxira fayl bilan) almashadi.
 
 ## Phase 16 — 2026-11-04
 

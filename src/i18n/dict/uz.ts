@@ -518,6 +518,10 @@ export const uzStrings = {
     installIos: 'Safari’da Ulashish tugmasi → “Bosh ekranga qo‘shish”.',
     installAndroid: 'Chrome menyusi (⋮) → “Ilovani o‘rnatish”.',
     installDesktop: 'Edge yoki Chrome manzil satridagi “O‘rnatish” belgisini bosing.',
+    windowsApp: 'Windows uchun dastur',
+    windowsAppHint:
+      'Kompyuterga alohida dastur sifatida o‘rnating: internetsiz ishlaydi, loyihalar akkaunt orqali sinxronlanadi.',
+    windowsDownload: 'Yuklab olish (.exe)',
     offlineReady: 'Internetsiz ishlash',
     offlineReadyHint:
       'Barcha loyihalar shu qurilmada saqlanadi: internet bo‘lmasa ham ochiladi, tahrirlanadi va PDF chiqadi.',

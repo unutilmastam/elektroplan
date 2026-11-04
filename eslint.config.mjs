@@ -5,7 +5,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) });
 
 const config = [
-  { ignores: ['.next/**', 'out/**', 'node_modules/**', 'playwright-report/**', 'test-results/**', 'next-env.d.ts', 'deploy/**', 'public/sw.js', 'public/swe-worker-*.js'] },
+  { ignores: ['.next/**', 'out/**', 'src-tauri/target/**', 'coverage/**', 'node_modules/**', 'playwright-report/**', 'test-results/**', 'next-env.d.ts', 'deploy/**', 'public/sw.js', 'public/swe-worker-*.js'] },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     rules: {

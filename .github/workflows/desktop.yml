@@ -1,0 +1,67 @@
+name: Windows app
+# PHASE 17: builds the Windows installer (Tauri + NSIS) from the same static export.
+# Every branch push that touches the app builds it (artifact); on main it is also published:
+#   - GitHub Release "desktop-N" with ElektroPlan-Setup.exe
+#   - the site: <SITE_URL>/download/ElektroPlan-Setup.exe (Settings → "Windows uchun dastur")
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'src-tauri/**'
+      - 'public/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'next.config.ts'
+      - 'scripts/build-desktop.mjs'
+      - '.github/workflows/desktop.yml'
+  workflow_dispatch: {}
+concurrency: { group: desktop-${{ github.ref }}, cancel-in-progress: true }
+permissions: { contents: write }
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults: { run: { shell: bash } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: 'src-tauri -> target' }
+      - run: pnpm install --frozen-lockfile
+      - name: Build installer
+        env:
+          NEXT_PUBLIC_SUPPORT_PHONE: ${{ vars.SUPPORT_PHONE }}
+          NEXT_PUBLIC_SUPPORT_TELEGRAM: ${{ vars.SUPPORT_TELEGRAM }}
+          VERSION: 1.0.${{ github.run_number }}
+        run: pnpm tauri build --config "{\"version\":\"$VERSION\"}"
+      - name: Collect
+        run: |
+          mkdir -p dl
+          cp src-tauri/target/release/bundle/nsis/*-setup.exe dl/ElektroPlan-Setup.exe
+          ls -la dl
+      - uses: actions/upload-artifact@v4
+        with: { name: ElektroPlan-Setup, path: dl/ElektroPlan-Setup.exe, retention-days: 14 }
+      - name: Publish GitHub Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: desktop-${{ github.run_number }}
+          name: ElektroPlan Windows 1.0.${{ github.run_number }}
+          make_latest: true
+          files: dl/ElektroPlan-Setup.exe
+          body: |
+            ElektroPlan — Windows dasturi. `ElektroPlan-Setup.exe` ni yuklab oling va ishga tushiring.
+            Windows "SmartScreen" ogohlantirsa: **Batafsil → Baribir ishga tushirish**.
+      - name: Upload to the site (/download/)
+        if: github.ref == 'refs/heads/main'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dl/
+          server-dir: ${{ secrets.FTP_DIR }}download/
+          protocol: ftps

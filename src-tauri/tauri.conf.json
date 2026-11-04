@@ -1,0 +1,35 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "ElektroPlan",
+  "mainBinaryName": "ElektroPlan",
+  "version": "1.0.0",
+  "identifier": "uz.itcode.elektroplan",
+  "build": {
+    "frontendDist": "../out",
+    "devUrl": "http://localhost:3000",
+    "beforeBuildCommand": "node scripts/build-desktop.mjs"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [],
+    "security": { "csp": null }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "ElektroPlan",
+    "category": "Productivity",
+    "shortDescription": "Elektr montaj rejalari",
+    "copyright": "ElektroPlan",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" },
+      "nsis": {
+        "installMode": "currentUser",
+        "installerIcon": "icons/icon.ico",
+        "languages": ["English", "Russian"],
+        "displayLanguageSelector": false
+      }
+    }
+  }
+}

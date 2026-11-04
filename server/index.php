@@ -9,6 +9,8 @@ declare(strict_types=1);
  *   GET  /api/admin/users?q=      POST /api/admin/users/{id}/reset-password   POST /api/admin/users/{id}/pro
  *   GET  /api/migrate?token=…
  * State-changing requests must carry `X-Elektroplan: 1` (with SameSite=Lax cookies this blocks CSRF).
+ * The Windows app (Tauri, origin tauri.localhost) is allowed by CORS and authenticates with the
+ * `X-Elektroplan-Auth` header; login/register return its token when `X-Elektroplan-Client: desktop`.
  */
 ini_set('display_errors', '0');
 ini_set('serialize_precision', '-1');
@@ -26,6 +28,26 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);
 $path = '/' . trim((string) preg_replace('#^.*?/api(?=/|$)#', '', $path), '/');
 
+const DESKTOP_ORIGINS = ['http://tauri.localhost', 'https://tauri.localhost', 'tauri://localhost'];
+$origin = (string) ($_SERVER['HTTP_ORIGIN'] ?? '');
+if (in_array($origin, DESKTOP_ORIGINS, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+    header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Accept, X-Elektroplan, X-Elektroplan-Auth, X-Elektroplan-Client');
+    header('Access-Control-Max-Age: 86400');
+    if ($method === 'OPTIONS') {
+        http_response_code(204);
+        exit;
+    }
+}
+/** Login answer; the desktop app also gets its session token (it has no cookie jar for our domain). */
+function userAnswer(array $user): array
+{
+    $desktop = ($_SERVER['HTTP_X_ELEKTROPLAN_CLIENT'] ?? '') === 'desktop';
+    return ['user' => $user] + ($desktop && Auth::$issuedToken ? ['token' => Auth::$issuedToken] : []);
+}
+
 try {
     if ($method === 'POST' && ($_SERVER['HTTP_X_ELEKTROPLAN'] ?? '') !== '1') {
         throw new ApiError(403, 'csrf');
@@ -38,9 +60,9 @@ try {
             Db::pdo()->query('SELECT 1');
             Http::json(200, ['ok' => true]);
         case 'POST /auth/register':
-            Http::json(201, ['user' => Auth::register(Http::body())]);
+            Http::json(201, userAnswer(Auth::register(Http::body())));
         case 'POST /auth/login':
-            Http::json(200, ['user' => Auth::login(Http::body())]);
+            Http::json(200, userAnswer(Auth::login(Http::body())));
         case 'POST /auth/logout':
             Auth::logout();
             Http::json(200, ['ok' => true]);

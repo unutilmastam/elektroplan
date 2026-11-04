@@ -194,6 +194,8 @@ Frontend runtime: `next`, `react`, `react-dom`, `typescript`, `tailwindcss`, sha
 
 Frontend dev: `vitest`, `@testing-library/react`, `fake-indexeddb`, `@playwright/test`, `eslint`, `prettier`.
 
+Windows app (PHASE 17, approved by the owner): `@tauri-apps/cli` (dev) + Rust crates `tauri`, `tauri-build`, `tauri-plugin-opener` in `src-tauri/`. Built with `NEXT_PUBLIC_DESKTOP=1` (`scripts/build-desktop.mjs`): no service worker, API at `NEXT_PUBLIC_API_BASE` with the `X-Elektroplan-Auth` token (`src/infra/desktop/desktop.ts`).
+
 Server: PHP 8.1+ core only (PDO MySQL, `password_hash`, `random_bytes`). No Composer runtime packages. PHPUnit as optional dev tool.
 
 Nothing else without approval.
