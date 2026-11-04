@@ -12,7 +12,7 @@
 | 7 | Devor ko‘rinishi | ✅ Tayyor |
 | 8 | Avtosaqlash (IndexedDB) | ✅ Tayyor |
 | 9 | Montaj rejimi | ✅ Tayyor |
-| 10 | PDF eksport | ✅ Tayyor (tasdiq kutilmoqda) |
+| 10 | PDF eksport | ✅ Tayyor |
 | 11 | PWA / offline (internetsiz ishlash) | — |
 | 12 | PHP + MySQL sync + Auth | — |
 | 13 | Testlar va optimizatsiya | — |
