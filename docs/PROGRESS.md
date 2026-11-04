@@ -35,8 +35,8 @@
 - Integratsiya (haqiqiy PHP + MariaDB): preflight faqat dastur manziliga ruxsat, ro‘yxatdan o‘tish/kirish token qaytaradi, token bilan `me`/`pull`, chiqishdan keyin token ishlamaydi, vebga token berilmaydi, CSRF sarlavhasisiz POST rad etiladi.
 - Unit: token saqlash/tozalash, API manzili, kirish va chiqish, tashqi havolalar.
 - Dastur Linux’da (WebKitGTK, virtual ekran) yig‘ilib ishga tushirildi: ochildi → kirish → loyiha yaratildi va serverga yetdi → server o‘chirilib dastur qayta ochildi: loyiha joyida, akkaunt saqlangan. Skrinshotlar: `docs/screenshots/phase-17/`.
-- Windows `.exe` GitHub Actions’da yig‘iladi.
-- Avvalgi bosqichlar: unit/integratsiya 288 ta, E2E 6 profilda (natija quyida).
+- Avvalgi bosqichlar buzilmadi: unit/integratsiya 288 ta, E2E 6 profilda 410 ta — hammasi o‘tdi.
+- Windows `.exe` GitHub Actions’da muvaffaqiyatli yig‘ildi (o‘rnatuvchi ~3 MB).
 
 **Ma’lum cheklovlar**
 - Dastur imzolanmagan: birinchi ishga tushirishda Windows SmartScreen ogohlantiradi → “Batafsil” → “Baribir ishga tushirish”.
