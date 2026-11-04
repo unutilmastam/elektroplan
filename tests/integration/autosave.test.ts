@@ -161,7 +161,8 @@ describe('autosave (fake-indexeddb)', () => {
     const app = await boot(true);
     expect(app.s().projects.map((x) => x.id)).toEqual(['old-1']);
     const db = await app.db.getDb();
-    expect(db.version).toBe(2);
+    expect(db.version).toBe(3);
+    expect([...db.objectStoreNames]).toContain('synced');
     expect([...db.objectStoreNames]).toContain('backups');
   });
 });

@@ -7,6 +7,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 const appleEngine = process.env.E2E_WEBKIT === '1' ? 'webkit' : 'chromium';
 const port = Number(process.env.E2E_PORT ?? 4173);
+const apiPort = port + 2;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -29,11 +30,21 @@ export default defineConfig({
       ],
     },
   },
-  webServer: {
-    command: `node scripts/serve-out.mjs ${port}`,
-    url: `http://127.0.0.1:${port}`,
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: [
+    {
+      // PHP API + fresh database (Phase 12); /api is proxied to it by serve-out
+      command: `node scripts/e2e-api.mjs ${apiPort}`,
+      url: `http://127.0.0.1:${apiPort}/api/ping`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 60_000,
+    },
+    {
+      command: `node scripts/serve-out.mjs ${port}`,
+      url: `http://127.0.0.1:${port}`,
+      reuseExistingServer: !process.env.CI,
+      env: { E2E_API_PORT: String(apiPort) },
+    },
+  ],
   projects: [
     {
       name: 'ipad-landscape',

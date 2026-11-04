@@ -1,6 +1,7 @@
 import { boundsOf, fitViewport, zoomAt } from '@/domain/geometry';
 import { uuidv7 } from '@/domain/ids';
 import { setStatusRecipe } from '@/domain/installation';
+import { useAuthStore } from '@/store/authStore';
 import type { PointStatus } from '@/domain/types';
 import {
   addPointRecipe,
@@ -160,7 +161,16 @@ export function setDefaultHeights(patch: { defaultSocketHeightCm?: number; defau
 export function setPointStatus(pointId: string, status: PointStatus) {
   useProjectStore
     .getState()
-    .apply('Holat', setStatusRecipe(pointId, status, uuidv7(), new Date().toISOString()));
+    .apply(
+      'Holat',
+      setStatusRecipe(
+        pointId,
+        status,
+        uuidv7(),
+        new Date().toISOString(),
+        useAuthStore.getState().user?.id ?? null,
+      ),
+    );
 }
 
 /** Select a point and bring it to the middle of the plan (keeps the zoom). */

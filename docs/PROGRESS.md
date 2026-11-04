@@ -14,8 +14,31 @@
 | 9 | Montaj rejimi | ✅ Tayyor |
 | 10 | PDF eksport | ✅ Tayyor |
 | 11 | PWA / offline (internetsiz ishlash) | ✅ Tayyor |
-| 12 | PHP + MySQL sync + Auth | — |
+| 12 | PHP + MySQL sync + Auth | ✅ Tayyor (tasdiq kutilmoqda) |
 | 13 | Testlar va optimizatsiya | — |
+
+## Phase 12 — 2026-11-04
+
+**Bajarildi**
+- **`domain/merge.ts`** (avval yozildi, 21 test): uch tomonlama merge maydon darajasida — bir tomon o‘zgartirgan har narsa saqlanadi; ikkala tomon bir maydonni o‘zgartirsa — `updatedAt` yangirog‘i (teng bo‘lsa server); **montaj holati konfliktda hech qachon orqaga qaytmaydi**; o‘chirish va tahrir — yangirog‘i yutadi (keyin tahrirlangan nuqta qaytadi); montaj jurnali — ikkala qurilmaniki birlashtiriladi; eshik/deraza (vaqt belgisisiz) — uch tomonlama; ikkala qurilma xona chizgan bo‘lsa devorlar qayta quriladi (topologiya buzilmaydi); konfliktlar ro‘yxati serverda `project_history` ga yoziladi.
+- **PHP API** (`server/`): router, PDO (utf8mb4, UTC), JSON xatolar, to‘liq validatsiya (zod sxemasi + ustun chegaralari), `migrate.php` + `/api/migrate?token=`, `002_sync.sql` (openings jadvali, ro‘yxat tartibi `seq`, (project_id, id) kalitlari, kasr sm, rate limit, 11 ta tizim belgisi seed).
+- **Auth:** telefon (+998…, “90 123 45 67” ham) yoki email + parol (bcrypt), httpOnly SameSite=Lax cookie sessiya (60 kun, sha256 saqlanadi), login uchun rate limit (10 urinish / 15 daqiqa), CSRF himoyasi (`X-Elektroplan` sarlavhasi). Kirish sahifasi: Kirish / Yangi akkaunt, o‘zbekcha xatolar; akkaunt sahifasi: oxirgi sinxronizatsiya, “Hozir sinxronlash”, “Chiqish” (loyihalar qurilmada qoladi). Sidebar va Sozlamalarda akkaunt.
+- **`/api/sync` + `/api/pull`:** revision asosida, bitta tranzaksiyada; eskirgan revision → 409 + server versiyasi → qurilma merge qilib qayta yuboradi. Login’dan keyin serverdagi **barcha** loyihalar IndexedDB’ga tushadi (boshqa qurilmada yaratilganlari ham oflayn ochiladi). Akkauntsiz yaratilgan lokal loyihalar birinchi sinxronda **akkauntga biriktiriladi** (“N ta loyiha akkauntga biriktirildi”). Boshqa akkaunt loyihasi hech qachon yuborilmaydi.
+- **Fon sinxronizatsiyasi:** kirgan bo‘lsa — ishga tushganda, har 10 s, internet qaytganda, tab faollashganda, saqlashdan 1,5 s keyin; xatoda exponential backoff (5 s → 5 daqiqa). Sinxron paytida tahrir qilinsa — u yo‘qolmaydi (o‘sha loyiha keyingi raundda). Sarlavhada: Oflayn / Sinxronlanmoqda / Sinxronlandi / Sinxronlanmadi; “serverga yuborilmagan” belgisi endi server saqlagach yo‘qoladi. Montaj jurnalida kim belgilagani (userId) yoziladi.
+- IndexedDB v3: `synced` (server bilan kelishilgan oxirgi nusxa — merge asosi).
+- CI: MariaDB 10.11 servisi, `php -l`, `pdo_mysql`; deploy `config.php` ni secrets’dan yozadi va (`SITE_URL` berilsa) migratsiyani avtomatik qo‘llaydi.
+
+**Test qilindi**
+- `pnpm test` — 231 test. Yangi: merge (21), **haqiqiy PHP + MariaDB** bilan API (10: ro‘yxatdan o‘tish, cookie, bcrypt, email login, logout, rate limit 429, CSRF, loyiha to‘liq aylanib qaytishi — barcha jadvallar, tartib, kasrlar, o‘zbek harflari, sanalar; 409; boshqa foydalanuvchi 403; buzilgan loyiha 422; migratsiya tokeni), **qabul testi**: iPad va telefon bitta loyihani oflayn tahrirlaydi (nom, manzil, xona nomi, nuqta balandligi/rangi/izohi, holat, o‘chirish, yangi nuqta, jurnal) → ulanadi → ikkala qurilmada va MySQL’da hamma o‘zgarish bor, outbox bo‘sh (in-memory server va haqiqiy PHP+MySQL).
+- `pnpm test:e2e` — 6 profilning barchasida: ro‘yxatdan o‘tish + lokal loyiha biriktirilishi, noto‘g‘ri parol/kiritish xabarlari, **ikki brauzer (ikki qurilma) oflayn tahrir → qayta ulanish → nom, manzil va montaj holati ikkalasida**, chiqishda loyihalar qoladi. Jami 347 o‘tdi, 13 ataylab o‘tkazildi; avvalgi bosqichlar to‘liq qayta o‘tdi.
+- Skrinshotlar: `docs/screenshots/phase-12/` (ro‘yxatdan o‘tish, sinxronlangan Loyihalar, Chizma sarlavhasidagi “Sinxronlandi”, akkaunt — 5 qurilma).
+- Topilib tuzatilgan: PDO kasr sonlarni 14 xonagacha qisqartirardi (`precision=-1`); xona/devor id’lari serverda global kalit bo‘lgani uchun ikki loyihada to‘qnashardi — (project_id, id) kalitlariga o‘tildi.
+
+**Ma’lum cheklovlar**
+- hostmaster.uz’da haqiqiy tekshiruv FTP/DB secrets qo‘shilgandan keyin (`docs/DEPLOY.md` §2, §7). Lokal va CI’da MariaDB 10.11 (cPanel bilan bir xil) ishlatildi.
+- Bitta loyiha id’si faqat bitta akkauntga tegishli: bir zaxira faylni ikki xil akkauntga tiklasangiz, ikkinchisida u qurilmada qoladi (“server qabul qilmadi” xabari).
+- Parolni tiklash (SMS/email) va jamoa bilan ulashish yo‘q — keyingi bosqichlar.
+- Chiqishda loyihalar qurilmada qoladi (oflayn-birinchi tamoyil); umumiy qurilmada ehtiyot bo‘ling.
 
 ## Phase 11 — 2026-11-04
 

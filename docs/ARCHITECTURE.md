@@ -169,7 +169,7 @@ server (PHP, one DB transaction):
 ```
 - Conflict policy: entity-level last-writer-wins by `updatedAt`, **except installation status, which never goes backwards** (completed > in_progress > pending). Newer deletions win. Every conflict is logged (`project_history.kind = 'conflict'`).
 - `beforeunload` / `visibilitychange` flush IndexedDB immediately.
-- Until Phase 12 the app works fully without an account (IndexedDB only).
+- The app works fully without an account (IndexedDB only). With an account every project is also on the server and on every device of that account. Protocol details: DATA_MODEL §9.
 
 ### 4.8 PDF export
 - Client-side `pdf-lib` + `@pdf-lib/fontkit`, embedded Inter (Uzbek Latin). Works offline.

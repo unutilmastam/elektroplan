@@ -14,10 +14,12 @@ export interface ElektroDB extends DBSchema {
   backups: { key: string; value: unknown };
   outbox: { key: number; value: OutboxRecord; indexes: { byProject: string } };
   meta: { key: string; value: unknown };
+  /** v3: per project, the version last agreed with the server (base of the three-way merge) */
+  synced: { key: string; value: unknown };
 }
 
 export const DB_NAME = 'elektroplan';
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 
 let dbPromise: Promise<IDBPDatabase<ElektroDB>> | null = null;
 /** the open connection, once ready — lets a save start its transaction synchronously (page unload) */
@@ -41,6 +43,7 @@ export function getDb(): Promise<IDBPDatabase<ElektroDB>> {
         db.createObjectStore('backups');
         tx.objectStore('outbox').createIndex('byProject', 'projectId');
       }
+      if (oldVersion < 3) db.createObjectStore('synced');
     },
     blocking() {
       // Another tab wants a newer schema: close so it can upgrade.
