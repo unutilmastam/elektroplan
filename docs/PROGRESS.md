@@ -20,7 +20,7 @@
 | 15 | Barcha qurilmalarga moslashuv | ✅ Tayyor |
 | 16 | Rus tili | ✅ Tayyor |
 | 17 | Windows dasturi | ✅ Tayyor |
-| 18 | Devor o‘lchamlari | ✅ Tayyor (tasdiq kutilmoqda) |
+| 18 | Devor o‘lchamlari | ✅ Tayyor |
 
 ## Phase 18 — 2026-11-04
 
