@@ -93,7 +93,9 @@ export function wallTarget(
     .map((id) => p.rooms.find((r) => r.id === id && r.deletedAt === null))
     .filter((r): r is Room => !!r);
   const probe = pointOnWall(w, t, cursorSide, 10);
-  const room = rooms.find((r) => pointInPolygon(probe, r.vertices)) ?? rooms[0] ?? roomAt(p, probe);
+  // the room on the tapped side: one of the wall's rooms, or the room around it (a room drawn inside a room:
+  // its walls' outer faces are in the outer room), else the wall's own room (tap just outside an outer wall)
+  const room = rooms.find((r) => pointInPolygon(probe, r.vertices)) ?? roomAt(p, probe) ?? rooms[0];
   if (!room) return null;
   // the side that was tapped when it is inside the room (both sides of a wall standing inside one room),
   // otherwise the room's side (a tap just outside an outer wall still lands inside)

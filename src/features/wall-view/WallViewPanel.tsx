@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import { roomWallIds, selectWallElevation } from '@/domain/selectors';
+import { countOf } from '@/i18n/plural';
 import { uz } from '@/i18n/uz';
 import { useEditorStore } from '@/store/editorStore';
 import { useCurrentProject } from '@/store/projectStore';
@@ -35,10 +36,16 @@ export function useWallView() {
         elevation?.room ? [{ kind: 'room', id: elevation.room.id }] : undefined,
       );
   };
-  const subtitle =
+  const place =
     elevation?.room && elevation.direction
       ? `${elevation.room.name} – ${uz.wallView.directions[elevation.direction]}`
       : '';
+  // a named wall ("TV devori") shows its name first
+  const subtitle = elevation?.wall.name
+    ? place
+      ? `${elevation.wall.name} · ${place}`
+      : elevation.wall.name
+    : place;
   return { elevation, subtitle, step, canStep: walls.length > 1 };
 }
 
@@ -95,7 +102,7 @@ export function WallViewPanel({ showTitle = true }: { showTitle?: boolean }) {
               <Maximize2 size={17} aria-hidden />
             </button>
             <span className="tabular ml-1 shrink-0 rounded-full bg-primary/25 px-3.5 py-1 text-[14px] text-text">
-              {elevation.points.length} {uz.wallView.points}
+              {countOf(elevation.points.length, uz.wallView.points)}
             </span>
           </>
         ) : null}

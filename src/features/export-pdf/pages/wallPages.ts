@@ -1,5 +1,6 @@
 import { elevationLayout, toX, toY } from '@/domain/elevation';
 import type { Report, ReportWall } from '@/domain/report';
+import { countOf } from '@/i18n/plural';
 import { uz } from '@/i18n/uz';
 import { hex, INK, MARGIN, type Canvas } from '../kit';
 import { drawNumber, drawSymbol } from '../symbol';
@@ -8,9 +9,10 @@ const PER_PAGE = 3;
 
 function drawWall(c: Canvas, w: ReportWall, x: number, y: number, width: number, height: number) {
   const e = w.elevation;
-  const title = `${e.room?.name ?? ''}${e.direction ? ` – ${uz.wallView.directions[e.direction]}` : ''}`;
+  const place = `${e.room?.name ?? ''}${e.direction ? ` – ${uz.wallView.directions[e.direction]}` : ''}`;
+  const title = e.wall.name ? `${e.wall.name}${place ? ` · ${place}` : ''}` : place;
   c.text(title, x, y, { size: 11.5, font: c.fonts.semibold });
-  c.text(`${e.points.length} ${uz.wallView.points}`, x + width, y + 1, {
+  c.text(countOf(e.points.length, uz.wallView.points), x + width, y + 1, {
     size: 9.5,
     color: INK.muted,
     align: 'right',

@@ -7,13 +7,19 @@ import { TextField } from '@/components/common/TextField';
 import { Button } from '@/components/ui/button';
 import { ROOM_COLORS } from '@/domain/rooms';
 import type { Room } from '@/domain/types';
+import { countOf } from '@/i18n/plural';
 import { uz } from '@/i18n/uz';
 import { useCurrentProject } from '@/store/projectStore';
 import { useUiStore } from '@/store/uiStore';
 import { deleteSelection, duplicateSelectedRoom, renameRoom, setRoomColor } from '../actions';
 import { PanelShell } from './PanelShell';
 
-const SWATCHES = ROOM_COLORS.map((value, i) => ({ value, label: uz.room.colorNames[i] ?? value }));
+const SWATCHES = ROOM_COLORS.map((value, i) => ({
+  value,
+  get label() {
+    return uz.room.colorNames[i] ?? value;
+  },
+}));
 
 /** "Tanlangan xona": name, colour, copy, delete. Double tap on a room focuses the name. */
 export function RoomPanel({ room, showTitle }: { room: Room; showTitle: boolean }) {
@@ -53,9 +59,7 @@ export function RoomPanel({ room, showTitle }: { room: Room; showTitle: boolean 
         <span className="text-[14px]">{uz.room.color}</span>
         <ColorSwatches swatches={SWATCHES} value={room.color} onChange={(c) => setRoomColor(room.id, c)} />
       </div>
-      <p className="tabular text-[14px] text-text-muted">
-        {points} {uz.room.points}
-      </p>
+      <p className="tabular text-[14px] text-text-muted">{countOf(points, uz.room.points)}</p>
       <div className="mt-auto grid grid-cols-2 gap-2.5 pt-1">
         <Button variant="danger" className="h-11 px-2" onClick={() => deleteSelection()}>
           <Trash2 size={18} aria-hidden />

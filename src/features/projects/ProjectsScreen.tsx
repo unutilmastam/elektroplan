@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { GlassPanel } from '@/components/layout/GlassPanel';
 import { Button } from '@/components/ui/button';
 import { filterAndSortProjects, uniqueName, type ProjectSort } from '@/domain/projectList';
+import { countOf } from '@/i18n/plural';
 import { uz } from '@/i18n/uz';
 import { useProjectStore } from '@/store/projectStore';
 import { useUiStore } from '@/store/uiStore';
@@ -31,9 +32,7 @@ export function ProjectsScreen() {
       <GlassPanel as="header" className="flex shrink-0 items-center gap-3 px-4 py-3 lg:px-5 lg:py-4">
         <div className="min-w-0 flex-1">
           <h1 className="text-[22px] font-semibold lg:text-[26px]">{uz.projects.title}</h1>
-          <p className="tabular text-[14px] text-text-muted">
-            {liveCount} {uz.projects.count}
-          </p>
+          <p className="tabular text-[14px] text-text-muted">{countOf(liveCount, uz.projects.count)}</p>
         </div>
         <OfflineBadge />
         <Button variant="primary" onClick={openCreate} className="lg:h-[52px] lg:px-5 lg:text-[16px]">

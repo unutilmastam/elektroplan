@@ -3,6 +3,7 @@
 import { Crown, KeyRound, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { AdminUser } from '@/domain/auth';
+import { countOf } from '@/i18n/plural';
 import { uz } from '@/i18n/uz';
 import { formatDate, formatDateTime } from '@/lib/format';
 
@@ -60,7 +61,7 @@ export function MasterCard({
         <div>
           <dt className="text-text-dim">{uz.admin.projects}</dt>
           <dd className="tabular">
-            {u.projects} · {u.points} {uz.admin.points}
+            {u.projects} · {countOf(u.points, uz.admin.points)}
           </dd>
         </div>
         <div>

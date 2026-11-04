@@ -29,7 +29,7 @@ Read these before writing any code:
 - **Offline is mandatory:** every saved project must open, display and be editable with no internet. Pages read IndexedDB only; the network is background sync.
 - **iPad is the primary device.** Every UI change is checked at 1180×820 and 820×1180 first, then iPhone, Android, Windows (`docs/DEVICES.md`). Input only via Pointer Events.
 
-- UI language: Uzbek (Latin). All user-facing strings live in `src/i18n/uz.ts` — no hardcoded strings in components.
+- UI languages: Uzbek (Latin, reference) and Russian (Phase 16). Components read text via `uz.*` from `src/i18n/uz.ts` (it follows the current language); dictionaries are `src/i18n/dict/uz.ts` and `ru.ts` — add every new string to BOTH. No hardcoded strings in components; never copy `uz.*` into module-level constants (use getters / read at render time).
 - TypeScript `strict: true`, no `any`, no `@ts-ignore`.
 - No giant files: a component > ~250 lines must be split.
 - Business logic lives in `src/domain/**` as pure functions with unit tests. Components and stores call it; they never duplicate it.
