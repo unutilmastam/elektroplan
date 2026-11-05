@@ -31,8 +31,11 @@
 - **Pastki panellarni yig‘ish:** rejaning pastki o‘rtasidagi tutqich — bossangiz xonalar ro‘yxati / devor ko‘rinishi / holat yig‘iladi (reja kattalashadi), yana bossangiz ochiladi; tortib balandligini o‘zgartirish mumkin, pastga tortib tashlasangiz yig‘iladi. Holat qurilmada eslab qolinadi.
 - **Telefon ixchamroq:** sarlavha tugmalari 44→40 px, belgi chiplari 44→36 px va 14 px matn, pastki menyu 58→52 px, panel tablari va maydonlar pastroq, panel ichki bo‘shliqlari kichikroq. Kiritish matni 16 px qoldi (iPhone o‘zi kattalashtirib yubormasligi uchun).
 
+- **Tuzatish:** parol almashtirilgandan keyin serverning eskiroq javobi kech kelsa, “parolni almashtiring” oynasi qaytib chiqishi mumkin edi (CI’da ba’zan ko‘rinardi) — endi eski javob yangi holatni bosib ketmaydi.
+
 **Test qilindi**
-- E2E 6 profilda: kattalashtirish → reja maydoni oshadi → qaytadi; pastki panellar bosish bilan yig‘iladi, qayta yuklashda yig‘ilgan qoladi, ochiladi, pastga tortish bilan yig‘iladi.
+- Unit: kech kelgan eski javob parol oynasini qaytarmaydi; yangi javob esa akkauntni yangilaydi.
+- To‘liq E2E 6 profilda: 431 ta o‘tdi. Yangi testlar: kattalashtirish → reja maydoni oshadi → qaytadi; pastki panellar bosish bilan yig‘iladi, qayta yuklashda yig‘ilgan qoladi, ochiladi, pastga tortish bilan yig‘iladi.
 - Layout auditi 15 qurilma o‘lchamida: 0 muammo.
 - Windows dasturi Linux’da (virtual ekran 1366×768) ishga tushirildi: 80 %, kattalashtirish, panel yig‘ish, 70 % tanlash va saqlanishi tekshirildi. Skrinshotlar: `docs/screenshots/phase-19/`.
 
