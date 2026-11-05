@@ -22,6 +22,23 @@
 | 17 | Windows dasturi | ✅ Tayyor |
 | 18 | Devor o‘lchamlari | ✅ Tayyor |
 | 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor |
+| 20 | 3 va 4 talik rozetka | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 20 — 2026-11-05
+
+**Bajarildi**
+- **To‘rt rozetka** — yangi belgi (2×2 to‘rt doira, ko‘k, 30 sm, devorga yopishadi va devor bilan buriladi). O‘zbekcha “To‘rt rozetka”, ruscha “Четверная розетка”.
+- **Uch rozetka** oldin “Boshqa” menyusida yashirin edi — endi u ham, to‘rt rozetka ham asosiy panelda, “Ikki rozetka” yonida.
+- Belgi paneli: chiplar sig‘masa yonga suriladi, **“Boshqa” tugmasi doim ko‘rinib turadi** (iPad va telefonda ham).
+- Server: migratsiya `004_socket_quad.sql` (deployda avtomatik), API yangi belgini qabul qiladi. Nuqta turini o‘zgartirish menyusi, PDF, materiallar, belgilar galereyasida ham bor.
+
+**Test qilindi**
+- Unit/integratsiya: katalogda 12 belgi, panelda 9 chip; ikki qurilma sinxron senariysida to‘rt rozetka server orqali o‘tadi; migratsiyadan keyin 12 tizim belgisi.
+- To‘liq E2E 6 profilda: 437 ta o‘tdi. Yangi: “Uch rozetka” va “To‘rt rozetka” panelda, to‘rt rozetka devorga qo‘yiladi (30 sm), “Boshqa” ekranda ko‘rinadi; belgilar galereyasida 12 ta.
+- Skrinshotlar: `docs/screenshots/phase-20/`.
+
+**Ma’lum cheklovlar**
+- Telefonda barcha chiplar bir qatorga sig‘maydi — yonga surib tanlanadi.
 
 ## Phase 19 — 2026-11-05
 

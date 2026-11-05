@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { openSeededProject, worldToPage } from './fixtures/seed';
 
-test('symbol gallery: all 11 symbols, sizes, colours and the zoom strip', async ({ page }) => {
+test('symbol gallery: all 12 symbols, sizes, colours and the zoom strip', async ({ page }) => {
   await page.goto('/settings/');
   await page.getByRole('link', { name: /Belgilar galereyasi/ }).click();
   await expect(page).toHaveURL(/\/settings\/symbols\/$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Belgilar galereyasi' })).toBeVisible();
-  await expect(page.getByTestId('gallery-symbol')).toHaveCount(11);
+  await expect(page.getByTestId('gallery-symbol')).toHaveCount(12);
   await expect(page.getByTestId('zoom-strip').locator('canvas').first()).toBeAttached();
   const [sw, iw] = await page.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
   expect(sw).toBeLessThanOrEqual(iw);

@@ -38,6 +38,7 @@ export const uzStrings = {
     'socket-single': 'Rozetka',
     'socket-double': 'Ikki rozetka',
     'socket-triple': 'Uch rozetka',
+    'socket-quad': 'To‘rt rozetka',
     'switch-single': 'Viklyuchatel',
     'switch-double': 'Ikki klavishli viklyuchatel',
     internet: 'Internet',

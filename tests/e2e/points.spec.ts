@@ -134,3 +134,18 @@ test('default socket height from Sozlamalar is used for new sockets', async ({ p
     (s as unknown as { points: P[] }).points.some((x) => x.mountHeightCm === 40),
   );
 });
+
+test('3- and 4-gang sockets are in the bar and go onto a wall', async ({ page }) => {
+  await expect(chip(page, 'Uch rozetka')).toBeAttached();
+  await chip(page, 'To‘rt rozetka').click();
+  await tapWorld(page, 80, 12);
+  await expectStored(page, (p) =>
+    (p as unknown as { points: Array<P & { symbolId: string }> }).points.some(
+      (x) => x.symbolId === 'socket-quad' && x.wallId === 'w1' && x.mountHeightCm === 30,
+    ),
+  );
+  // "Boshqa" stays reachable even when the chips do not all fit
+  await expect(
+    page.getByRole('toolbar', { name: 'Elektr belgilar' }).getByRole('button', { name: 'Boshqa' }),
+  ).toBeInViewport();
+});

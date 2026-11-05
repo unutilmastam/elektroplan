@@ -189,6 +189,6 @@ describe.skipIf(!ok)('PHP API + MySQL', () => {
     const d = new Device(api.url);
     expect((await d.call('GET', '/migrate?token=wrong')).status).toBe(404);
     expect((await d.call('GET', '/migrate?token=test-token')).body).toEqual({ applied: [] });
-    expect(api.sql('SELECT COUNT(*) FROM symbols WHERE is_system=1').trim()).toBe('11');
+    expect(api.sql('SELECT COUNT(*) FROM symbols WHERE is_system=1').trim()).toBe('12');
   });
 });

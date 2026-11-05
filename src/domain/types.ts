@@ -10,6 +10,7 @@ export type SymbolId =
   | 'socket-single'
   | 'socket-double'
   | 'socket-triple'
+  | 'socket-quad'
   | 'switch-single'
   | 'switch-double'
   | 'internet'

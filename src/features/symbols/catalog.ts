@@ -85,6 +85,27 @@ export const SYMBOLS: Record<SymbolId, SymbolDef & SymbolVisual> = {
       f(circle(19.4, 12, 1)),
     ],
   },
+  // PHASE 20: four outlets in a 2×2 block (reads clearly at badge size)
+  'socket-quad': {
+    id: 'socket-quad',
+    category: 'socket',
+    defaultColor: SYMBOL_COLORS.blue,
+    defaultMountHeightCm: 30,
+    placement: 'wall',
+    editableProps: wallProps,
+    rotatable: true,
+    badge: 'badge',
+    glyph: [
+      s(circle(7.4, 7.4, 3.9)),
+      s(circle(16.6, 7.4, 3.9)),
+      s(circle(7.4, 16.6, 3.9)),
+      s(circle(16.6, 16.6, 3.9)),
+      f(circle(7.4, 7.4, 1.1)),
+      f(circle(16.6, 7.4, 1.1)),
+      f(circle(7.4, 16.6, 1.1)),
+      f(circle(16.6, 16.6, 1.1)),
+    ],
+  },
   'switch-single': {
     id: 'switch-single',
     category: 'switch',
@@ -210,6 +231,8 @@ export const SYMBOL_IDS = Object.keys(SYMBOLS) as SymbolId[];
 export const SYMBOL_BAR: SymbolId[] = [
   'socket-single',
   'socket-double',
+  'socket-triple',
+  'socket-quad',
   'switch-single',
   'internet',
   'tv',

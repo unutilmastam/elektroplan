@@ -127,7 +127,7 @@ const pt = (p: Project, id: string) => p.points.find((x) => x.id === id)!;
 const live = <T extends { deletedAt: string | null }>(xs: T[]) => xs.filter((x) => x.deletedAt === null);
 const newPoint = (id: string, roomId: string, now: string): ElectricalPoint => ({
   id,
-  symbolId: 'socket-double',
+  symbolId: 'socket-quad', // PHASE 20: the new symbol goes through the server (migration 004)
   roomId,
   wallId: null,
   t: null,
