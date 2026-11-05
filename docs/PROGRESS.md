@@ -21,7 +21,7 @@
 | 16 | Rus tili | ✅ Tayyor |
 | 17 | Windows dasturi | ✅ Tayyor |
 | 18 | Devor o‘lchamlari | ✅ Tayyor |
-| 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor (tasdiq kutilmoqda) |
+| 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor |
 
 ## Phase 19 — 2026-11-05
 
