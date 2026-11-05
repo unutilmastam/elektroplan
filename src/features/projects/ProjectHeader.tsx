@@ -29,7 +29,7 @@ export function ProjectHeader() {
       <RecentProjectsMenu />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2.5">
-          <h1 className="truncate text-[17px] sm:text-[18px] leading-tight font-semibold md:text-[22px] lg:text-[26px]">
+          <h1 className="truncate text-[16px] sm:text-[18px] leading-tight font-semibold md:text-[22px] lg:text-[26px]">
             {name}
           </h1>
           {editable ? (
@@ -64,16 +64,16 @@ export function ProjectHeader() {
       <div className="flex shrink-0 items-center gap-2 lg:gap-3">
         <SaveButton
           disabled={!editable}
-          className="w-11 px-0 md:w-auto md:min-w-[150px] md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
+          className="w-11 px-0 max-sm:w-10 md:w-auto md:min-w-[150px] md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
         />
         <ExportPdfButton
           disabled={!editable}
-          className="w-11 px-0 md:w-auto md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
+          className="w-11 px-0 max-sm:w-10 md:w-auto md:px-4 lg:h-[52px] lg:px-4 lg:text-[16px]"
         />
         <Button
           asChild
           variant="primary"
-          className="w-11 px-0 sm:w-auto sm:px-4 lg:h-[52px] lg:px-5 lg:text-[16px]"
+          className="w-11 px-0 max-sm:w-10 sm:w-auto sm:px-4 lg:h-[52px] lg:px-5 lg:text-[16px]"
         >
           <Link href={installHref} aria-label={uz.header.installMode}>
             <span className="hidden sm:inline">{uz.header.installMode}</span>

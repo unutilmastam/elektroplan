@@ -54,7 +54,7 @@ export function CompactPanels() {
             aria-selected={tab === t}
             onClick={() => pick(t)}
             className={cn(
-              'h-10 flex-1 rounded-[9px] text-[14px] font-medium transition-colors duration-150',
+              'h-10 flex-1 rounded-[9px] text-[14px] font-medium max-sm:h-9 max-sm:text-[13px] transition-colors duration-150',
               t === 'point' && 'sm:hidden',
               tab === t ? 'bg-primary text-white' : 'text-text-muted hover:bg-white/[0.05]',
             )}
@@ -66,7 +66,7 @@ export function CompactPanels() {
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-label={open ? uz.mobile.collapse : uz.mobile.expand}
-          className="flex h-10 w-10 items-center justify-center rounded-[9px] text-text-muted sm:hidden short:flex!"
+          className="flex h-10 w-10 items-center justify-center rounded-[9px] text-text-muted max-sm:h-9 max-sm:w-9 sm:hidden short:flex!"
         >
           {open ? <ChevronDown size={20} aria-hidden /> : <ChevronUp size={20} aria-hidden />}
         </button>

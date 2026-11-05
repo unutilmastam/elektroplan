@@ -10,6 +10,7 @@ import { AccountRow } from '@/features/auth/AccountRow';
 import { AppSettings, BackupSettings } from '@/features/offline-library';
 import { OfflineBadge } from '@/features/offline-library/ConnectionBadge';
 import { useSettingsStore } from '@/store/settingsStore';
+import { UiScalePicker } from './UiScalePicker';
 import { LanguagePicker } from './LanguagePicker';
 import { ProjectDefaults } from './ProjectDefaults';
 
@@ -77,6 +78,7 @@ export function SettingsScreen() {
           {uz.settings.device}
         </h2>
         <LanguagePicker />
+        <UiScalePicker />
         <SwitchRow
           icon={PenLine}
           label={uz.settings.penOnly}

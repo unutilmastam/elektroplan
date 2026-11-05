@@ -21,6 +21,24 @@
 | 16 | Rus tili | ✅ Tayyor |
 | 17 | Windows dasturi | ✅ Tayyor |
 | 18 | Devor o‘lchamlari | ✅ Tayyor |
+| 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 19 — 2026-11-05
+
+**Bajarildi**
+- **Windows dasturi ixcham:** standart 80 % masshtab — tugmalar, yozuvlar, panellar oddiy Windows dasturidek. Sozlamalar → “Interfeys o‘lchami”: 70 / 80 / 90 / 100 %; tanlov dasturning o‘zida saqlanadi va keyingi ochilishda darhol qo‘llanadi. Bu WebView’ning o‘z masshtabi (brauzerdagi Ctrl − kabi), shuning uchun reja va bosishlar aniq ishlaydi.
+- **Rejani kattalashtirish:** rejaning o‘ng yuqori burchagidagi tugma — o‘ng panel va pastki panellar yashirinadi, reja butun maydonni oladi. Qayta bosish yoki Esc — qaytadi. Telefonda pastki varaq ham yashirinadi. “Xususiyatlar” so‘ralsa avtomatik qaytadi.
+- **Pastki panellarni yig‘ish:** rejaning pastki o‘rtasidagi tutqich — bossangiz xonalar ro‘yxati / devor ko‘rinishi / holat yig‘iladi (reja kattalashadi), yana bossangiz ochiladi; tortib balandligini o‘zgartirish mumkin, pastga tortib tashlasangiz yig‘iladi. Holat qurilmada eslab qolinadi.
+- **Telefon ixchamroq:** sarlavha tugmalari 44→40 px, belgi chiplari 44→36 px va 14 px matn, pastki menyu 58→52 px, panel tablari va maydonlar pastroq, panel ichki bo‘shliqlari kichikroq. Kiritish matni 16 px qoldi (iPhone o‘zi kattalashtirib yubormasligi uchun).
+
+**Test qilindi**
+- E2E 6 profilda: kattalashtirish → reja maydoni oshadi → qaytadi; pastki panellar bosish bilan yig‘iladi, qayta yuklashda yig‘ilgan qoladi, ochiladi, pastga tortish bilan yig‘iladi.
+- Layout auditi 15 qurilma o‘lchamida: 0 muammo.
+- Windows dasturi Linux’da (virtual ekran 1366×768) ishga tushirildi: 80 %, kattalashtirish, panel yig‘ish, 70 % tanlash va saqlanishi tekshirildi. Skrinshotlar: `docs/screenshots/phase-19/`.
+
+**Ma’lum cheklovlar**
+- Brauzerdagi saytda (kompyuterda) masshtab sozlamasi yo‘q — brauzerning o‘zida Ctrl − / Ctrl + ishlating.
+- iPad ko‘rinishi o‘zgarmadi (asosiy qurilma).
 
 ## Phase 18 — 2026-11-04
 
