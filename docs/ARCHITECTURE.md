@@ -188,6 +188,11 @@ Primary device is **iPad** (touch + Apple Pencil + keyboard/trackpad), then iPho
 
 Layout depends on width only (iPad Split View/Stage Manager can be phone-width). Input handled only via Pointer Events; `pointerType` decides pen/touch/mouse behaviour.
 
+## 4b. Wiring module (PHASE 21)
+
+- `src/domain/wiring/`: `catalog.ts` (consumers, ratings, cable table, wire colours), `panel.ts` (board design + BOM), `panelSim.ts` (protections), `junctionBox.ts` (box cables + correct joins), `boxCheck.ts` (net test over every key combination), `fromProject.ts` (circuits from a plan).
+- `src/features/wiring/`: `/wiring/` screen, animated SVG board and box; state in `src/store/wiringStore.ts`, saved to IndexedDB meta `wiring` (zod `WiringDocSchema`).
+
 ## 5. Dependencies
 
 Frontend runtime: `next`, `react`, `react-dom`, `typescript`, `tailwindcss`, shadcn/ui (+ generated `@radix-ui/*`, `class-variance-authority`, `clsx`, `tailwind-merge`), `lucide-react`, `konva`, `react-konva`, `zustand`, `immer`, `zod`, `idb`, `pdf-lib`, `@pdf-lib/fontkit`, `@serwist/next` / `serwist`.

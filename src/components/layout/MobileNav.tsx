@@ -19,7 +19,7 @@ export function MobileNav() {
         paddingRight: 'var(--safe-right)',
       }}
     >
-      {NAV_ITEMS.map(({ key, href, icon: Icon }) => {
+      {NAV_ITEMS.filter((i) => i.mobile !== false).map(({ key, href, icon: Icon }) => {
         const active = isNavActive(pathname, href);
         return (
           <Link
