@@ -44,7 +44,7 @@
 
 **Test qilindi**
 - Unit (15 ta yangi): kabel/avtomat tanlash, UZO guruhlari va reytingi, kirish avtomati, 3 faza taqsimoti, ajratilgan quvvatdan oshish, simulyatsiya (yoqish, qisqa tutashuv, ortiqcha yuklama, tok sizishi, UZO testi, hammasi yoqilganda kirish avtomati), klemmalar, quti ulanishi, klassik xatolarni topish, loyihadan liniyalar.
-- E2E 6 profilda: shitga liniya qo‘shish → tavsiyalar, iste’molchini yoqish → 11,4 A, tok sizishi → UZO o‘chadi, qisqa tutashuv → avtomat o‘chadi, materiallar, qayta yuklashda saqlanadi; quti: klavish → chiroq yonadi, “O‘zim ulayman” → tekshirish xatolarni ko‘rsatadi, qo‘lda ulash, to‘g‘ri javob → “Hammasi to‘g‘ri”; loyihadan liniyalar.
+- To‘liq E2E 6 profilda: 455 ta o‘tdi. Yangi: shitga liniya qo‘shish → tavsiyalar, iste’molchini yoqish → 11,4 A, tok sizishi → UZO o‘chadi, qisqa tutashuv → avtomat o‘chadi, materiallar, qayta yuklashda saqlanadi; quti: klavish → chiroq yonadi, “O‘zim ulayman” → tekshirish xatolarni ko‘rsatadi, qo‘lda ulash, to‘g‘ri javob → “Hammasi to‘g‘ri”; loyihadan liniyalar.
 - Layout auditi (yangi sahifa bilan, 15 qurilma): 0 muammo. Skrinshotlar: `docs/screenshots/phase-21/`.
 
 **Ma’lum cheklovlar**
