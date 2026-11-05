@@ -5,8 +5,8 @@ import { SymbolIcon } from '@/features/symbols/SymbolIcon';
 import { uz } from '@/i18n/uz';
 
 describe('symbol catalog', () => {
-  it('has all 11 symbols with names and glyphs', () => {
-    expect(SYMBOL_IDS).toHaveLength(11);
+  it('has all 12 symbols with names and glyphs', () => {
+    expect(SYMBOL_IDS).toHaveLength(12);
     for (const id of SYMBOL_IDS) {
       expect(SYMBOLS[id].id).toBe(id);
       expect(uz.symbols[id].length).toBeGreaterThan(0);

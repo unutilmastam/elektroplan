@@ -11,6 +11,7 @@ const SPEC_IDS = [
   'socket-single',
   'socket-double',
   'socket-triple',
+  'socket-quad',
   'switch-single',
   'switch-double',
   'internet',
@@ -22,7 +23,7 @@ const SPEC_IDS = [
 ];
 
 describe('symbol catalog (single source)', () => {
-  it('has exactly the 11 symbols from the spec with every field', () => {
+  it('has exactly the 12 symbols from the spec with every field', () => {
     expect([...SYMBOL_IDS].sort()).toEqual([...SPEC_IDS].sort());
     for (const id of SYMBOL_IDS) {
       const s = SYMBOLS[id];
@@ -56,7 +57,7 @@ describe('symbol catalog (single source)', () => {
       SYMBOL_IDS.filter((id) => SYMBOLS[id].rotatable).every((id) => SYMBOLS[id].category === 'socket'),
     ).toBe(true);
     expect(SYMBOLS['ceiling-light'].badge).toBe('outline');
-    expect(SYMBOL_BAR).toHaveLength(7);
+    expect(SYMBOL_BAR).toHaveLength(9);
   });
 });
 

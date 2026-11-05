@@ -32,6 +32,7 @@ export const SymbolIdSchema = z.enum([
   'socket-single',
   'socket-double',
   'socket-triple',
+  'socket-quad',
   'switch-single',
   'switch-double',
   'internet',

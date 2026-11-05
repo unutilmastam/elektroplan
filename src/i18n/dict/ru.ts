@@ -43,6 +43,7 @@ export const ruStrings: Strings = {
     'socket-single': 'Розетка',
     'socket-double': 'Двойная розетка',
     'socket-triple': 'Тройная розетка',
+    'socket-quad': 'Четверная розетка',
     'switch-single': 'Выключатель',
     'switch-double': 'Двухклавишный выключатель',
     internet: 'Интернет',

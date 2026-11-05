@@ -7,7 +7,7 @@ declare(strict_types=1);
  */
 final class ProjectRepo
 {
-    private const SYMBOLS = ['socket-single', 'socket-double', 'socket-triple', 'switch-single', 'switch-double', 'internet', 'tv', 'ceiling-light', 'led', 'ac', 'custom'];
+    private const SYMBOLS = ['socket-single', 'socket-double', 'socket-triple', 'socket-quad', 'switch-single', 'switch-double', 'internet', 'tv', 'ceiling-light', 'led', 'ac', 'custom'];
     private const STATUS = ['pending', 'in_progress', 'completed'];
 
     // ---------- validation (mirrors ProjectSchema in src/domain/schemas.ts + column limits) ----------

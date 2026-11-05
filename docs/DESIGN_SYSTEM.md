@@ -94,6 +94,7 @@ Left drawing toolbar (top → bottom): Tanlash (cursor), Ramka tanlash (marquee)
 | socket-single | Rozetka | circle with two pins | blue |
 | socket-double | Ikki rozetka | two circles side by side | blue |
 | socket-triple | Uch rozetka | three circles | blue |
+| socket-quad | To‘rt rozetka | four circles, 2×2 | blue |
 | switch-single | Viklyuchatel | rocker plate | red |
 | switch-double | Ikki klavishli viklyuchatel | split rocker | red |
 | internet | Internet | RJ45 / globe | blue |

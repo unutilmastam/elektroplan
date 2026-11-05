@@ -271,4 +271,11 @@ O‘lcham hech qachon majburiy emas. 1 reja birligi = 1 sm (devor 16 sm, to‘r 
 - ≥1024 px: pastki panellar (xonalar, devor ko‘rinishi, holat) tutqich bilan yig‘iladi/ochiladi, tortib balandligi o‘zgaradi; holat eslab qolinadi.
 - Telefon (<600 px): tugma, chip, menyu, maydonlar ixchamroq (barmoq uchun ≥36 px, kiritish matni 16 px saqlanadi).
 
+## PHASE 20 — 3 va 4 talik rozetka (egasi qo‘shgan, 2026-11-05)
+
+**Qabul mezonlari**
+- Yangi belgi `socket-quad` (“To‘rt rozetka”, 2×2 doira), “Uch rozetka” bilan birga asosiy belgi panelida.
+- Panelga sig‘masa chiplar yonga suriladi, “Boshqa” doim ko‘rinadi.
+- Server migratsiyasi 004 yangi belgini qo‘shadi; sinxron, PDF, materiallar ishlaydi.
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)
