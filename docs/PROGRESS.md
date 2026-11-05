@@ -34,7 +34,7 @@
 
 **Test qilindi**
 - Unit/integratsiya: katalogda 12 belgi, panelda 9 chip; ikki qurilma sinxron senariysida to‘rt rozetka server orqali o‘tadi; migratsiyadan keyin 12 tizim belgisi.
-- E2E 6 profilda: “Uch rozetka” va “To‘rt rozetka” panelda, to‘rt rozetka devorga qo‘yiladi (30 sm), “Boshqa” ekranda ko‘rinadi; belgilar galereyasida 12 ta.
+- To‘liq E2E 6 profilda: 437 ta o‘tdi. Yangi: “Uch rozetka” va “To‘rt rozetka” panelda, to‘rt rozetka devorga qo‘yiladi (30 sm), “Boshqa” ekranda ko‘rinadi; belgilar galereyasida 12 ta.
 - Skrinshotlar: `docs/screenshots/phase-20/`.
 
 **Ma’lum cheklovlar**
