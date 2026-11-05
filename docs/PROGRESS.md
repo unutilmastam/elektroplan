@@ -22,7 +22,7 @@
 | 17 | Windows dasturi | ✅ Tayyor |
 | 18 | Devor o‘lchamlari | ✅ Tayyor |
 | 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor |
-| 20 | 3 va 4 talik rozetka | ✅ Tayyor (tasdiq kutilmoqda) |
+| 20 | 3 va 4 talik rozetka | ✅ Tayyor |
 
 ## Phase 20 — 2026-11-05
 
