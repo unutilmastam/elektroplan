@@ -20,7 +20,7 @@ export const SymbolChip = forwardRef<HTMLButtonElement, SymbolChipProps>(functio
       type="button"
       aria-pressed={active}
       className={cn(
-        'flex h-11 shrink-0 items-center gap-2.5 rounded-[10px] border px-3.5 text-[15px] whitespace-nowrap transition-[background,border-color,box-shadow] duration-150 md:h-[42px] lg:h-12 lg:px-4 lg:text-[16px] xl:px-5',
+        'flex h-11 shrink-0 items-center gap-2.5 rounded-[10px] border px-3.5 text-[15px] max-sm:h-9 max-sm:gap-2 max-sm:px-3 max-sm:text-[14px] whitespace-nowrap transition-[background,border-color,box-shadow] duration-150 md:h-[42px] lg:h-12 lg:px-4 lg:text-[16px] xl:px-5',
         active
           ? 'glow-primary border-primary-hi/60 bg-primary text-white'
           : 'border-white/[0.12] bg-[#0d1527]/85 text-text hover:border-white/25 hover:bg-[#121d33]',

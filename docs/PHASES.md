@@ -263,4 +263,12 @@ O‘lcham hech qachon majburiy emas. 1 reja birligi = 1 sm (devor 16 sm, to‘r 
 - Devor panelida “Uzunligi (ixtiyoriy)”: “3,2”, “320”, “320 sm”, “3.2 m” qabul qilinadi; xona to‘g‘ri burchakli qoladi, qo‘shni xona birga cho‘ziladi; bitta “Bekor qilish” qaytaradi.
 - Rejada devor uzunliklari (Sozlamalar → “Devor o‘lchamlari”, qurilma sozlamasi, standart: yoqilgan); qisqa devorda yozuv yashiriladi.
 
+## PHASE 19 — Ixcham interfeys, rejani kattalashtirish (egasi qo‘shgan, 2026-11-05)
+
+**Qabul mezonlari**
+- Windows dasturi: “Interfeys o‘lchami” 70 / 80 / 90 / 100 % (WebView masshtabi, standart 80 %), dastur eslab qoladi.
+- “Rejani yoyish” tugmasi: reja butun ish maydonini egallaydi, qayta bosish yoki Esc — qaytadi.
+- ≥1024 px: pastki panellar (xonalar, devor ko‘rinishi, holat) tutqich bilan yig‘iladi/ochiladi, tortib balandligi o‘zgaradi; holat eslab qolinadi.
+- Telefon (<600 px): tugma, chip, menyu, maydonlar ixchamroq (barmoq uchun ≥36 px, kiritish matni 16 px saqlanadi).
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)

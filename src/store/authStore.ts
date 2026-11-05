@@ -23,6 +23,12 @@ interface AuthState {
 }
 
 let lastRefresh = 0;
+/**
+ * Bumps on every explicit account change (login, register, password change, logout). A background
+ * `me()` that started before such a change is stale when it answers and must not overwrite it
+ * (e.g. bring back the "change your password" gate right after the password was changed).
+ */
+let epoch = 0;
 
 const parseUser = (v: unknown) => {
   const r = UserSchema.safeParse(v);
@@ -48,31 +54,44 @@ export const useAuthStore = create<AuthState>()((set, get) => {
     load: async () => {
       const cached = await getMeta(META_ACCOUNT, parseUser).catch(() => null);
       set({ status: cached ? 'user' : 'anon', user: cached });
+      const at = epoch;
       try {
         const me = await api.me();
+        if (at !== epoch) return;
         if (me) await signedIn(me);
         else if (get().user) await signedOut();
       } catch {
         // offline, or the API is not reachable: keep the cached account
       }
     },
-    login: async (login, password) => signedIn(await api.login(login, password)),
-    register: async (name, login, password) => signedIn(await api.register(name, login, password)),
+    login: async (login, password) => {
+      const user = await api.login(login, password);
+      epoch++;
+      return signedIn(user);
+    },
+    register: async (name, login, password) => {
+      const user = await api.register(name, login, password);
+      epoch++;
+      return signedIn(user);
+    },
     logout: async () => {
+      epoch++;
       await api.logout().catch(() => undefined);
       await clearSynced().catch(() => undefined);
       await signedOut();
     },
     expired: signedOut,
     setUser: async (user) => {
+      epoch++;
       await signedIn(user);
     },
     refresh: async () => {
       if (!get().user || Date.now() - lastRefresh < 60_000) return;
       lastRefresh = Date.now();
+      const at = epoch;
       try {
         const me = await api.me();
-        if (me) await signedIn(me);
+        if (me && at === epoch) await signedIn(me);
       } catch {
         // offline: keep the cached account
       }

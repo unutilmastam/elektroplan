@@ -130,6 +130,13 @@ export const uzStrings = {
     ceiling: 'Shipda / xona ichida',
     closePanel: 'Yopish',
   },
+  layout: {
+    expand: 'Rejani yoyish',
+    restore: 'Panellarni qaytarish',
+    hidePanels: 'Pastki panellarni yig‘ish',
+    showPanels: 'Pastki panellarni ochish',
+    dragHint: 'tortib balandligini o‘zgartiring',
+  },
   units: { m: 'm', cm: 'sm' },
   walls: {
     length: 'Uzunligi',
@@ -350,6 +357,8 @@ export const uzStrings = {
     autoStraighten: 'Qo‘lda chizilgan shaklni avtomatik tekislash',
     autoStraightenHint:
       'Qiyshiq chizilgan xona to‘g‘ri burchakli toza shaklga aylanadi. Bir marta “Bekor qilish” asl chizmani qaytaradi.',
+    uiScale: 'Interfeys o‘lchami',
+    uiScaleHint: 'Tugma va yozuvlar kattaligi. Kichikroq bo‘lsa rejaga ko‘proq joy qoladi.',
     showDimensions: 'Devor o‘lchamlari',
     showDimensionsHint:
       'Rejada har bir devor uzunligini ko‘rsatish. Chizayotganda o‘lcham doim ko‘rinadi; qo‘yib yuborgan joyingizda qoladi.',

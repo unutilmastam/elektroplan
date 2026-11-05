@@ -51,3 +51,30 @@ export function routeExternalLinks(doc: Document = document): () => void {
   doc.addEventListener('click', onClick);
   return () => doc.removeEventListener('click', onClick);
 }
+
+type TauriInternals = { invoke: (cmd: string, args?: Record<string, unknown>) => Promise<unknown> };
+
+/** Calls a command of src-tauri/src/main.rs (null on the web or when it fails). */
+async function invoke(cmd: string, args?: Record<string, unknown>): Promise<unknown> {
+  if (!IS_DESKTOP) return null;
+  const t = (window as unknown as { __TAURI_INTERNALS__?: TauriInternals }).__TAURI_INTERNALS__;
+  if (!t) return null;
+  try {
+    return await t.invoke(cmd, args);
+  } catch {
+    return null;
+  }
+}
+
+/** PHASE 19: interface size of the Windows app (WebView zoom), remembered by the app itself. */
+export const UI_SCALES = [0.7, 0.8, 0.9, 1] as const;
+
+export async function getUiScale(): Promise<number | null> {
+  const v = await invoke('get_ui_scale');
+  return typeof v === 'number' && Number.isFinite(v) ? v : null;
+}
+
+export async function setUiScale(scale: number): Promise<number | null> {
+  const v = await invoke('set_ui_scale', { scale });
+  return typeof v === 'number' && Number.isFinite(v) ? v : null;
+}

@@ -21,7 +21,7 @@ export function PanelShell({
           <h2 className="text-[16px] font-semibold lg:text-[17px]">{title}</h2>
         </div>
       ) : null}
-      <div className="no-scrollbar flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-3 lg:py-4">
+      <div className="no-scrollbar flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-3 max-sm:gap-2.5 max-sm:px-3 max-sm:py-2.5 lg:py-4">
         {children}
       </div>
     </div>

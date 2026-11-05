@@ -28,17 +28,17 @@ export function MobileNav() {
             aria-current={active ? 'page' : undefined}
             aria-label={uz.nav[key]}
             className={cn(
-              'flex h-[58px] flex-col items-center justify-center gap-1 text-[11px]',
+              'flex h-[52px] flex-col items-center justify-center gap-0.5 text-[11px]',
               active ? 'text-primary-hi' : 'text-text-muted',
             )}
           >
             <span
               className={cn(
-                'flex h-7 w-11 items-center justify-center rounded-full',
+                'flex h-6 w-10 items-center justify-center rounded-full',
                 active && 'bg-primary/20',
               )}
             >
-              <Icon size={21} strokeWidth={1.9} aria-hidden />
+              <Icon size={20} strokeWidth={1.9} aria-hidden />
             </span>
             <span className="leading-none">{uz.navShort[key]}</span>
           </Link>
