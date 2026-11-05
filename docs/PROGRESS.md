@@ -23,6 +23,35 @@
 | 18 | Devor o‘lchamlari | ✅ Tayyor |
 | 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor |
 | 20 | 3 va 4 talik rozetka | ✅ Tayyor |
+| 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 21 — 2026-11-05
+
+**Bajarildi** — yangi bo‘lim **“Elektr sxemalar”** (menyuda “Sxema”), internetsiz ishlaydi, ma’lumotlar qurilmada saqlanadi.
+- **Elektr shit:**
+  - Kirish: 1 faza (220 V) yoki 3 faza (380 V), ajratilgan quvvat (kVt).
+  - Liniyalar ro‘yxatdan qo‘shiladi (yoritish, rozetkalar, oshxona, hammom, duxovka, elektr plita, konditsioner, boyler, kir/idish yuvish mashinasi, issiq pol, hovli, boshqa) yoki **“Loyihadan olish”** — chizilgan rejadagi rozetka/chiroq/konditsionerlardan avtomatik (oshxona va hammom alohida, xonalar 8 rozetkagacha birga, har konditsioner alohida).
+  - Har liniyaga tavsiya: tok, avtomat (B — chiroq, C — rozetka/texnika), kabel kesimi (1,5 / 2,5 / 4 / 6 / 10 mm²), himoya: UZO 30 mA, difavtomat (kir yuvish, boyler, hammom, hovli) yoki avtomat. 3 fazada liniyalar fazalarga teng taqsimlanadi.
+  - Shit: kirish avtomati (ajratilgan quvvat bo‘yicha), kuchlanish relesi, UZIP, UZO guruhlari (bittasida 4 tagacha liniya, reytingi to‘g‘ri), N va PE shinalar, modullar soni, shit hajmi (20 % zaxira), **materiallar ro‘yxati** va **tavsiyalar** (ulash tartibi, sim ranglari, nima uchun).
+  - **Animatsiyali shit:** DIN-reykalar, avtomatlar — dastagini bossangiz yoqiladi/o‘chadi; taroqsimon faza shinasi; har liniyaning kabeli (jigarrang L, ko‘k N, sariq-yashil PE); iste’molchini bossangiz tok oqadi (oqim animatsiyasi, amper ko‘rsatiladi).
+  - **Sinov:** ortiqcha yuklama (avtomat qizib o‘chadi), qisqa tutashuv (bir zumda o‘chadi), tok sizishi (UZO/difavtomat o‘chadi; UZO bo‘lmasa “tok urishi mumkin” ogohlantirishi), UZO “T” test tugmasi, “Hammasini yoqish” (kirish avtomati yuklamani ko‘tara oladimi), hodisalar jurnali.
+- **Tarqatish qutisi:**
+  - 1–4 viklyuchatel (1, 2, 3 klavishli), har klavishga 1–4 chiroq.
+  - Kabellar (shitdan 3×1,5, viklyuchatelga 2/3/4 tolali, chiroqlarga 3×1,5), klemmalar (Wago 221 — 2/3/5 o‘rinli, 5 dan ko‘p bo‘lsa zanjir), **ulash tartibi** matnda.
+  - **Animatsiyali quti:** har bir tola o‘z klemmasigacha chizilgan; viklyuchatel klavishini bossangiz faza oqimi ko‘rinadi va chiroq yonadi.
+  - **“O‘zim ulayman”:** tolaning uchini bosing → klemmani bosing (yoki “Yangi klemma”). **“Tekshirish”** barcha klavish holatlarini sinaydi va xatolarni aytadi: qisqa tutashuv (faza+nol yoki faza+yer), chiroq yonmaydi / doim yonadi / boshqa klavishdan yonadi, **viklyuchatel nolni uzyapti** (xavfli), chiroq yerga ulanmagan, ulanmagan sim. “To‘g‘ri javob” tugmasi bor.
+- Boshqa: telefon pastki menyusida “Material” (hali tayyor emas) o‘rnida “Sxema”; uzun menyular telefonda ekran ichida suriladi.
+
+**Test qilindi**
+- Unit (15 ta yangi): kabel/avtomat tanlash, UZO guruhlari va reytingi, kirish avtomati, 3 faza taqsimoti, ajratilgan quvvatdan oshish, simulyatsiya (yoqish, qisqa tutashuv, ortiqcha yuklama, tok sizishi, UZO testi, hammasi yoqilganda kirish avtomati), klemmalar, quti ulanishi, klassik xatolarni topish, loyihadan liniyalar.
+- E2E 6 profilda: shitga liniya qo‘shish → tavsiyalar, iste’molchini yoqish → 11,4 A, tok sizishi → UZO o‘chadi, qisqa tutashuv → avtomat o‘chadi, materiallar, qayta yuklashda saqlanadi; quti: klavish → chiroq yonadi, “O‘zim ulayman” → tekshirish xatolarni ko‘rsatadi, qo‘lda ulash, to‘g‘ri javob → “Hammasi to‘g‘ri”; loyihadan liniyalar.
+- Layout auditi (yangi sahifa bilan, 15 qurilma): 0 muammo. Skrinshotlar: `docs/screenshots/phase-21/`.
+
+**Ma’lum cheklovlar**
+- Sxemalar akkaunt orqali sinxronlanmaydi (faqat shu qurilmada saqlanadi).
+- Tarqatish qutisida o‘tish (prohodnoy) viklyuchatellar va rozetka tranziti hali yo‘q; shitni qo‘lda simlab ulash (faqat tayyor sxema) hali yo‘q.
+- Telefonda sxemalar yonga surib ko‘riladi. PDF ga chiqarish hali yo‘q.
+- Tavsiyalar odatiy kvartira/uy uchun (mis kabel, yashirin montaj, TN-C-S); murakkab obyektlarda loyihachi hisoblaydi.
 
 ## Phase 20 — 2026-11-05
 

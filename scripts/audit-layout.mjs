@@ -32,6 +32,7 @@ const SCREENS = [
   ['editor', `/editor/?id=${seed.id}`],
   ['install', `/install/?id=${seed.id}`],
   ['settings', '/settings/'],
+  ['wiring', '/wiring/'],
   ['symbols', '/settings/symbols/'],
   ['login', '/login/'],
   ['pro', '/pro/'],

@@ -14,6 +14,7 @@ const PAGES = [
   '/settings/',
   '/settings/symbols/',
   '/login/',
+  '/wiring/',
 ];
 // HTML is not hashed: a new revision per build makes the service worker fetch fresh pages on update
 const revision = process.env.GITHUB_SHA ?? randomUUID();

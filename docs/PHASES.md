@@ -278,4 +278,14 @@ O‘lcham hech qachon majburiy emas. 1 reja birligi = 1 sm (devor 16 sm, to‘r 
 - Panelga sig‘masa chiplar yonga suriladi, “Boshqa” doim ko‘rinadi.
 - Server migratsiyasi 004 yangi belgini qo‘shadi; sinxron, PDF, materiallar ishlaydi.
 
+## PHASE 21 — Elektr sxemalar: shit va tarqatish qutisi (egasi qo‘shgan, 2026-11-05)
+
+Yangi bo‘lim “Elektr sxemalar” (`/wiring/`), internetsiz ishlaydi. Hisob-kitob `src/domain/wiring/**` (sof funksiyalar, testlar).
+
+**Qabul mezonlari**
+- **Shit:** kirish (1 / 3 faza, ajratilgan kVt), liniyalar (yoritish, rozetkalar, oshxona, hammom, duxovka, plita, konditsioner, boyler, kir/idish yuvish, issiq pol, hovli, boshqa) yoki ochiq loyihadan avtomatik. Har liniyaga: tok, avtomat (B/C, reyting), kabel kesimi, himoya (UZO / difavtomat / avtomat), 3 fazada faza taqsimoti. Shit: kirish avtomati, kuchlanish relesi, UZIP, UZO guruhlari (≤ 4 liniya), N/PE shinalar, modullar, shit hajmi, materiallar ro‘yxati, ajratilgan quvvatdan oshish ogohlantirishi.
+- **Animatsiyali shit:** DIN-reykalar, avtomatlar (dastagi bosiladi), taroqsimon shina, chiquvchi kabellar L/N/PE ranglarda, iste’molchi yoqilganda tok oqimi va amper. Sinov: ortiqcha yuklama, qisqa tutashuv, tok sizishi (UZO/difavtomat o‘chadi, UZO yo‘q bo‘lsa xavf ogohlantirishi), UZO “T” tugmasi, hammasini yoqish (kirish avtomati), hodisalar jurnali.
+- **Tarqatish qutisi:** 1–4 viklyuchatel (1/2/3 klavishli), har klavishga 1–4 chiroq. Kabellar, tolalar, klemmalar (Wago 221, 2/3/5 o‘rinli, zanjir), ulash tartibi. Klavish bosilsa tok oqimi va chiroq yonishi jonli.
+- **“O‘zim ulayman”:** sim uchini klemmaga bosib ulash; “Tekshirish” barcha klavish holatlarini sinaydi: qisqa tutashuv, chiroq yonmaydi / doim yonadi / boshqa klavishdan yonadi, viklyuchatel nolni uzadi, yer ulanmagan, ulanmagan sim.
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)

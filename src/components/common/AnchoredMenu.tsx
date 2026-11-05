@@ -65,8 +65,15 @@ export function AnchoredMenu({
       ref={menuRef}
       role="menu"
       aria-label={label}
-      className="glass fixed z-50 flex flex-col gap-1 p-2"
-      style={{ left: pos.left, top: pos.top, width, background: 'rgba(14, 22, 40, 0.96)' }}
+      className="glass fixed z-50 flex flex-col gap-1 overflow-y-auto overscroll-contain p-2"
+      // long menus scroll inside the screen (phones)
+      style={{
+        left: pos.left,
+        top: pos.top,
+        width,
+        maxHeight: `calc(100dvh - ${Math.round(pos.top) + 8}px)`,
+        background: 'rgba(14, 22, 40, 0.96)',
+      }}
     >
       {children}
     </div>,

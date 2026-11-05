@@ -161,3 +161,51 @@ export const DEFAULT_DEVICE_SETTINGS: DeviceSettings = {
   autoStraighten: true,
   showDimensions: true,
 };
+
+/* PHASE 21 — wiring designs (kept on the device, IndexedDB meta) */
+const ConsumerTypeSchema = z.enum([
+  'lighting',
+  'sockets',
+  'kitchen-sockets',
+  'bathroom-sockets',
+  'oven',
+  'stove',
+  'ac',
+  'boiler',
+  'washer',
+  'dishwasher',
+  'warm-floor',
+  'outdoor',
+  'custom',
+]);
+export const PanelInputSchema = z.object({
+  phases: z.union([z.literal(1), z.literal(3)]),
+  allocatedKw: z.number().min(1).max(500),
+  lines: z
+    .array(
+      z.object({
+        id: z.string().min(1).max(64),
+        type: ConsumerTypeSchema,
+        name: z.string().max(80),
+        powerW: z.number().min(10).max(50_000),
+      }),
+    )
+    .max(60),
+});
+export const BoxInputSchema = z.object({
+  switches: z
+    .array(
+      z.object({
+        id: z.string().min(1).max(64),
+        keys: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+        lamps: z.array(z.number().int().min(1).max(6)).max(3),
+      }),
+    )
+    .max(4),
+});
+export const WiringDocSchema = z.object({
+  panel: PanelInputSchema,
+  box: BoxInputSchema,
+  manual: z.array(z.array(z.string().max(80)).max(30)).max(60),
+});
+export type WiringDoc = z.infer<typeof WiringDocSchema>;
