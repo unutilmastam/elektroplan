@@ -23,7 +23,7 @@
 | 18 | Devor o‘lchamlari | ✅ Tayyor |
 | 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor |
 | 20 | 3 va 4 talik rozetka | ✅ Tayyor |
-| 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor (tasdiq kutilmoqda) |
+| 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor |
 
 ## Phase 21 — 2026-11-05
 
