@@ -13,7 +13,7 @@ const height = async (page: import('@playwright/test').Page) =>
 const width = async (page: import('@playwright/test').Page) =>
   (await page.getByTestId('plan-canvas').boundingBox())!.width;
 
-test('"Rejani kattalashtirish" gives the plan the whole workspace and back', async ({ page }) => {
+test('"Rejani yoyish" gives the plan the whole workspace and back', async ({ page }) => {
   const w0 = await width(page);
   const h0 = await height(page);
   await page.getByTestId('plan-expand').click();

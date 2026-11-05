@@ -131,7 +131,7 @@ export const uzStrings = {
     closePanel: 'Yopish',
   },
   layout: {
-    expand: 'Rejani kattalashtirish',
+    expand: 'Rejani yoyish',
     restore: 'Panellarni qaytarish',
     hidePanels: 'Pastki panellarni yig‘ish',
     showPanels: 'Pastki panellarni ochish',

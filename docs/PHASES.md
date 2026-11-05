@@ -267,7 +267,7 @@ O‘lcham hech qachon majburiy emas. 1 reja birligi = 1 sm (devor 16 sm, to‘r 
 
 **Qabul mezonlari**
 - Windows dasturi: “Interfeys o‘lchami” 70 / 80 / 90 / 100 % (WebView masshtabi, standart 80 %), dastur eslab qoladi.
-- “Rejani kattalashtirish” tugmasi: reja butun ish maydonini egallaydi, qayta bosish yoki Esc — qaytadi.
+- “Rejani yoyish” tugmasi: reja butun ish maydonini egallaydi, qayta bosish yoki Esc — qaytadi.
 - ≥1024 px: pastki panellar (xonalar, devor ko‘rinishi, holat) tutqich bilan yig‘iladi/ochiladi, tortib balandligi o‘zgaradi; holat eslab qolinadi.
 - Telefon (<600 px): tugma, chip, menyu, maydonlar ixchamroq (barmoq uchun ≥36 px, kiritish matni 16 px saqlanadi).
 
