@@ -62,7 +62,7 @@ Egasining fikri: oldingi sxemalar multfilmga o‘xshab, tushunarsiz edi; hammasi
 
 **Test qilindi**
 - Unit: tok yo‘nalishi (faza kiradi → viklyuchatelga → klavishdan qaytadi → chiroqqa; nol qaytadi; ikki chiroqda yuklama 2), yangi iste’molchilar.
-- E2E 6 profilda: real qutida klavish → chiroq yonadi, “Tok yo‘li” matni; Wago qo‘shish, simni bosib va **sichqoncha/barmoq bilan tortib** ulash, to‘g‘ri javob → “Hammasi to‘g‘ri”; real shitda yuklama, UZO/avtomat o‘chishi; katalog: 48 detal, qidiruv, guruh.
+- To‘liq E2E 6 profilda: 460 ta o‘tdi (iPhone’dagi bitta barmoq bilan chizish testi yuklama ostida bir marta yiqildi, qayta 24/24 o‘tdi). Yangi: real qutida klavish → chiroq yonadi, “Tok yo‘li” matni; Wago qo‘shish, simni bosib va **sichqoncha/barmoq bilan tortib** ulash, to‘g‘ri javob → “Hammasi to‘g‘ri”; real shitda yuklama, UZO/avtomat o‘chishi; katalog: 48 detal, qidiruv, guruh.
 - Skrinshotlar: `docs/screenshots/phase-22/`.
 
 **Ma’lum cheklovlar**
