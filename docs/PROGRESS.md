@@ -24,7 +24,7 @@
 | 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor |
 | 20 | 3 va 4 talik rozetka | ✅ Tayyor |
 | 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor |
-| 22 | Real ko‘rinishdagi sxemalar va detallar katalogi | ✅ Tayyor (tasdiq kutilmoqda) |
+| 22 | Real ko‘rinishdagi sxemalar va detallar katalogi | ✅ Tayyor |
 
 ## Phase 22 — 2026-11-06
 
