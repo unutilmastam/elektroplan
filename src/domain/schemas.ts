@@ -207,5 +207,15 @@ export const WiringDocSchema = z.object({
   panel: PanelInputSchema,
   box: BoxInputSchema,
   manual: z.array(z.array(z.string().max(80)).max(30)).max(60),
+  /** PHASE 22: clamps placed by hand (size + what sits in each opening) */
+  clamps: z
+    .array(
+      z.object({
+        size: z.union([z.literal(2), z.literal(3), z.literal(5)]),
+        ends: z.array(z.string().max(80).nullable()).max(5),
+      }),
+    )
+    .max(40)
+    .default([]),
 });
 export type WiringDoc = z.infer<typeof WiringDocSchema>;

@@ -220,3 +220,22 @@ describe('circuits from the drawn plan', async () => {
     ]);
   });
 });
+
+describe('current paths in the junction box', async () => {
+  const { boxCurrents } = await import('@/domain/wiring/boxFlow');
+  it('phase goes in from the panel, out to the switch, back on the key, out to the lamp; neutral returns', () => {
+    const box: BoxInput = { switches: [{ id: 'a', keys: 2, lamps: [1, 1] }] };
+    const joins = designBox(box).groups.map((g) => g.ends);
+    expect(boxCurrents(box, joins, { a: [false, false] }).size).toBe(0);
+    const c = boxCurrents(box, joins, { a: [true, false] });
+    expect(c.get('in:L')).toMatchObject({ kind: 'L', inward: true });
+    expect(c.get('sw-a:C')).toMatchObject({ kind: 'L', inward: false });
+    expect(c.get('sw-a:K1')).toMatchObject({ kind: 'L', inward: true });
+    expect(c.get('lamp-a-1-1:L')).toMatchObject({ kind: 'L', inward: false });
+    expect(c.get('lamp-a-1-1:N')).toMatchObject({ kind: 'N', inward: true });
+    expect(c.get('in:N')).toMatchObject({ kind: 'N', inward: false });
+    expect(c.has('sw-a:K2')).toBe(false);
+    expect(c.has('lamp-a-2-1:L')).toBe(false);
+    expect(boxCurrents(box, joins, { a: [true, true] }).get('in:L')!.load).toBe(2);
+  });
+});
