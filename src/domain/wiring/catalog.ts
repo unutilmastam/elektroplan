@@ -16,6 +16,11 @@ export type ConsumerType =
   | 'dishwasher'
   | 'warm-floor'
   | 'outdoor'
+  | 'fridge'
+  | 'microwave'
+  | 'pump'
+  | 'heater'
+  | 'ev-charger'
   | 'custom';
 
 export interface ConsumerSpec {
@@ -139,6 +144,52 @@ export const CONSUMERS: Record<ConsumerType, ConsumerSpec> = {
     demand: 0.5,
     minBreaker: 16,
     maxBreaker: 16,
+    curve: 'C',
+    protection: 'rcbo',
+  },
+  // PHASE 22
+  fridge: {
+    powerW: 400,
+    cosPhi: 0.8,
+    demand: 0.9,
+    minBreaker: 16,
+    maxBreaker: 16,
+    curve: 'C',
+    protection: 'rcd',
+  },
+  microwave: {
+    powerW: 1600,
+    cosPhi: 0.95,
+    demand: 0.4,
+    minBreaker: 16,
+    maxBreaker: 16,
+    curve: 'C',
+    protection: 'rcd',
+  },
+  pump: {
+    powerW: 1100,
+    cosPhi: 0.8,
+    demand: 0.7,
+    minBreaker: 16,
+    maxBreaker: 16,
+    curve: 'C',
+    protection: 'rcbo',
+  },
+  heater: {
+    powerW: 2000,
+    cosPhi: 1,
+    demand: 0.8,
+    minBreaker: 16,
+    maxBreaker: 16,
+    curve: 'C',
+    protection: 'rcd',
+  },
+  'ev-charger': {
+    powerW: 7400,
+    cosPhi: 1,
+    demand: 1,
+    minBreaker: 32,
+    maxBreaker: 40,
     curve: 'C',
     protection: 'rcbo',
   },

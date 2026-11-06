@@ -220,3 +220,32 @@ describe('circuits from the drawn plan', async () => {
     ]);
   });
 });
+
+describe('current paths in the junction box', async () => {
+  const { boxCurrents } = await import('@/domain/wiring/boxFlow');
+  it('phase goes in from the panel, out to the switch, back on the key, out to the lamp; neutral returns', () => {
+    const box: BoxInput = { switches: [{ id: 'a', keys: 2, lamps: [1, 1] }] };
+    const joins = designBox(box).groups.map((g) => g.ends);
+    expect(boxCurrents(box, joins, { a: [false, false] }).size).toBe(0);
+    const c = boxCurrents(box, joins, { a: [true, false] });
+    expect(c.get('in:L')).toMatchObject({ kind: 'L', inward: true });
+    expect(c.get('sw-a:C')).toMatchObject({ kind: 'L', inward: false });
+    expect(c.get('sw-a:K1')).toMatchObject({ kind: 'L', inward: true });
+    expect(c.get('lamp-a-1-1:L')).toMatchObject({ kind: 'L', inward: false });
+    expect(c.get('lamp-a-1-1:N')).toMatchObject({ kind: 'N', inward: true });
+    expect(c.get('in:N')).toMatchObject({ kind: 'N', inward: false });
+    expect(c.has('sw-a:K2')).toBe(false);
+    expect(c.has('lamp-a-2-1:L')).toBe(false);
+    expect(boxCurrents(box, joins, { a: [true, true] }).get('in:L')!.load).toBe(2);
+  });
+});
+
+describe('more consumers (PHASE 22)', () => {
+  it('EV charger gets its own RCBO and a 10 mm² cable; a pump an RCBO; a fridge sits behind an RCD', () => {
+    const l = (type: import('@/domain/wiring/catalog').ConsumerType, powerW: number) =>
+      designLine({ id: type, type, name: type, powerW });
+    expect(l('ev-charger', 7400)).toMatchObject({ breakerA: 40, cableMm2: 10, protection: 'rcbo' });
+    expect(l('pump', 1100)).toMatchObject({ breakerA: 16, protection: 'rcbo' });
+    expect(l('fridge', 400)).toMatchObject({ breakerA: 16, protection: 'rcd', cableMm2: 2.5 });
+  });
+});

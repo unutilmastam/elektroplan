@@ -7,7 +7,7 @@ import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 import { useWiringStore } from '@/store/wiringStore';
 import { PanelAdvice, PanelBom } from './PanelBom';
-import { PanelBoard } from './PanelBoard';
+import { PanelRealView } from '../real/PanelRealView';
 import { PanelInputs } from './PanelInputs';
 import { PanelSimControls } from './PanelSimControls';
 import { usePanelSim } from './usePanelSim';
@@ -46,8 +46,8 @@ export function PanelWorkbench() {
         {view === 'scheme' ? (
           <div className="grid grid-cols-[minmax(0,1fr)] gap-3 2xl:grid-cols-[minmax(0,1fr)_340px]">
             <div className="min-w-0 overflow-x-auto">
-              <div className="mx-auto max-w-[620px] min-w-[420px]">
-                <PanelBoard
+              <div className="mx-auto max-w-[900px] min-w-[560px]">
+                <PanelRealView
                   design={design}
                   input={input}
                   state={sim.state}

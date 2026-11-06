@@ -19,6 +19,7 @@ export const DEFAULT_DOC: WiringDoc = {
     ],
   },
   manual: [],
+  clamps: [],
 };
 
 interface WiringState extends WiringDoc {
@@ -32,6 +33,7 @@ interface WiringState extends WiringDoc {
   setBox: (box: BoxInput) => void;
   updateSwitch: (id: string, patch: Partial<BoxSwitch>) => void;
   setManual: (joins: Joins) => void;
+  setClamps: (clamps: WiringDoc['clamps']) => void;
 }
 
 export const useWiringStore = create<WiringState>()((set, get) => {
@@ -39,8 +41,8 @@ export const useWiringStore = create<WiringState>()((set, get) => {
   const save = () => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
-      const { panel, box, manual } = get();
-      void setMeta(KEY, { panel, box, manual } satisfies WiringDoc).catch(() => undefined);
+      const { panel, box, manual, clamps } = get();
+      void setMeta(KEY, { panel, box, manual, clamps } satisfies WiringDoc).catch(() => undefined);
     }, 300);
   };
   const patch = (p: Partial<WiringDoc>) => {
@@ -68,12 +70,14 @@ export const useWiringStore = create<WiringState>()((set, get) => {
       patch({ panel: { ...get().panel, lines: get().panel.lines.filter((l) => l.id !== id) } }),
     setLines: (lines) => patch({ panel: { ...get().panel, lines } }),
     // a changed box invalidates the hand-made joins
-    setBox: (box) => patch({ box, manual: [] }),
+    setBox: (box) => patch({ box, manual: [], clamps: [] }),
     updateSwitch: (id, p) =>
       patch({
         box: { switches: get().box.switches.map((s) => (s.id === id ? { ...s, ...p } : s)) },
         manual: [],
+        clamps: [],
       }),
     setManual: (manual) => patch({ manual }),
+    setClamps: (clamps) => patch({ clamps }),
   };
 });

@@ -8,8 +8,9 @@ import { cn } from '@/lib/cn';
 import { useWiringStore } from '@/store/wiringStore';
 import { BoxWorkbench } from './box/BoxWorkbench';
 import { PanelWorkbench } from './panel/PanelWorkbench';
+import { PartsCatalog } from './parts/PartsCatalog';
 
-type Tab = 'panel' | 'box';
+type Tab = 'panel' | 'box' | 'parts';
 
 /** PHASE 21 "Elektr sxemalar": distribution board and junction box designers with a live simulation. */
 export function WiringScreen() {
@@ -34,7 +35,7 @@ export function WiringScreen() {
           aria-label={uz.wiring.title}
           className="flex w-full gap-1 rounded-xl border border-white/10 p-1 sm:w-auto"
         >
-          {(['panel', 'box'] as const).map((t) => (
+          {(['panel', 'box', 'parts'] as const).map((t) => (
             <button
               key={t}
               type="button"
@@ -46,7 +47,7 @@ export function WiringScreen() {
                 tab === t ? 'bg-primary text-white' : 'text-text-muted hover:bg-white/[0.05]',
               )}
             >
-              {uz.wiring.tabs[t]}
+              {t === 'parts' ? uz.wiring.parts.tab : uz.wiring.tabs[t]}
             </button>
           ))}
         </div>
@@ -55,7 +56,15 @@ export function WiringScreen() {
         <ShieldAlert size={16} className="mt-0.5 shrink-0" aria-hidden />
         {uz.wiring.disclaimer}
       </p>
-      {loaded ? tab === 'panel' ? <PanelWorkbench /> : <BoxWorkbench /> : null}
+      {loaded ? (
+        tab === 'panel' ? (
+          <PanelWorkbench />
+        ) : tab === 'box' ? (
+          <BoxWorkbench />
+        ) : (
+          <PartsCatalog />
+        )
+      ) : null}
     </div>
   );
 }
