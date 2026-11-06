@@ -176,6 +176,11 @@ const ConsumerTypeSchema = z.enum([
   'dishwasher',
   'warm-floor',
   'outdoor',
+  'fridge',
+  'microwave',
+  'pump',
+  'heater',
+  'ev-charger',
   'custom',
 ]);
 export const PanelInputSchema = z.object({

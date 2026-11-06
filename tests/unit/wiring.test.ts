@@ -239,3 +239,13 @@ describe('current paths in the junction box', async () => {
     expect(boxCurrents(box, joins, { a: [true, true] }).get('in:L')!.load).toBe(2);
   });
 });
+
+describe('more consumers (PHASE 22)', () => {
+  it('EV charger gets its own RCBO and a 10 mm² cable; a pump an RCBO; a fridge sits behind an RCD', () => {
+    const l = (type: import('@/domain/wiring/catalog').ConsumerType, powerW: number) =>
+      designLine({ id: type, type, name: type, powerW });
+    expect(l('ev-charger', 7400)).toMatchObject({ breakerA: 40, cableMm2: 10, protection: 'rcbo' });
+    expect(l('pump', 1100)).toMatchObject({ breakerA: 16, protection: 'rcbo' });
+    expect(l('fridge', 400)).toMatchObject({ breakerA: 16, protection: 'rcd', cableMm2: 2.5 });
+  });
+});

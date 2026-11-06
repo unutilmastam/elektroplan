@@ -288,4 +288,13 @@ Yangi bo‘lim “Elektr sxemalar” (`/wiring/`), internetsiz ishlaydi. Hisob-k
 - **Tarqatish qutisi:** 1–4 viklyuchatel (1/2/3 klavishli), har klavishga 1–4 chiroq. Kabellar, tolalar, klemmalar (Wago 221, 2/3/5 o‘rinli, zanjir), ulash tartibi. Klavish bosilsa tok oqimi va chiroq yonishi jonli.
 - **“O‘zim ulayman”:** sim uchini klemmaga bosib ulash; “Tekshirish” barcha klavish holatlarini sinaydi: qisqa tutashuv, chiroq yonmaydi / doim yonadi / boshqa klavishdan yonadi, viklyuchatel nolni uzadi, yer ulanmagan, ulanmagan sim.
 
+## PHASE 22 — Real ko‘rinishdagi sxemalar va detallar katalogi (egasi so‘radi, 2026-11-06)
+
+**Qabul mezonlari**
+- Tarqatish qutisi real ko‘rinishda: VVGng kabellar, qobig‘i tozalangan, tolalar haqiqiy ranglarda (PE sariq-yashil chiziqli), mis uchlar, Wago 221 (shaffof korpus, richag ochiq/yopiq, ichidagi mis), quti (vint ustunlari, rezina kirishlar), devor viklyuchateli, lampochka (ip yonadi).
+- Tok oqimi: faza (to‘q sariq) shitdan iste’molchiga, nol (ko‘k) qaytib — har bir simda nur nuqtalari yo‘nalish bilan; “Tok yo‘li” matnda bosqichma-bosqich.
+- “O‘zim ulayman”: Wago’ni (2/3/5) o‘zi qo‘shadi, simni barmoq bilan tortib yoki bosib ulaydi; tekshirish avvalgidek.
+- Shit real ko‘rinishda: hisoblagich (LED yuklamaga qarab), kirish avtomati, rele (displey), UZIP, UZO (T), difavtomat, avtomatlar (dastak, qizil/yashil bayroqcha, vintli klemmalar), DIN-reyka, taroqsimon shina, N/PE shinalar, tartibli ichki simlar, chiquvchi kabellar; 1 va 3 faza; tok oqimi animatsiyasi.
+- “Detallar” katalogi: 48 detal real rasmda, vazifasi va qayerga qo‘yilishi, qidiruv va guruhlar. Yangi iste’molchilar: muzlatgich, mikroto‘lqinli pech, nasos, isitgich, elektromobil zaryadkasi.
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)

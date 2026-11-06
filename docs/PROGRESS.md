@@ -24,6 +24,51 @@
 | 19 | Ixcham interfeys, rejani kattalashtirish | ✅ Tayyor |
 | 20 | 3 va 4 talik rozetka | ✅ Tayyor |
 | 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor |
+| 22 | Real ko‘rinishdagi sxemalar va detallar katalogi | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 22 — 2026-11-06
+
+Egasining fikri: oldingi sxemalar multfilmga o‘xshab, tushunarsiz edi; hammasi real bo‘lishi va detallar ko‘p bo‘lishi kerak.
+
+**Bajarildi**
+- **Real tarqatish qutisi:**
+  - qopqog‘i ochiq ABS quti: vint ustunlari, rezina kirishlar;
+  - qora VVGng kabellar devor bo‘ylab keladi; qobig‘i tozalangan joydan tolalar real ranglarda chiqadi (jigarrang, ko‘k, sariq-yashil chiziqli, qora, kulrang, oq), uchlari tozalangan mis;
+  - Wago 221 shaffof korpusda: ichidagi mis plastina ko‘rinadi, richag sim kirsa yopiladi;
+  - real devor viklyuchateli (klavishlari bosiladi) va lampochka (ichidagi ip yonadi, atrofga yorug‘lik tarqaladi).
+- **Tok oqimi tushunarli:**
+  - faza — to‘q sariq nur nuqtalari shitdan viklyuchatel orqali chiroqqa boradi; nol — ko‘k nuqtalar qaytib keladi;
+  - nuqtalar har bir tolada tokning haqiqiy yo‘nalishida yuradi (kabel qobig‘ida ham);
+  - **“Tok yo‘li”** bo‘limi zanjirni 5 qadamda yozadi: shitdan faza → L klemma → viklyuchatel → klavish chiqishi → chiroq → nol orqali shitga.
+- **“O‘zim ulayman” real:**
+  - Wago’ni o‘zingiz tanlaysiz (2, 3 yoki 5 o‘rinli);
+  - simning mis uchini **barmoq bilan Wago teshigiga tortasiz** (yoki uchini, keyin teshikni bosasiz); bossangiz chiqadi;
+  - “Tekshirish” barcha klavish holatlarini sinaydi, “To‘g‘ri javob” 5 dan ko‘p sim bo‘lsa zanjir (peremichka bilan) ko‘rsatadi.
+- **Real shit:**
+  - hisoblagich (LCD’da quvvat, LED yuklamaga qarab miltillaydi);
+  - kirish avtomati, kuchlanish relesi (raqamli displey “230”), UZIP (yashil oynalar), UZO va difavtomat (sariq “T” tugma);
+  - avtomatlar: qora dastak (I/O), qizil/yashil holat bayroqchasi, vintli yuqori/pastki klemmalar, reyting va tavsif yozuvi;
+  - teshikli DIN-reykalar, mis taroqsimon shina (UZO guruhiga alohida), har qatorda PE va N shinalar (UZO guruhi uchun alohida N);
+  - ichki simlar real shitdagidek to‘g‘ri burchak bilan tartibli yotqizilgan (faza, N, PE stoyaklar);
+  - liniya kabellari o‘ng tomondan chiqadi, uchida iste’molchi (bosib yoqiladi, amper ko‘rinadi);
+  - 3 fazada L1/L2/L3 o‘z ranglarida (jigarrang, qora, kulrang);
+  - tok bor simlarda nur nuqtalari: hisoblagichdan avtomatgacha faza, qaytishda nol.
+- **“Detallar” katalogi** (yangi tab), 48 ta detal real rasmda, har biri: nomi, nima uchun kerak, qayerga qo‘yiladi. Qidiruv va 4 guruh:
+  - **Shit:** avtomat 1P/2P/3P, UZO, difavtomat, rele, UZIP, rubilnik, kontaktor, impuls rele, taymer, shit rozetkasi, hisoblagich, DIN-reyka, taroqsimon shina, N va PE shina, shit qutisi;
+  - **Tarqatish qutisi:** Wago 221-412/413/415, Wago 2273, SIZ qalpoqcha, klemma kolodka, tarqatish qutisi;
+  - **Devor:** viklyuchatel 1/2/3 klavishli, o‘tish viklyuchateli, dimmer, harakat datchigi, rozetka, ikki o‘rinli, IP44, plita rozetkasi 32 A, podrozetnik, chiroq;
+  - **Kabel va montaj:** VVGng 2×1,5 / 3×1,5 / 3×2,5 / 3×4 / 3×6 / 5×2,5, kirish kabeli, PVS, gofra truba, kabel kanal, dyubel-xomut.
+- Shit uchun yangi iste’molchilar: muzlatgich, mikroto‘lqinli pech, suv nasosi, elektr isitgich, elektromobil zaryadkasi (difavtomat C40, 10 mm²).
+
+**Test qilindi**
+- Unit: tok yo‘nalishi (faza kiradi → viklyuchatelga → klavishdan qaytadi → chiroqqa; nol qaytadi; ikki chiroqda yuklama 2), yangi iste’molchilar.
+- E2E 6 profilda: real qutida klavish → chiroq yonadi, “Tok yo‘li” matni; Wago qo‘shish, simni bosib va **sichqoncha/barmoq bilan tortib** ulash, to‘g‘ri javob → “Hammasi to‘g‘ri”; real shitda yuklama, UZO/avtomat o‘chishi; katalog: 48 detal, qidiruv, guruh.
+- Skrinshotlar: `docs/screenshots/phase-22/`.
+
+**Ma’lum cheklovlar**
+- Qo‘lda ulashda 5 dan ortiq simni bitta guruhga ulash uchun peremichka hozircha faqat “To‘g‘ri javob”da; o‘zingiz peremichka qo‘yish keyingi bosqichda.
+- Shitni simlab o‘zingiz ulash rejimi hali yo‘q (shit — tayyor sxema + sinov).
+- Telefonda sxemalar yonga surib ko‘riladi.
 
 ## Phase 21 — 2026-11-05
 

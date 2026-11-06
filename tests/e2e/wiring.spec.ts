@@ -88,3 +88,14 @@ test('circuits from the open project', async ({ page }) => {
   await expect(page.getByTestId('wiring-line-summary').first()).toBeVisible();
   await expect(page.getByTestId('wiring-lines')).toContainText('Rozetkalar');
 });
+
+test('parts catalogue: every part with a picture and what it is for; search', async ({ page }) => {
+  await page.getByRole('tab', { name: 'Detallar' }).click();
+  await expect(page.getByTestId('part-card')).toHaveCount(48);
+  await page.getByRole('textbox', { name: /Qidirish/ }).fill('Wago 221');
+  await expect(page.getByTestId('part-card')).toHaveCount(3);
+  await expect(page.getByTestId('part-card').first()).toContainText('richagli klemma');
+  await page.getByRole('textbox', { name: /Qidirish/ }).fill('');
+  await page.getByRole('tab', { name: 'Kabel va montaj' }).click();
+  await expect(page.getByTestId('part-card')).toHaveCount(11);
+});

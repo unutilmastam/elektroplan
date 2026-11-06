@@ -36,6 +36,7 @@ export function RealDin({
   onToggle,
   onTest,
   label,
+  face,
 }: {
   kind: DinKind;
   x: number;
@@ -49,6 +50,8 @@ export function RealDin({
   onToggle: (() => void) | null;
   onTest: (() => void) | null;
   label: string;
+  /** catalogue faces of other modular devices */
+  face?: 'contactor' | 'impulse' | 'timer' | 'socket';
 }) {
   const w = modules * MOD - 4;
   const px = poleXs(modules, poles);
@@ -89,7 +92,75 @@ export function RealDin({
       ))}
       {/* raised front */}
       <rect x={x + 7} y={y + 50} width={w - 10} height={DIN_H - 100} rx={5} fill="#f6f7f9" stroke="#c4cad2" />
-      {kind === 'relay' ? (
+      {face === 'contactor' || face === 'impulse' ? (
+        <g>
+          <rect x={x + 12} y={y + 62} width={w - 20} height={30} rx={4} fill="#dfe4ea" stroke="#aab2bd" />
+          <text
+            x={x + 2 + w / 2}
+            y={y + 82}
+            textAnchor="middle"
+            fontSize={12}
+            fontWeight={700}
+            fill="#374151"
+          >
+            {face === 'contactor' ? 'A1  A2' : 'I / O'}
+          </text>
+          <rect
+            x={x + 2 + w / 2 - 14}
+            y={y + 104}
+            width={28}
+            height={36}
+            rx={5}
+            fill={face === 'impulse' ? '#e5e7eb' : '#94a3b8'}
+            stroke="#64748b"
+          />
+          <circle cx={x + 2 + w / 2} cy={y + 154} r={4} fill="#22c55e" />
+        </g>
+      ) : face === 'timer' ? (
+        <g>
+          <circle
+            cx={x + 2 + w / 2}
+            cy={y + 110}
+            r={Math.min(40, w / 2 - 8)}
+            fill="#f8fafc"
+            stroke="#94a3b8"
+            strokeWidth={2}
+          />
+          {Array.from({ length: 24 }, (_, i) => {
+            const a = (i / 24) * Math.PI * 2;
+            const r = Math.min(40, w / 2 - 8);
+            return (
+              <path
+                key={i}
+                d={`M${x + 2 + w / 2 + Math.cos(a) * (r - 8)} ${y + 110 + Math.sin(a) * (r - 8)} L${x + 2 + w / 2 + Math.cos(a) * r} ${y + 110 + Math.sin(a) * r}`}
+                stroke={i % 3 ? '#cbd5e1' : '#334155'}
+                strokeWidth={2}
+              />
+            );
+          })}
+          <path
+            d={`M${x + 2 + w / 2} ${y + 110} L${x + 2 + w / 2 + 16} ${y + 96}`}
+            stroke="#ef4444"
+            strokeWidth={3}
+            strokeLinecap="round"
+          />
+        </g>
+      ) : face === 'socket' ? (
+        <g>
+          <circle
+            cx={x + 2 + w / 2}
+            cy={y + 110}
+            r={Math.min(36, w / 2 - 10)}
+            fill="#f1f5f9"
+            stroke="#94a3b8"
+            strokeWidth={2}
+          />
+          <circle cx={x + 2 + w / 2 - 10} cy={y + 110} r={4.5} fill="#1f2937" />
+          <circle cx={x + 2 + w / 2 + 10} cy={y + 110} r={4.5} fill="#1f2937" />
+          <rect x={x + 2 + w / 2 - 4} y={y + 76} width={8} height={7} rx={1} fill="#cbd5e1" />
+          <rect x={x + 2 + w / 2 - 4} y={y + 137} width={8} height={7} rx={1} fill="#cbd5e1" />
+        </g>
+      ) : kind === 'relay' ? (
         <g>
           <rect x={x + 12} y={y + 62} width={w - 20} height={42} rx={4} fill="#06140a" stroke="#1e3a24" />
           <text
