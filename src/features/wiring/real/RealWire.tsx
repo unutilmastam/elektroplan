@@ -130,3 +130,22 @@ export function Sheath({ d, width = 22 }: { d: string; width?: number }) {
     </g>
   );
 }
+
+/** A neatly laid conductor through waypoints: straight runs with rounded bends (as in a tidy board). */
+export function ortho(points: P[], r = 12): string {
+  if (points.length < 2) return '';
+  let d = `M${points[0]!.x.toFixed(1)} ${points[0]!.y.toFixed(1)}`;
+  for (let i = 1; i < points.length - 1; i++) {
+    const a = points[i - 1]!;
+    const b = points[i]!;
+    const c = points[i + 1]!;
+    const l1 = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+    const l2 = Math.hypot(c.x - b.x, c.y - b.y) || 1;
+    const k = Math.min(r, l1 / 2, l2 / 2);
+    const p1 = { x: b.x - ((b.x - a.x) / l1) * k, y: b.y - ((b.y - a.y) / l1) * k };
+    const p2 = { x: b.x + ((c.x - b.x) / l2) * k, y: b.y + ((c.y - b.y) / l2) * k };
+    d += ` L${p1.x.toFixed(1)} ${p1.y.toFixed(1)} Q${b.x.toFixed(1)} ${b.y.toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+  }
+  const z = points[points.length - 1]!;
+  return `${d} L${z.x.toFixed(1)} ${z.y.toFixed(1)}`;
+}
