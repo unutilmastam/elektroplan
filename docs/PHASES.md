@@ -297,4 +297,14 @@ Yangi bo‘lim “Elektr sxemalar” (`/wiring/`), internetsiz ishlaydi. Hisob-k
 - Shit real ko‘rinishda: hisoblagich (LED yuklamaga qarab), kirish avtomati, rele (displey), UZIP, UZO (T), difavtomat, avtomatlar (dastak, qizil/yashil bayroqcha, vintli klemmalar), DIN-reyka, taroqsimon shina, N/PE shinalar, tartibli ichki simlar, chiquvchi kabellar; 1 va 3 faza; tok oqimi animatsiyasi.
 - “Detallar” katalogi: 48 detal real rasmda, vazifasi va qayerga qo‘yilishi, qidiruv va guruhlar. Yangi iste’molchilar: muzlatgich, mikroto‘lqinli pech, nasos, isitgich, elektromobil zaryadkasi.
 
+## PHASE 23 — Xonani 3D ko‘rish (egasi so‘radi, 2026-11-06)
+
+Kutubxonasiz (egasi tanlovi): brauzerning WebGL’i, teksturalar kanvasda chiziladi.
+
+**Qabul mezonlari**
+- Rejada “3D” tugmasi: tanlangan (yoki birinchi) xona 3D da ochiladi; xonalar ro‘yxatidan almashtiriladi.
+- “Ichkaridan”: xona markazida 155 sm balandlikdan barmoq bilan atrofga qarash, ikki barmoq / g‘ildirak — yaqinlashtirish. “Tepadan”: qo‘g‘irchoq uy ko‘rinishi (oldingi devorlar yashirinadi), aylantirish.
+- Devorlar loyiha balandligida, eshik (yog‘och, nalichnik, dastak) va deraza (PVC rom, oyna, tokcha, tashqarida osmon) devorni teshib o‘tadi; pol laminat, shift.
+- Devordagi nuqtalar real o‘lchamda va o‘z balandligida: rozetkalar (1/2/3/4), viklyuchatellar, internet, TV, konditsioner; shiftda chiroq. “Belgilash” — ularni topish uchun rangli yog‘du. Bosilganda nomi, balandligi, devor nomi, izoh.
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)

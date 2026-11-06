@@ -13,6 +13,7 @@ import { cn } from '@/lib/cn';
 import { useCurrentProject, useProjectStore } from '@/store/projectStore';
 import { useUiStore } from '@/store/uiStore';
 import { BottomPanelsGrip, ExpandPlanButton } from './LayoutControls';
+import { Room3DButton } from '@/features/room3d/Room3DButton';
 import { NoProjectState } from './NoProjectState';
 import { CompactPanels, PointSlideOver } from './CompactPanels';
 import { useWorkspaceProject, type WorkspaceMode } from './useWorkspaceProject';
@@ -77,6 +78,7 @@ export function Workspace({ mode }: { mode: WorkspaceMode }) {
         />
         <PointSlideOver />
         {project ? <ExpandPlanButton /> : null}
+        <Room3DButton className={expanded ? 'right-14' : 'right-14 sm:right-28 md:right-14'} />
         {project && !expanded ? <BottomPanelsGrip defaultHeight={wide ? 248 : 212} /> : null}
       </div>
       <GlassPanel as="aside" className={cn('hidden min-h-0', !expanded && 'md:block')}>

@@ -25,6 +25,34 @@
 | 20 | 3 va 4 talik rozetka | ✅ Tayyor |
 | 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor |
 | 22 | Real ko‘rinishdagi sxemalar va detallar katalogi | ✅ Tayyor |
+| 23 | Xonani 3D ko‘rish | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 23 — 2026-11-06
+
+**Bajarildi** — rejaning yuqorisida **“3D”** tugmasi (Chizma va Montaj rejimida):
+- Tanlangan xona (yoki birinchisi) 3D da ochiladi. Tepadagi ro‘yxatdan boshqa xonaga o‘tasiz.
+- **Ichkaridan:** xona o‘rtasida, 155 sm balandlikda turgandek. Bir barmoq bilan surib atrofga, yuqori-pastga qaraysiz. Ikki barmoq yoki sichqoncha g‘ildiragi bilan yaqinlashtirasiz. Tik turgan telefonda ko‘rish burchagi avtomatik kengayadi.
+- **Tepadan:** “qo‘g‘irchoq uy” ko‘rinishi. Oldingi devorlar va shift yashirinadi, xonani aylantirib ko‘rasiz.
+- **Real ko‘rinish (WebGL, qo‘shimcha kutubxonasiz):**
+  - devorlar gips teksturasida, balandligi loyihadan (270 sm); burchak va pol-shift yonida yumshoq soya; shiftdagi yorug‘likdan tushadigan yoritilish;
+  - pol — och eman laminat, shift oq;
+  - **eshik** devorni teshib o‘tadi: o‘yiq qalinligi, oq nalichnik, yog‘och tabaqa (filenkali) va dastak;
+  - **deraza:** o‘yiq, oq PVC rom (o‘rtada ustuncha), shaffof oyna, deraza tokchasi; tashqarida osmon, bulutlar va uzoqdagi binolar.
+- **Devordagi detallar** real o‘lchamda va o‘z balandligida:
+  - rozetka (1, 2, 3 o‘rinli va 2×2), viklyuchatel (1–2 klavishli), internet va TV rozetkalari;
+  - konditsioner (80×29 sm, 220 sm balandlikda), shiftdagi chiroq va LED.
+  - **“Belgilash”** tugmasi detallar atrofida rangli yog‘du qiladi — katta devorda kichik rozetkani tez topasiz. Uni o‘chirib qo‘yish mumkin.
+- **Detalni bosing:** nomi, poldan balandligi, devor nomi va izohi chiqadi.
+
+**Test qilindi**
+- Unit: 3D geometriya (devorlar to‘liq balandlikda va normallari xona ichiga qaragan, uchburchaklash — to‘rtburchak va L shakl, deraza ostidagi va ustidagi bo‘laklar, o‘yiq yon tomonlari, oyna, tokcha, osmon, eshik; nuqtalar devorning ichki yuzasida va o‘z balandligida, konditsioner standart 220 sm, chiroq shiftda), kamera va bosish (rozetkaga bosish uni topadi, bo‘sh devorga — hech narsa).
+- E2E 6 profilda (iPad, iPhone, Android, Windows): 3D ochiladi, rasm chiziladi (bir xil rang emas), surish ko‘rinishni buradi, “Tepadan”, “Belgilash”, xona almashtirish, yopish.
+- Skrinshotlar: `docs/screenshots/phase-23/`.
+
+**Ma’lum cheklovlar**
+- Eshik va derazaning balandligi standart (eshik 210 sm, deraza 85–210 sm) — rejada ularning balandligi hali kiritilmaydi.
+- Xonalar orasida 3D “yurish” yo‘q — xona ro‘yxatdan tanlanadi. Mebel yo‘q.
+- Tarqatish qutisi va kabel yo‘llari 3D da hali ko‘rsatilmaydi.
 
 ## Phase 22 — 2026-11-06
 
