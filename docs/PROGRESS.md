@@ -25,7 +25,7 @@
 | 20 | 3 va 4 talik rozetka | ✅ Tayyor |
 | 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor |
 | 22 | Real ko‘rinishdagi sxemalar va detallar katalogi | ✅ Tayyor |
-| 23 | Xonani 3D ko‘rish | ✅ Tayyor (tasdiq kutilmoqda) |
+| 23 | Xonani 3D ko‘rish | ✅ Tayyor |
 
 ## Phase 23 — 2026-11-06
 
