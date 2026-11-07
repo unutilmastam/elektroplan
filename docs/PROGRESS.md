@@ -27,7 +27,7 @@
 | 22 | Real ko‘rinishdagi sxemalar va detallar katalogi | ✅ Tayyor |
 | 23 | Xonani 3D ko‘rish | ✅ Tayyor |
 | 24 | 3D da detallarni barmoq bilan ko‘chirish | ✅ Tayyor |
-| 25 | Uy bo‘ylab 3D yurish, 3D da qo‘shish, rozetka qo‘yish xatosi tuzatildi | 🟡 Tasdiq kutilmoqda |
+| 25 | Uy bo‘ylab 3D yurish, 3D da qo‘shish, rozetka qo‘yish xatosi tuzatildi | ✅ Tayyor |
 
 ## Phase 25 — 2026-11-07
 
