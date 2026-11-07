@@ -41,7 +41,7 @@
 
 **Test qilindi**
 - Unit: barmoq nuri qaragan devorga tushadi (balandlik 5 sm qadamda), shiftga, hech narsaga tushmasa — yo‘q; rozetka devor bo‘ylab siljiydi va yangi balandlikni oladi, boshqa devorga o‘tadi.
-- E2E 6 profilda: 3D da viklyuchatelni surish → “Poldan” yozuvi → saqlangan balandlik pasaydi, joyi o‘zgardi, ko‘rinish burilmadi → “Bekor qilish” qaytardi.
+- To‘liq E2E 6 profilda: 475 ta o‘tdi. Yangi: 3D da viklyuchatelni surish → “Poldan” yozuvi → saqlangan balandlik pasaydi, joyi o‘zgardi, ko‘rinish burilmadi → “Bekor qilish” qaytardi.
 
 **Ma’lum cheklovlar**
 - Detalni boshqa xonaga 3D dan o‘tkazib bo‘lmaydi (rejada mumkin).
