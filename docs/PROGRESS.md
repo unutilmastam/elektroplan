@@ -26,6 +26,25 @@
 | 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor |
 | 22 | Real ko‘rinishdagi sxemalar va detallar katalogi | ✅ Tayyor |
 | 23 | Xonani 3D ko‘rish | ✅ Tayyor |
+| 24 | 3D da detallarni barmoq bilan ko‘chirish | ✅ Tayyor (tasdiq kutilmoqda) |
+
+## Phase 24 — 2026-11-07
+
+**Bajarildi**
+- 3D ko‘rinishda rozetka, viklyuchatel, internet/TV rozetkasi yoki konditsionerni **barmoq bilan bosib surasiz**:
+  - devor bo‘ylab chapga-o‘ngga va yuqori-pastga (balandlik 5 sm qadam bilan) siljiydi;
+  - xonaning boshqa devoriga ham o‘tkazsa bo‘ladi;
+  - shiftdagi chiroq shift bo‘ylab suriladi.
+- Surish vaqtida tepada **“Poldan N sm — qo‘yib yuboring”** yozuvi chiqadi, detal yangi joyda jonli ko‘rinadi.
+- Qo‘yib yuborilganda saqlanadi: rejada ham o‘sha joyga o‘tadi, balandlik va chap burchakdan masofa yangilanadi, akkaunt orqali sinxronlanadi. Bitta **“Bekor qilish”** qaytaradi.
+- Detal bo‘lmagan joydan surish avvalgidek atrofga qaratadi; bosib qo‘yish (surmasdan) — ma’lumot chiqadi. Demo loyihada faqat ko‘rish mumkin.
+
+**Test qilindi**
+- Unit: barmoq nuri qaragan devorga tushadi (balandlik 5 sm qadamda), shiftga, hech narsaga tushmasa — yo‘q; rozetka devor bo‘ylab siljiydi va yangi balandlikni oladi, boshqa devorga o‘tadi.
+- E2E 6 profilda: 3D da viklyuchatelni surish → “Poldan” yozuvi → saqlangan balandlik pasaydi, joyi o‘zgardi, ko‘rinish burilmadi → “Bekor qilish” qaytardi.
+
+**Ma’lum cheklovlar**
+- Detalni boshqa xonaga 3D dan o‘tkazib bo‘lmaydi (rejada mumkin).
 
 ## Phase 23 — 2026-11-06
 

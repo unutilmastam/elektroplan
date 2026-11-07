@@ -24,14 +24,19 @@ export function camera(room: Room3D, mode: Mode, l: Look): Cam {
 }
 
 /** The fixture under a tap: a ray from the camera through the pixel, nearest face it passes through. */
-export function pick(room: Room3D, cam: Cam, x: number, y: number, w: number, h: number): Fixture | null {
+/** Direction of the ray from the camera through pixel (x, y) of a w × h view. */
+export function ray(cam: Cam, x: number, y: number, w: number, h: number): Vec3 {
   const f = norm(sub(cam.target, cam.eye));
   const r = norm(cross(f, [0, 1, 0]));
   const u = cross(r, f);
   const t = Math.tan((cam.fov * Math.PI) / 360);
   const nx = (x / w) * 2 - 1;
   const ny = 1 - (y / h) * 2;
-  const d = norm(add(f, add(scale(r, nx * t * (w / h)), scale(u, ny * t))));
+  return norm(add(f, add(scale(r, nx * t * (w / h)), scale(u, ny * t))));
+}
+
+export function pick(room: Room3D, cam: Cam, x: number, y: number, w: number, h: number): Fixture | null {
+  const d = ray(cam, x, y, w, h);
   let best: { fx: Fixture; dist: number } | null = null;
   for (const fx of room.fixtures) {
     const den = dot(d, fx.n);

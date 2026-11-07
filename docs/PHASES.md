@@ -307,4 +307,11 @@ Kutubxonasiz (egasi tanlovi): brauzerning WebGL’i, teksturalar kanvasda chizil
 - Devorlar loyiha balandligida, eshik (yog‘och, nalichnik, dastak) va deraza (PVC rom, oyna, tokcha, tashqarida osmon) devorni teshib o‘tadi; pol laminat, shift.
 - Devordagi nuqtalar real o‘lchamda va o‘z balandligida: rozetkalar (1/2/3/4), viklyuchatellar, internet, TV, konditsioner; shiftda chiroq. “Belgilash” — ularni topish uchun rangli yog‘du. Bosilganda nomi, balandligi, devor nomi, izoh.
 
+## PHASE 24 — 3D da detallarni barmoq bilan ko‘chirish (egasi so‘radi, 2026-11-07)
+
+**Qabul mezonlari**
+- 3D da rozetka/viklyuchatel/internet/TV/konditsionerni bosib suring: devor bo‘ylab va balandlik bo‘yicha (5 sm qadam) siljiydi, xonaning boshqa devoriga ham o‘tadi; shiftdagi chiroq shift bo‘ylab.
+- Surish vaqtida “Poldan N sm” yozuvi; qo‘yib yuborilganda saqlanadi (rejada ham, sinxron ham), bitta “Bekor qilish” qaytaradi.
+- Detal bo‘lmagan joydan surish — avvalgidek atrofga qarash. Demo loyihada faqat ko‘rish.
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)
