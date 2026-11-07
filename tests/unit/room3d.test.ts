@@ -102,3 +102,49 @@ describe('3D camera and tapping a fixture', async () => {
     expect(pick(r, cam, 60, 300, 800, 600)).toBeNull();
   });
 });
+
+describe('moving a fixture in 3D', async () => {
+  const { hitRoom, moveFixtureRecipe } = await import('@/domain/room3dEdit');
+  const { produce } = await import('immer');
+  const withSocket = () => {
+    const p = house();
+    const top = p.walls.find((w) => w.a.y === 0 && w.b.y === 0)!;
+    const points = [
+      {
+        id: 's', symbolId: 'socket-single', roomId: 'a', wallId: top.id, t: 0.25, side: 1, x: 100, y: 22, mountHeightCm: 30,
+        distanceFromCornerCm: 100, description: '', color: '#3b8bff', label: null, status: 'pending', statusChangedAt: null,
+        createdAt: NOW, updatedAt: NOW, deletedAt: null,
+      },
+    ] as unknown as Project['points'];
+    return { p: { ...p, points }, top };
+  };
+
+  it('a ray from the middle of the room hits the wall it looks at, with the height snapped to 5 cm', () => {
+    const { p, top } = withSocket();
+    // from (200, 155, 150) towards the wall at plan y = 0, slightly down
+    const hit = hitRoom(p, 'a', [200, 155, 150], [0.2, -0.3, -1], false)!;
+    expect(hit).toMatchObject({ kind: 'wall', wallId: top.id });
+    if (hit.kind !== 'wall') throw new Error();
+    expect(hit.height % 5).toBe(0);
+    expect(hit.t).toBeGreaterThan(0.5);
+    // looking up hits the ceiling when asked for it
+    expect(hitRoom(p, 'a', [200, 155, 150], [0.1, 1, 0.1], true)).toMatchObject({ kind: 'ceiling' });
+    // looking at nothing (out of a wall's range) → null
+    expect(hitRoom(p, 'a', [200, 155, 150], [0, 1, 0], false)).toBeNull();
+  });
+
+  it('the socket slides along the wall and gets the new height; to another wall too', () => {
+    const { p, top } = withSocket();
+    const hit = hitRoom(p, 'a', [200, 155, 150], [0, -0.6, -1], false)!;
+    const next = produce(p, moveFixtureRecipe(p, 's', hit, 8.5, NOW));
+    const s = next.points[0]!;
+    expect(s.wallId).toBe(top.id);
+    expect(s.t).toBeCloseTo(0.5, 2);
+    expect(s.mountHeightCm).toBe(hit.kind === 'wall' ? hit.height : -1);
+    const right = p.walls.find((w) => w.a.x === 400 && w.b.x === 400)!;
+    const hit2 = hitRoom(p, 'a', [200, 155, 150], [1, -0.2, 0], false)!;
+    const moved = produce(p, moveFixtureRecipe(p, 's', hit2, 8.5, NOW)).points[0]!;
+    expect(moved.wallId).toBe(right.id);
+    expect(moved.roomId).toBe('a');
+  });
+});

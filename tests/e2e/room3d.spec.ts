@@ -121,3 +121,57 @@ test('3D screenshots (iPad, iPhone)', async ({ page }, info) => {
   await page.waitForTimeout(300);
   await page.screenshot({ path: `docs/screenshots/phase-23/${info.project.name}-3.png` });
 });
+
+test('3D: drag a switch on the wall — it gets a new height and place; one undo puts it back', async ({
+  page,
+}) => {
+  const base = project();
+  const sw = {
+    ...(base.points[0] as Record<string, unknown>),
+    id: 'sw',
+    symbolId: 'switch-single',
+    wallId: 'w1',
+    t: 0.5,
+    x: 150,
+    y: 22,
+    mountHeightCm: 155,
+    roomId: 'rA',
+  };
+  await put(page, { ...base, points: [...base.points, sw] });
+  await page.goto(`/editor/?id=${seedProject.id}`);
+  await page.locator('[data-testid="plan-canvas"][data-scale]').waitFor();
+  await page.getByTestId('open-3d').click();
+  const canvas = page.getByTestId('room3d-canvas');
+  await expect(canvas).toBeVisible();
+  const box = (await canvas.boundingBox())!;
+  // the default view looks straight at that wall: the switch is in the middle of the screen
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2 - 6;
+  await page.mouse.move(cx, cy);
+  await page.mouse.down();
+  for (let i = 1; i <= 10; i++) await page.mouse.move(cx + i * 8, cy + i * 14);
+  await expect(page.getByTestId('room3d-dragging')).toContainText('Poldan');
+  await page.mouse.up();
+  const stored = async () =>
+    page.evaluate(async (id) => {
+      const db: IDBDatabase = await new Promise((res) => {
+        const r = indexedDB.open('elektroplan');
+        r.onsuccess = () => res(r.result);
+      });
+      const p = await new Promise<{ points: Array<{ id: string; mountHeightCm: number; t: number }> }>(
+        (res) => {
+          const q = db.transaction('projects').objectStore('projects').get(id);
+          q.onsuccess = () => res(q.result);
+        },
+      );
+      db.close();
+      return p.points.find((x) => x.id === 'sw')!;
+    }, seedProject.id);
+  await expect.poll(async () => (await stored()).mountHeightCm).toBeLessThan(150);
+  expect((await stored()).t).toBeGreaterThan(0.5);
+  // the view did not turn while the switch was dragged
+  expect(Number(await canvas.getAttribute('data-yaw'))).toBe(0);
+  await page.getByTestId('room3d-close').click();
+  await page.keyboard.press('ControlOrMeta+z');
+  await expect.poll(async () => (await stored()).mountHeightCm).toBe(155);
+});

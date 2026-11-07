@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { uz } from '@/i18n/uz';
 import { cn } from '@/lib/cn';
 import { useEditorStore } from '@/store/editorStore';
-import { useCurrentProject } from '@/store/projectStore';
+import { useCurrentProject, useProjectStore } from '@/store/projectStore';
 
 // the 3D code (WebGL, textures) loads only when someone opens it
 const Room3DView = dynamic(() => import('./Room3DView'), { ssr: false });
@@ -16,6 +16,7 @@ export function Room3DButton({ className }: { className?: string }) {
   const project = useCurrentProject();
   const [open, setOpen] = useState(false);
   const selected = useEditorStore((s) => s.selectedRoomId);
+  const demo = useProjectStore((s) => s.demo !== null);
   if (!project || !project.rooms.some((r) => r.deletedAt === null)) return null;
   return (
     <>
@@ -33,7 +34,9 @@ export function Room3DButton({ className }: { className?: string }) {
         <Box size={17} aria-hidden />
         3D
       </button>
-      {open ? <Room3DView project={project} roomId={selected} onClose={() => setOpen(false)} /> : null}
+      {open ? (
+        <Room3DView project={project} roomId={selected} onClose={() => setOpen(false)} editable={!demo} />
+      ) : null}
     </>
   );
 }

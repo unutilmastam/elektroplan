@@ -134,6 +134,9 @@ export const uzStrings = {
     closePanel: 'Yopish',
   },
   room3d: {
+    hintEdit: 'Barmoq bilan suring — atrofga qarang. Rozetka yoki viklyuchatelni bosib suring — joyini o‘zgartiring. Ikki barmoq — yaqinlashtirish.',
+    dragging: 'Poldan {h} sm — qo‘yib yuboring',
+    draggingCeiling: 'Shiftda — qo‘yib yuboring',
     marks: 'Belgilash',
     open: '3D ko‘rinish',
     title: '3D',
