@@ -29,16 +29,27 @@ function planBounds(project: Project) {
   return boundsOf([...walls.flatMap((w) => [w.a, w.b]), ...doorTips]);
 }
 
+/** The view the last fit produced: while it is untouched, a resize fits again instead of keeping the centre. */
+let lastFit: object | null = null;
+
 function fitTo(width: number, height: number) {
   const project = selectCurrentProject(useProjectStore.getState());
   const set = useEditorStore.getState().setViewport;
   if (!project || width === 0) return;
   const b = planBounds(project);
-  if (!b) return set({ x: width / 2, y: height / 2, scale: 1 });
+  if (!b) {
+    lastFit = null;
+    return set({ x: width / 2, y: height / 2, scale: 1 });
+  }
   const toolbarSpace = width < 600 ? 52 : width < 1000 ? 64 : 80;
   const pad = Math.max(16, Math.min(width, height) * 0.05);
-  const v = fitViewport(b, width - toolbarSpace, height, pad);
-  set({ ...v, x: v.x + toolbarSpace });
+  // keep the plan clear of the buttons over its top edge (3D, expand, placing banner) and the bottom grip
+  const top = height > 200 ? 48 : 0;
+  const bottom = height > 200 ? 36 : 0;
+  const v = fitViewport(b, width - toolbarSpace, height - top - bottom, pad);
+  const next = { ...v, x: v.x + toolbarSpace, y: v.y + top };
+  set(next);
+  lastFit = useEditorStore.getState().viewport;
 }
 
 /** Canvas area: grid + plan (Konva) with the floating drawing toolbar on the left. */
@@ -85,7 +96,7 @@ export function PlanCanvas({
     if (p.width === width && p.height === height) return;
     prev.current = { width, height };
     if (width === 0) return;
-    if (p.width === 0 || !ed.viewport) fitTo(width, height);
+    if (p.width === 0 || !ed.viewport || ed.viewport === lastFit) fitTo(width, height);
     else
       ed.setViewport({
         ...ed.viewport,
