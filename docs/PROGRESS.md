@@ -40,15 +40,18 @@
 - Har bir xonaning chirog‘i (yoki xona o‘rtasi) yoritadi — 8 tagacha yorug‘lik manbai, iliq rang.
 - **3D da yangi rozetka/viklyuchatel/chiroq qo‘shish:** o‘ngdagi paneldan belgini tanlang → devorni bosing — o‘sha joyga, o‘sha balandlikka (5 sm qadam) qo‘yiladi; chiroq — shiftni (tepadan ko‘rinishda — polni) bosing. Devor orqasidagi joyga qo‘yilmaydi. Esc yoki belgini qayta bosish — tugatish. Har qo‘shish — bitta “Bekor qilish” qadami.
 - Tanlash/ko‘chirish ham butun uyda ishlaydi; devor orqasidagi detal bosilmaydi.
+- **Yana ikki xato tuzatildi:** (1) “Elektr sxemalar”da ketma-ket o‘zgartirishlar saqlashni cheksiz kechiktirardi — sahifa yangilansa oxirgi ish yo‘qolishi mumkin edi; endi birinchi o‘zgarishdan ≤300 ms ichida va sahifa yopilayotganda saqlanadi. (2) Sozlamalar sahifa ochilishi bilan darhol bosilsa, kech yuklangan eski qiymat yangisini bosib ketishi mumkin edi.
+- Reja sig‘dirishda tepada/pastda kichik bo‘sh joy (28/20 px) — 3D tugmasi ostida qolmaydi, 500 nuqtali rejada kattalashtirish tezligi saqlandi (perf testi).
 - Kutubxona kerak bo‘lmadi: o‘z WebGL renderimiz kengaytirildi (yuklama ~kichik, offline ishlaydi).
 
 **Test qilindi**
-- `pnpm typecheck`, `pnpm lint`, `pnpm test` (yangi `tests/unit/house3d.test.ts`: sahna, ochiq eshik, devorga urilish, eshikdan o‘tish, devordan sakramaslik, boshlanish joyi, nur/devor, 3D da qo‘shish).
+- To‘liq e2e: 455 o‘tdi, 0 xato (6 profil). `pnpm typecheck`, `pnpm lint`, `pnpm test` (308 unit; yangi `tests/unit/house3d.test.ts`: sahna, ochiq eshik, devorga urilish, eshikdan o‘tish, devordan sakramaslik, boshlanish joyi, nur/devor, 3D da qo‘shish).
 - e2e (`tests/e2e/room3d.spec.ts`): joystik bilan eshikdan keyingi xonaga o‘tish va devorda to‘xtash, W / ← klaviatura, xona tanlab o‘tish, 3D da viklyuchatel qo‘shish (balandligi bilan), surib ko‘chirish + bekor qilish. Skrinshotlar: `docs/screenshots/phase-25/`.
 
 **Ma’lum cheklovlar**
 - Soyalar yo‘q (yorug‘lik devor orqali o‘tmaydi, lekin qo‘shni xona chirog‘i polni biroz yoritadi).
 - Eshik tabaqasi doim ochiq turadi; mebel yo‘q.
+- Juda uzoqlashtirilgan katta rejada (masshtab < 0.45) kattalashtirish ko‘proq ish talab qiladi (belgilar o‘lchami har kadrda o‘zgaradi) — keyinroq optimallashtirish mumkin.
 - 3D palitrada 7 ta asosiy belgi; qolganlari rejadan qo‘shiladi.
 
 ## Phase 24 — 2026-11-07

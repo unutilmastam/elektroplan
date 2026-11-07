@@ -51,6 +51,23 @@ test('wall sizes on the plan can be switched off in Settings', async ({ page }) 
   await expect(sw).toHaveAttribute('aria-checked', 'true');
   await sw.click();
   await expect(sw).toHaveAttribute('aria-checked', 'false');
+  // saved on the device before the reload
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const db: IDBDatabase = await new Promise((res) => {
+          const r = indexedDB.open('elektroplan');
+          r.onsuccess = () => res(r.result);
+        });
+        const all = await new Promise<unknown[]>((res) => {
+          const q = db.transaction('meta').objectStore('meta').getAll();
+          q.onsuccess = () => res(q.result);
+        });
+        db.close();
+        return JSON.stringify(all).includes('"showDimensions":false');
+      }),
+    )
+    .toBe(true);
   await page.reload();
   await expect(page.getByRole('switch', { name: /Devor o‘lchamlari/ })).toHaveAttribute('aria-checked', 'false');
 });

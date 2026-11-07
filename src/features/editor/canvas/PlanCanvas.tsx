@@ -44,8 +44,8 @@ function fitTo(width: number, height: number) {
   const toolbarSpace = width < 600 ? 52 : width < 1000 ? 64 : 80;
   const pad = Math.max(16, Math.min(width, height) * 0.05);
   // keep the plan clear of the buttons over its top edge (3D, expand, placing banner) and the bottom grip
-  const top = height > 200 ? 48 : 0;
-  const bottom = height > 200 ? 36 : 0;
+  const top = height > 200 ? 28 : 0;
+  const bottom = height > 200 ? 20 : 0;
   const v = fitViewport(b, width - toolbarSpace, height - top - bottom, pad);
   const next = { ...v, x: v.x + toolbarSpace, y: v.y + top };
   set(next);
