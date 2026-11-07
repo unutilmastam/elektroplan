@@ -26,7 +26,7 @@
 | 21 | Elektr sxemalar: shit va tarqatish qutisi | ✅ Tayyor |
 | 22 | Real ko‘rinishdagi sxemalar va detallar katalogi | ✅ Tayyor |
 | 23 | Xonani 3D ko‘rish | ✅ Tayyor |
-| 24 | 3D da detallarni barmoq bilan ko‘chirish | ✅ Tayyor (tasdiq kutilmoqda) |
+| 24 | 3D da detallarni barmoq bilan ko‘chirish | ✅ Tayyor |
 
 ## Phase 24 — 2026-11-07
 
