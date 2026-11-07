@@ -36,7 +36,7 @@ export interface PlacementOptions {
   free?: boolean;
 }
 
-type SymbolInfo = Pick<SymbolDef, 'placement' | 'category' | 'defaultMountHeightCm'>;
+export type SymbolInfo = Pick<SymbolDef, 'placement' | 'category' | 'defaultMountHeightCm'>;
 
 const liveRooms = (p: Project) => p.rooms.filter((r) => r.deletedAt === null);
 const liveWalls = (p: Project) => p.walls.filter((w) => w.deletedAt === null);

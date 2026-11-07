@@ -38,13 +38,24 @@ interface WiringState extends WiringDoc {
 
 export const useWiringStore = create<WiringState>()((set, get) => {
   let timer: ReturnType<typeof setTimeout> | null = null;
-  const save = () => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => {
-      const { panel, box, manual, clamps } = get();
-      void setMeta(KEY, { panel, box, manual, clamps } satisfies WiringDoc).catch(() => undefined);
-    }, 300);
+  // changed before the saved copy finished loading (a slow first IndexedDB open): keep the new work
+  let dirty = false;
+  const write = () => {
+    timer = null;
+    const { panel, box, manual, clamps } = get();
+    void setMeta(KEY, { panel, box, manual, clamps } satisfies WiringDoc).catch(() => undefined);
   };
+  // at most 300 ms after the first unsaved change (a stream of changes must not keep postponing it)
+  const save = () => {
+    dirty = true;
+    if (!timer) timer = setTimeout(write, 300);
+  };
+  if (typeof window !== 'undefined')
+    window.addEventListener('pagehide', () => {
+      if (!timer) return;
+      clearTimeout(timer);
+      write();
+    });
   const patch = (p: Partial<WiringDoc>) => {
     set(p);
     save();
@@ -57,7 +68,8 @@ export const useWiringStore = create<WiringState>()((set, get) => {
         const r = WiringDocSchema.safeParse(v);
         return r.success ? r.data : null;
       }).catch(() => null);
-      set({ ...(doc ?? DEFAULT_DOC), loaded: true });
+      if (dirty) set({ loaded: true });
+      else set({ ...(doc ?? DEFAULT_DOC), loaded: true });
     },
     setPanel: (p) => patch({ panel: { ...get().panel, ...p } }),
     addLine: (l) =>

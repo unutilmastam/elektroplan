@@ -1,11 +1,12 @@
-import type { Fixture, Quad, Room3D, Surface } from '@/domain/room3d';
+import { MAX_LIGHTS, type Scene3D } from '@/domain/house3d';
+import type { Fixture, Quad, Surface } from '@/domain/room3d';
 import { cross, dot, sub, type M4, type Vec3 } from './mat4';
 import { TILE, fixtureTexture, haloTexture, surfaceTexture } from './textures';
 
 /**
- * PHASE 23 — a small WebGL renderer for one room (no library). Textured, lit by a ceiling light with soft
- * corner shading; sky, glass and lamps glow on their own. Inner faces only: from outside (top view) the
- * near walls disappear like a doll's house.
+ * PHASE 23 — a small WebGL renderer (no library). Textured, lit by the ceiling lights with soft corner
+ * shading; sky, glass and lamps glow on their own. Inner faces only: from outside (top view) the near walls
+ * disappear like a doll's house. PHASE 25: the whole home at once, up to MAX_LIGHTS lamps.
  */
 
 const VS = `
@@ -15,15 +16,21 @@ void main(){ vPos=aPos; vNrm=aNrm; vUv=aUv; gl_Position=uMvp*vec4(aPos,1.0); }`;
 const FS = `
 precision mediump float;
 varying vec3 vPos; varying vec3 vNrm; varying vec2 vUv;
-uniform sampler2D uTex; uniform vec3 uLight; uniform float uH; uniform float uEmissive; uniform float uAlpha;
+uniform sampler2D uTex; uniform vec3 uLights[${MAX_LIGHTS}]; uniform float uCount;
+uniform float uH; uniform float uEmissive; uniform float uAlpha;
 void main(){
   vec4 t=texture2D(uTex,vUv);
   if(uEmissive>0.5){ gl_FragColor=vec4(t.rgb,t.a*uAlpha); return; }
-  vec3 L=uLight-vPos; float d=length(L); L/=d;
-  float diff=max(dot(normalize(vNrm),L),0.0)*(1.0/(1.0+d*d*0.0000022));
-  float ao=1.0-0.20*(1.0-smoothstep(0.0,38.0,vPos.y))-0.10*(1.0-smoothstep(0.0,30.0,uH-vPos.y));
-  float l=(0.50+0.62*diff)*ao;
-  gl_FragColor=vec4(t.rgb*l,t.a*uAlpha);
+  vec3 N=normalize(vNrm); float diff=0.0;
+  for(int i=0;i<${MAX_LIGHTS};i++){
+    if(float(i)>=uCount) break;
+    vec3 L=uLights[i]-vPos; float d=length(L); L/=d;
+    diff+=max(dot(N,L),0.0)*(1.0/(1.0+d*d*0.000006));
+  }
+  float ao=1.0-0.22*(1.0-smoothstep(0.0,38.0,vPos.y))-0.10*(1.0-smoothstep(0.0,30.0,uH-vPos.y));
+  float l=(0.46+0.66*min(diff,1.15))*ao;
+  vec3 warm=vec3(1.0,0.975,0.94);
+  gl_FragColor=vec4(t.rgb*l*warm,t.a*uAlpha);
 }`;
 
 interface Batch {
@@ -36,14 +43,15 @@ interface Batch {
   blend: boolean;
 }
 
-const EMISSIVE: Surface[] = ['sky'];
+// sky glows; wall tops are seen only from above, where no lamp reaches them
+const EMISSIVE: Surface[] = ['sky', 'cap'];
 
 export class Room3DRenderer {
   private gl: WebGLRenderingContext;
   private prog: WebGLProgram;
   private batches: Batch[] = [];
   private texCache = new Map<string, WebGLTexture>();
-  private room: Room3D | null = null;
+  private scene: Scene3D | null = null;
 
   static create(canvas: HTMLCanvasElement): Room3DRenderer | null {
     const gl = canvas.getContext('webgl', { antialias: true, alpha: false, preserveDrawingBuffer: true });
@@ -89,12 +97,12 @@ export class Room3DRenderer {
     return t;
   }
 
-  /** Builds the vertex buffers for a room (call again when the project changes). */
-  setRoom(room: Room3D) {
+  /** Builds the vertex buffers for the scene (call again when the project changes). */
+  setScene(scene: Scene3D) {
     const gl = this.gl;
     for (const b of this.batches) gl.deleteBuffer(b.buf);
     this.batches = [];
-    this.room = room;
+    this.scene = scene;
     const groups = new Map<Surface, number[]>();
     const push = (s: Surface, v: number[]) => {
       const arr = groups.get(s) ?? [];
@@ -130,19 +138,20 @@ export class Room3DRenderer {
       tri(v, q.p[0], q.p[2], q.p[3], q.n, uv[0]!, uv[2]!, uv[3]!);
       push(q.surface, v);
     };
-    room.quads.forEach(quad);
-    // floor and ceiling
+    scene.quads.forEach(quad);
+    // floors and ceilings
     const f: number[] = [];
     const c: number[] = [];
-    const H = room.height;
+    const H = scene.height;
     const T = TILE.floor!;
-    for (const [i, j, k] of room.triangles) {
-      const [a, b, d] = [room.floor[i]!, room.floor[j]!, room.floor[k]!];
-      const P = (p: { x: number; y: number }, h: number): Vec3 => [p.x, h, p.y];
-      const U = (p: { x: number; y: number }) => [p.x / T, p.y / T];
-      tri(f, P(a, 0), P(b, 0), P(d, 0), [0, 1, 0], U(a), U(b), U(d));
-      tri(c, P(a, H), P(b, H), P(d, H), [0, -1, 0], U(a), U(b), U(d));
-    }
+    for (const fl of scene.floors)
+      for (const [i, j, k] of fl.triangles) {
+        const [a, b, d] = [fl.poly[i]!, fl.poly[j]!, fl.poly[k]!];
+        const P = (p: { x: number; y: number }, h: number): Vec3 => [p.x, h, p.y];
+        const U = (p: { x: number; y: number }) => [p.x / T, p.y / T];
+        tri(f, P(a, 0), P(b, 0), P(d, 0), [0, 1, 0], U(a), U(b), U(d));
+        tri(c, P(a, H), P(b, H), P(d, H), [0, -1, 0], U(a), U(b), U(d));
+      }
     push('floor', f);
     push('ceiling', c);
 
@@ -161,7 +170,7 @@ export class Room3DRenderer {
         blend,
       });
     }
-    for (const fx of room.fixtures) this.addFixture(fx);
+    for (const fx of scene.fixtures) this.addFixture(fx);
     // transparent last
     this.batches.sort((a, b) => Number(a.blend) - Number(b.blend));
   }
@@ -225,17 +234,18 @@ export class Room3DRenderer {
   /** `sky` = draw the view outside the windows (inside view; from above it would float in the air). */
   render(mvp: M4, width: number, height: number, sky = true, marks = true) {
     const gl = this.gl;
-    const room = this.room;
+    const scene = this.scene;
     gl.viewport(0, 0, width, height);
     gl.clearColor(0.11, 0.12, 0.14, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    if (!room) return;
+    if (!scene) return;
     gl.useProgram(this.prog);
     const loc = (n: string) => gl.getAttribLocation(this.prog, n);
     const uni = (n: string) => gl.getUniformLocation(this.prog, n);
     gl.uniformMatrix4fv(uni('uMvp'), false, mvp);
-    gl.uniform3f(uni('uLight'), room.center[0], room.height - 25, room.center[2]);
-    gl.uniform1f(uni('uH'), room.height);
+    if (scene.lights.length) gl.uniform3fv(uni('uLights'), new Float32Array(scene.lights.flat()));
+    gl.uniform1f(uni('uCount'), scene.lights.length);
+    gl.uniform1f(uni('uH'), scene.height);
     const aPos = loc('aPos');
     const aNrm = loc('aNrm');
     const aUv = loc('aUv');

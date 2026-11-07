@@ -130,11 +130,11 @@ test('3D: drag a switch on the wall — it gets a new height and place; one undo
     ...(base.points[0] as Record<string, unknown>),
     id: 'sw',
     symbolId: 'switch-single',
-    wallId: 'w1',
+    wallId: 'w2',
     t: 0.5,
-    x: 150,
-    y: 22,
-    mountHeightCm: 155,
+    x: 278,
+    y: 100,
+    mountHeightCm: 145,
     roomId: 'rA',
   };
   await put(page, { ...base, points: [...base.points, sw] });
@@ -144,9 +144,10 @@ test('3D: drag a switch on the wall — it gets a new height and place; one undo
   const canvas = page.getByTestId('room3d-canvas');
   await expect(canvas).toBeVisible();
   const box = (await canvas.boundingBox())!;
-  // the default view looks straight at that wall: the switch is in the middle of the screen
+  // the walk starts looking at the far wall of the room: the switch is in the middle of the screen
+  const yaw0 = await canvas.getAttribute('data-yaw');
   const cx = box.x + box.width / 2;
-  const cy = box.y + box.height / 2 - 6;
+  const cy = box.y + box.height / 2;
   await page.mouse.move(cx, cy);
   await page.mouse.down();
   for (let i = 1; i <= 10; i++) await page.mouse.move(cx + i * 8, cy + i * 14);
@@ -167,11 +168,140 @@ test('3D: drag a switch on the wall — it gets a new height and place; one undo
       db.close();
       return p.points.find((x) => x.id === 'sw')!;
     }, seedProject.id);
-  await expect.poll(async () => (await stored()).mountHeightCm).toBeLessThan(150);
+  await expect.poll(async () => (await stored()).mountHeightCm).toBeLessThan(135);
   expect((await stored()).t).toBeGreaterThan(0.5);
   // the view did not turn while the switch was dragged
-  expect(Number(await canvas.getAttribute('data-yaw'))).toBe(0);
+  expect(await canvas.getAttribute('data-yaw')).toBe(yaw0);
   await page.getByTestId('room3d-close').click();
   await page.keyboard.press('ControlOrMeta+z');
-  await expect.poll(async () => (await stored()).mountHeightCm).toBe(155);
+  await expect.poll(async () => (await stored()).mountHeightCm).toBe(145);
+});
+
+const stick = async (page: Page, dx: number, dy: number, ms: number) => {
+  const b = (await page.getByTestId('room3d-stick').boundingBox())!;
+  const [x, y] = [b.x + b.width / 2, b.y + b.height / 2];
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + dx, y + dy, { steps: 4 });
+  await page.waitForTimeout(ms);
+  await page.mouse.up();
+};
+const posOf = async (page: Page) =>
+  ((await page.getByTestId('room3d-canvas').getAttribute('data-pos')) ?? '0,0').split(',').map(Number) as [
+    number,
+    number,
+  ];
+
+test('3D walk: the stick walks you forward, a wall stops you, the door takes you to the next room', async ({
+  page,
+}) => {
+  await put(page, {
+    ...project(),
+    openings: [{ id: 'door', wallId: 'w2', kind: 'door', t: 0.5, width: 90, swing: 1 }],
+  });
+  await page.goto(`/editor/?id=${seedProject.id}`);
+  await page.locator('[data-testid="plan-canvas"][data-scale]').waitFor();
+  await page.getByTestId('open-3d').click();
+  const canvas = page.getByTestId('room3d-canvas');
+  await expect(canvas).toHaveAttribute('data-pos', /\d/);
+  await expect(canvas).toHaveAttribute('data-room', 'rA');
+  const [x0] = await posOf(page);
+  // facing the door in the wall to the next room (x = 300): walk forward through it
+  await stick(page, 0, -60, 2600);
+  await expect.poll(async () => (await posOf(page))[0]).toBeGreaterThan(x0 + 150);
+  await expect(canvas).toHaveAttribute('data-room', 'rB');
+  await expect(page.getByTestId('room3d-room')).toHaveValue('rB');
+  // keep walking: the far wall of rB (x = 500) stops you before it
+  await stick(page, 0, -60, 2200);
+  const [x1] = await posOf(page);
+  expect(x1).toBeLessThan(500 - 8 - 20);
+  expect(x1).toBeGreaterThan(420);
+});
+
+test('3D walk: keyboard W walks, ← turns; the room list takes you to a room', async ({ page }, info) => {
+  test.skip(!['desktop-windows', 'ipad-landscape'].includes(info.project.name));
+  await put(page, project());
+  await page.goto(`/editor/?id=${seedProject.id}`);
+  await page.locator('[data-testid="plan-canvas"][data-scale]').waitFor();
+  await page.getByTestId('open-3d').click();
+  const canvas = page.getByTestId('room3d-canvas');
+  await expect(canvas).toHaveAttribute('data-pos', /\d/);
+  const [x0] = await posOf(page);
+  await page.keyboard.down('KeyW');
+  await page.waitForTimeout(600);
+  await page.keyboard.up('KeyW');
+  await expect.poll(async () => (await posOf(page))[0]).toBeGreaterThan(x0 + 30);
+  const yaw = Number(await canvas.getAttribute('data-yaw'));
+  await page.keyboard.down('ArrowLeft');
+  await page.waitForTimeout(400);
+  await page.keyboard.up('ArrowLeft');
+  await expect.poll(async () => Number(await canvas.getAttribute('data-yaw'))).toBeGreaterThan(yaw + 15);
+  await page.getByTestId('room3d-room').selectOption('rB');
+  await expect.poll(async () => (await posOf(page))[0]).toBeGreaterThan(300);
+});
+
+test('3D add: pick a switch, tap the wall in front — a new switch at that height; Esc stops adding', async ({
+  page,
+}, info) => {
+  await put(page, project());
+  await page.goto(`/editor/?id=${seedProject.id}`);
+  await page.locator('[data-testid="plan-canvas"][data-scale]').waitFor();
+  await page.getByTestId('open-3d').click();
+  const canvas = page.getByTestId('room3d-canvas');
+  await expect(canvas).toHaveAttribute('data-pos', /\d/);
+  await page.getByTestId('room3d-add-switch-single').click();
+  await expect(page.getByTestId('room3d-hint')).toContainText(/Devorni bosing/);
+  const box = (await canvas.boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2 - 40, box.y + box.height / 2);
+  const count = async () =>
+    page.evaluate(async (id) => {
+      const db: IDBDatabase = await new Promise((res) => {
+        const r = indexedDB.open('elektroplan');
+        r.onsuccess = () => res(r.result);
+      });
+      const p = await new Promise<{
+        points: Array<{ symbolId: string; wallId: string; mountHeightCm: number; deletedAt: string | null }>;
+      }>((res) => {
+        const q = db.transaction('projects').objectStore('projects').get(id);
+        q.onsuccess = () => res(q.result);
+      });
+      db.close();
+      return p.points.filter((x) => x.symbolId === 'switch-single' && x.deletedAt === null);
+    }, seedProject.id);
+  await expect.poll(async () => (await count()).length).toBe(2);
+  const added = (await count()).find((x) => x.wallId === 'w2')!;
+  expect(added.mountHeightCm).toBeGreaterThan(120);
+  expect(added.mountHeightCm).toBeLessThan(170);
+  if (['ipad-landscape', 'iphone'].includes(info.project.name)) {
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: `docs/screenshots/phase-25/${info.project.name}-add.png` });
+  }
+  await page.keyboard.press('Escape');
+  await expect(page.getByTestId('room3d-add-switch-single')).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.getByTestId('room3d')).toBeVisible();
+});
+
+test('3D walk screenshots (iPad, iPhone, desktop)', async ({ page }, info) => {
+  test.skip(!['ipad-landscape', 'iphone', 'desktop-windows'].includes(info.project.name));
+  await put(page, {
+    ...project(),
+    openings: [
+      { id: 'win', wallId: 'w1', kind: 'window', t: 0.7, width: 120, swing: 1 },
+      { id: 'door', wallId: 'w2', kind: 'door', t: 0.5, width: 90, swing: 1 },
+      { id: 'win2', wallId: 'w6', kind: 'window', t: 0.5, width: 100, swing: 1 },
+    ],
+  });
+  await page.goto(`/editor/?id=${seedProject.id}`);
+  await page.locator('[data-testid="plan-canvas"][data-scale]').waitFor();
+  await page.getByTestId('open-3d').click();
+  await expect(page.getByTestId('room3d-canvas')).toHaveAttribute('data-pos', /\d/);
+  await page.waitForTimeout(500);
+  const shot = (n: string) => page.screenshot({ path: `docs/screenshots/phase-25/${info.project.name}-${n}.png` });
+  await shot('1-xona');
+  await stick(page, 0, -60, 1500);
+  await page.waitForTimeout(200);
+  await shot('2-eshikdan');
+  await page.getByRole('radio', { name: 'Tepadan' }).click();
+  await page.waitForTimeout(300);
+  await shot('3-tepadan');
 });

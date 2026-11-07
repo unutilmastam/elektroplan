@@ -18,6 +18,9 @@ import { NoProjectState } from './NoProjectState';
 import { CompactPanels, PointSlideOver } from './CompactPanels';
 import { useWorkspaceProject, type WorkspaceMode } from './useWorkspaceProject';
 
+/** Bottom row height on laptop-height screens (≤ 860 px tall). */
+const LOW_BOTTOM = 168;
+
 /**
  * Main workspace (reference layout).
  * ≥1024: header / symbols / [canvas | point panel] / [rooms | wall view | status].
@@ -32,17 +35,24 @@ export function Workspace({ mode }: { mode: WorkspaceMode }) {
   const loadLayout = useUiStore((s) => s.loadLayout);
   const setExpanded = useUiStore((s) => s.setPlanExpanded);
   const [wide, setWide] = useState(false); // ≥1280: taller default bottom row
+  const [low, setLow] = useState(false); // laptop-height screens: a lower bottom row leaves room for the plan
   useEffect(() => {
     loadLayout();
     const mq = window.matchMedia('(min-width: 1280px)');
-    const on = () => setWide(mq.matches);
+    const mh = window.matchMedia('(max-height: 860px)');
+    const on = () => {
+      setWide(mq.matches);
+      setLow(mh.matches);
+    };
     on();
     mq.addEventListener('change', on);
+    mh.addEventListener('change', on);
     const esc = (e: KeyboardEvent) =>
       e.key === 'Escape' && useUiStore.getState().planExpanded && setExpanded(false);
     window.addEventListener('keydown', esc);
     return () => {
       mq.removeEventListener('change', on);
+      mh.removeEventListener('change', on);
       window.removeEventListener('keydown', esc);
       setExpanded(false);
     };
@@ -53,7 +63,9 @@ export function Workspace({ mode }: { mode: WorkspaceMode }) {
     ? { gridTemplateRows: 'auto auto minmax(0,1fr)' }
     : bottom > 0
       ? { gridTemplateRows: `auto auto minmax(0,1fr) ${bottom}px` }
-      : undefined;
+      : low
+        ? { gridTemplateRows: `auto auto minmax(0,1fr) ${LOW_BOTTOM}px` }
+        : undefined;
   return (
     <div
       style={rows}
@@ -79,7 +91,9 @@ export function Workspace({ mode }: { mode: WorkspaceMode }) {
         <PointSlideOver />
         {project ? <ExpandPlanButton /> : null}
         <Room3DButton className={expanded ? 'right-14' : 'right-14 sm:right-28 md:right-14'} />
-        {project && !expanded ? <BottomPanelsGrip defaultHeight={wide ? 248 : 212} /> : null}
+        {project && !expanded ? (
+          <BottomPanelsGrip defaultHeight={low ? LOW_BOTTOM : wide ? 248 : 212} />
+        ) : null}
       </div>
       <GlassPanel as="aside" className={cn('hidden min-h-0', !expanded && 'md:block')}>
         <PropertiesPanel />

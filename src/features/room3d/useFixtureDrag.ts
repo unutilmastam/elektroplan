@@ -1,7 +1,8 @@
 'use client';
 
 import { useRef, type PointerEvent } from 'react';
-import type { Fixture, Room3D } from '@/domain/room3d';
+import type { Scene3D } from '@/domain/house3d';
+import type { Fixture } from '@/domain/room3d';
 import { hitRoom, moveFixtureRecipe, type Hit3D } from '@/domain/room3dEdit';
 import type { Project } from '@/domain/types';
 import { useProjectStore } from '@/store/projectStore';
@@ -20,8 +21,7 @@ export interface DragPreview {
  */
 export function useFixtureDrag(o: {
   editable: boolean;
-  room: Room3D | null;
-  roomId: string | null;
+  scene: Scene3D | null;
   project: Project;
   preview: DragPreview | null;
   setPreview: (p: DragPreview | null) => void;
@@ -29,10 +29,10 @@ export function useFixtureDrag(o: {
   camera: () => Cam;
   look: ReturnType<typeof useLook>;
 }) {
-  const { editable, room, project, preview, setPreview, setPicked } = o;
-  const current = o.roomId;
+  const { editable, scene, project, preview, setPreview, setPicked } = o;
   const drag = useRef<{
     pointId: string;
+    roomId: string;
     size: number;
     ceiling: boolean;
     x: number;
@@ -46,13 +46,14 @@ export function useFixtureDrag(o: {
   };
   return {
     onPointerDown: (e: PointerEvent<HTMLCanvasElement>) => {
-      if (editable && room && current && e.isPrimary) {
+      if (editable && scene && e.isPrimary) {
         const l = local(e);
-        const fx = pick(room, viewCam(), l.x, l.y, l.w, l.h);
+        const fx = pick(scene, viewCam(), l.x, l.y, l.w, l.h);
         if (fx) {
           e.currentTarget.setPointerCapture(e.pointerId);
           drag.current = {
             pointId: fx.pointId,
+            roomId: fx.roomId,
             size: fx.h,
             ceiling: fx.wallId === null,
             x: e.clientX,
@@ -72,7 +73,7 @@ export function useFixtureDrag(o: {
       dr.moved = true;
       const l = local(e);
       const cam = viewCam();
-      const hit = hitRoom(project, current!, cam.eye, ray(cam, l.x, l.y, l.w, l.h), dr.ceiling);
+      const hit = hitRoom(project, dr.roomId, cam.eye, ray(cam, l.x, l.y, l.w, l.h), dr.ceiling);
       if (hit) setPreview({ pointId: dr.pointId, hit, size: dr.size });
     },
     onPointerUp: (e: PointerEvent<HTMLCanvasElement>) => {
