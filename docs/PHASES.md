@@ -314,4 +314,12 @@ Kutubxonasiz (egasi tanlovi): brauzerning WebGL’i, teksturalar kanvasda chizil
 - Surish vaqtida “Poldan N sm” yozuvi; qo‘yib yuborilganda saqlanadi (rejada ham, sinxron ham), bitta “Bekor qilish” qaytaradi.
 - Detal bo‘lmagan joydan surish — avvalgidek atrofga qarash. Demo loyihada faqat ko‘rish.
 
+## PHASE 25 — Uy bo‘ylab 3D yurish va 3D da qo‘shish (egasi so‘radi, 2026-11-07)
+
+**Qabul mezonlari**
+- 3D butun uyni ko‘rsatadi; joystik / W A S D bilan yuriladi, devor o‘tkazmaydi, ochiq eshikdan boshqa xonaga o‘tiladi.
+- Xona ro‘yxati turgan xonani ko‘rsatadi, tanlansa o‘sha xonaga o‘tadi; “Tepadan” — butun uy.
+- O‘ngdagi paneldan belgi tanlab devorni/shiftni bossangiz — yangi nuqta shu joyga va balandlikka qo‘shiladi.
+- Kichik kompyuter ekranlarida rejaga rozetka/viklyuchatel qo‘yish ishlaydi (regressiya testi).
+
 ## Keyin — Payme/Click onlayn to‘lov (merchant shartnoma tayyor bo‘lganda)

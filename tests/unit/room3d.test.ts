@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { buildHouse3D } from '@/domain/house3d';
 import { buildRoom3D, triangulate, WINDOW_SILL } from '@/domain/room3d';
 import { createEmptyProject } from '@/domain/project';
 import { reconcile } from '@/domain/topology';
@@ -95,8 +96,8 @@ describe('3D camera and tapping a fixture', async () => {
         createdAt: NOW, updatedAt: NOW, deletedAt: null,
       },
     ] as unknown as Project['points'];
-    const r = buildRoom3D({ ...p, points }, 'a')!;
-    const cam = camera(r, 'inside', { ...START.inside, pitch: 0 });
+    const r = buildHouse3D({ ...p, points })!;
+    const cam = camera(r, 'inside', { ...START.inside, pitch: 0 }, { x: 200, y: 150 });
     // the default view looks at the wall at plan y = 0, the switch is straight ahead at eye height
     expect(pick(r, cam, 400, 300, 800, 600)?.pointId).toBe('s');
     expect(pick(r, cam, 60, 300, 800, 600)).toBeNull();

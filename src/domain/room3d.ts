@@ -18,7 +18,9 @@ export type Surface =
   | 'frame'
   | 'sill'
   | 'glass'
-  | 'sky';
+  | 'sky'
+  | 'skirting'
+  | 'cap'; // top of a wall, seen from above
 
 /** A flat four-cornered piece, corners in order around it; `n` faces the viewer inside the room. */
 export interface Quad {
@@ -30,6 +32,7 @@ export interface Quad {
 }
 
 export interface Fixture {
+  roomId: string;
   pointId: string;
   symbolId: SymbolId;
   color: string;
@@ -131,7 +134,8 @@ export function triangulate(poly: readonly Vec2[]): Array<[number, number, numbe
 
 const v3 = (p: Vec2, h: number): V3 => [p.x, h, p.y];
 
-export function buildRoom3D(project: Project, roomId: string): Room3D | null {
+/** `openDoors`: leave the door leaves out (the walk-through house adds them, opened, once per door). */
+export function buildRoom3D(project: Project, roomId: string, opts: { openDoors?: boolean } = {}): Room3D | null {
   const room = project.rooms.find((r) => r.id === roomId && r.deletedAt === null);
   if (!room || room.vertices.length < 3) return null;
   const H = project.settings.wallDisplayHeightCm;
@@ -226,7 +230,7 @@ export function buildRoom3D(project: Project, roomId: string): Room3D | null {
         rect('glass', h.u0 + fw, h.u1 - fw, h.v0 + fw, h.v1 - fw, 0);
         rect('sky', h.u0 - 260, h.u1 + 260, h.v0 - 200, h.v1 + 320, -half - 90);
       } else {
-        rect('door', h.u0 + 4, h.u1 - 4, 0, h.v1 - 4, 0);
+        if (!opts.openDoors) rect('door', h.u0 + 4, h.u1 - 4, 0, h.v1 - 4, 0);
         // door casing: two jambs and the head
         rect('frame', h.u0 - 6, h.u0, 0, h.v1 + 6, half + 0.8);
         rect('frame', h.u1, h.u1 + 6, 0, h.v1 + 6, half + 0.8);
@@ -235,6 +239,13 @@ export function buildRoom3D(project: Project, roomId: string): Room3D | null {
       u = h.u1;
     }
     rect('wall', u, len, 0, H);
+    // skirting board along the floor, broken by the doors
+    let su = 0;
+    for (const h of holes.filter((x) => x.o.kind === 'door')) {
+      rect('skirting', su, h.u0 - 6, 0, 8, half + 1.2);
+      su = h.u1 + 6;
+    }
+    rect('skirting', su, len, 0, 8, half + 1.2);
 
     // what hangs on this wall, on this room's side
     for (const p of project.points) {
@@ -250,6 +261,7 @@ export function buildRoom3D(project: Project, roomId: string): Room3D | null {
     const [w, h] = fixtureSize(p.symbolId);
     fixtures.push({
       pointId: p.id,
+      roomId: p.roomId,
       symbolId: p.symbolId,
       color: p.color,
       c: [p.x, H - 0.8, p.y],
@@ -285,6 +297,7 @@ function wallFixture(p: ElectricalPoint, base: Vec2, nrm: Vec2, H: number): Fixt
   );
   return {
     pointId: p.id,
+    roomId: p.roomId,
     symbolId: p.symbolId,
     color: p.color,
     c: [base.x, height, base.y],

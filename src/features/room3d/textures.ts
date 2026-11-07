@@ -46,6 +46,18 @@ export function surfaceTexture(s: Surface): HTMLCanvasElement {
     case 'ceiling':
       noise(g, 256, 256, [246, 246, 244], 5, 3);
       break;
+    case 'skirting': {
+      // white MDF skirting: a lighter top edge and a soft shadow line
+      noise(g, 256, 256, [236, 236, 232], 4, 5);
+      g.fillStyle = 'rgba(255,255,255,0.7)';
+      g.fillRect(0, 0, 256, 34);
+      g.fillStyle = 'rgba(0,0,0,0.10)';
+      g.fillRect(0, 34, 256, 10);
+      break;
+    }
+    case 'cap':
+      noise(g, 256, 256, [92, 97, 106], 8, 9);
+      break;
     case 'floor': {
       // light oak laminate, 20 cm planks with staggered joints
       noise(g, 256, 256, [196, 160, 112], 10, 13);

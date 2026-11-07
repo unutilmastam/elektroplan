@@ -1,8 +1,8 @@
 import type { Draft } from 'immer';
 import { distance, pointInPolygon } from './geometry';
-import { movePointRecipe } from './points';
-import type { V3 } from './room3d';
-import type { Project, Vec2 } from './types';
+import { movePointRecipe, newPoint, placementTarget, wallTarget, type SymbolInfo } from './points';
+import { fixtureSize, type V3 } from './room3d';
+import type { ElectricalPoint, Project, SymbolId, Vec2 } from './types';
 
 /**
  * PHASE 24 — moving a socket / switch / lamp with the finger in the 3D view (pure).
@@ -15,14 +15,45 @@ export type Hit3D =
 const HEIGHT_STEP = 5;
 
 export function hitRoom(project: Project, roomId: string, eye: V3, d: V3, onCeiling: boolean): Hit3D | null {
+  return hitRoomAt(project, roomId, eye, d, onCeiling)?.hit ?? null;
+}
+
+/**
+ * PHASE 25 — what the finger points at anywhere in the house: the nearest wall face it sees (any room),
+ * or for a ceiling symbol the ceiling above you (from above: the floor spot under the finger).
+ */
+export function hitScene(
+  project: Project,
+  eye: V3,
+  d: V3,
+  onCeiling: boolean,
+): (Hit3D & { roomId: string; dist: number }) | null {
+  let best: (Hit3D & { roomId: string; dist: number }) | null = null;
+  for (const r of project.rooms) {
+    if (r.deletedAt !== null) continue;
+    const h = hitRoomAt(project, r.id, eye, d, onCeiling);
+    if (h && (!best || h.s < best.dist)) best = { ...h.hit, roomId: r.id, dist: h.s };
+  }
+  return best;
+}
+
+function hitRoomAt(
+  project: Project,
+  roomId: string,
+  eye: V3,
+  d: V3,
+  onCeiling: boolean,
+): { hit: Hit3D; s: number } | null {
   const room = project.rooms.find((r) => r.id === roomId && r.deletedAt === null);
   if (!room) return null;
   const H = project.settings.wallDisplayHeightCm;
   if (onCeiling) {
-    if (d[1] <= 1e-6) return null;
-    const s = (H - eye[1]) / d[1];
+    // inside: the ceiling above; from above the house (no ceiling drawn): the floor under the finger
+    const plane = eye[1] < H ? H : 0;
+    const s = Math.abs(d[1]) > 1e-6 ? (plane - eye[1]) / d[1] : -1;
+    if (s <= 0) return null;
     const at = { x: eye[0] + d[0] * s, y: eye[2] + d[2] * s };
-    return pointInPolygon(at, room.vertices) ? { kind: 'ceiling', at } : null;
+    return pointInPolygon(at, room.vertices) ? { hit: { kind: 'ceiling', at }, s } : null;
   }
   let best: { hit: Hit3D; s: number } | null = null;
   for (const w of project.walls) {
@@ -57,7 +88,7 @@ export function hitRoom(project: Project, roomId: string, eye: V3, d: V3, onCeil
       },
     };
   }
-  return best?.hit ?? null;
+  return best;
 }
 
 /** One undo step: the point goes where the finger is (wall + height, or ceiling position). */
@@ -76,4 +107,32 @@ export function moveFixtureRecipe(base: Project, pointId: string, hit: Hit3D, si
       p.updatedAt = now;
     }
   };
+}
+
+/**
+ * PHASE 25 — a new socket / switch / lamp where the finger tapped in 3D: on the wall at that height, or on
+ * the ceiling. Null when the tap does not suit the symbol.
+ */
+export function newFixturePoint(
+  base: Project,
+  symbolId: SymbolId,
+  symbol: SymbolInfo & { defaultColor: string },
+  hit: Hit3D,
+  id: string,
+  now: string,
+): ElectricalPoint | null {
+  const ceiling = symbol.placement === 'ceiling';
+  if (ceiling !== (hit.kind === 'ceiling')) return null;
+  const target =
+    hit.kind === 'wall'
+      ? wallTarget(base, hit.at, 14)
+      : placementTarget(base, hit.at, symbol, { tolerance: 14, free: false });
+  if (!target) return null;
+  const point = newPoint(base, target, symbolId, symbol, id, now);
+  if (hit.kind === 'wall') {
+    const H = base.settings.wallDisplayHeightCm;
+    const half = fixtureSize(symbolId)[1] / 2;
+    point.mountHeightCm = Math.round(Math.min(H - half - 2, Math.max(half + 2, hit.height)));
+  }
+  return point;
 }
